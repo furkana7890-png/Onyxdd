@@ -17,6 +17,7 @@
             color: white;
             min-height: 100vh;
             overflow-x: hidden;
+            padding-bottom: 80px; /* Özet butonu için boşluk */
         }
 
         .splash-screen {
@@ -195,9 +196,12 @@
             text-align: center;
             max-width: 500px;
             width: 90%;
+            max-height: 80vh;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             border: 2px solid rgba(255, 255, 255, 0.3);
             animation: slideIn 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
 
         .modal h2 {
@@ -206,10 +210,18 @@
             color: white;
         }
 
-        .modal p {
-            font-size: 1.3rem;
-            margin-bottom: 30px;
-            color: white;
+        .modal-text-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .modal-text-content p {
+            text-align: left;
+            font-size: 1.1rem;
+            line-height: 1.6;
         }
 
         .close-btn {
@@ -221,12 +233,67 @@
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
+            margin-top: auto;
         }
 
         .close-btn:hover {
             background: white;
             color: #6a11cb;
             transform: translateY(-2px);
+        }
+
+        /* Kaydırma çubuğu stilleri */
+        .modal-text-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-text-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .modal-text-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .modal-text-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Özet Butonu Stilleri */
+        .summary-section {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+
+        .summary-btn {
+            padding: 15px 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            font-weight: 600;
+        }
+
+        .summary-btn:hover {
+            background: white;
+            color: #6a11cb;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Özet Modal Stilleri */
+        .summary-modal .modal-content {
+            max-width: 600px;
+            max-height: 70vh;
         }
 
         /* Animations */
@@ -295,13 +362,19 @@
             
             .modal-content {
                 padding: 30px 20px;
+                max-width: 90%;
             }
             
             .modal h2 {
                 font-size: 1.8rem;
             }
             
-            .modal p {
+            .modal-text-content p {
+                font-size: 1rem;
+            }
+            
+            .summary-btn {
+                padding: 12px 30px;
                 font-size: 1.1rem;
             }
         }
@@ -324,32 +397,58 @@
     <!-- Ana İçerik -->
     <div class="main-content" id="mainContent">
         <h1>Sitemize Hoş Geldiniz</h1>
-        <p>Bu, Çözünürlük ile ilgili ana içerik alanıdır.</p>
+        <p>Bu site, Çözünürlüğe katkısı olan şeylerin anlatıldığı içerik alanıdır.
+        Çözünürlük = Belirli bir sıcaklık ve basınçta, 100 gram çözücüde (genellikle su) çözünebilen maksimum madde miktarına (gram cinsinden) denir.</p>
         
         <div class="features">
             <div class="feature-card" id="coderCard">
                 <div class="feature-icon">🚀</div>
                 <h3>Sıcaklık</h3>
-                <p>Furkan Tarafından yapılmıştır.</p>
+                <p>Bilgi Kutusu İçin Tıklayınız. </p>
             </div>
             <div class="feature-card" id="designCard">
                 <div class="feature-icon">🎨</div>
                 <h3>Basınç</h3>
-                <p>Kolay kullanıma sahip bir panel.</p>
+                <p>Bilgi Kutusu İçin Tıklayınız.</p>
             </div>
             <div class="feature-card" id="mobileCard">
                 <div class="feature-icon">📱</div>
-                <h3>Vb</h3>
-                <p>Tüm cihazlarda mükemmel görüntülenen responsive tasarım.</p>
+                <h3>Madde Cinsi</h3>
+                <p>Bilgi Kutusu İçin Tıklayınız.</p>
             </div>
         </div>
+    </div>
+
+    <!-- Özet Butonu -->
+    <div class="summary-section" id="summarySection">
+        <button class="summary-btn" id="summaryBtn">ÖZET</button>
     </div>
 
     <!-- Coder Modal -->
     <div class="modal" id="coderModal">
         <div class="modal-content">
             <h2>Sıcaklık</h2>
-            <p>Şimdilik birşey eklenmedi yakında..</p>
+            <div class="modal-text-content">
+                <p>Sıcaklığın etkisi, çözünen maddenin katı, sıvı veya gaz olmasına bağlı olarak değişir.
+
+a) Katı ve Sıvı Maddelerin Çözünürlüğüne Etkisi
+
+· Genel Kural: Sıcaklık arttıkça, katıların ve sıvıların çözünürlüğü genellikle artar.
+· Nedeni: Katıları çözmek genellikle enerji (ısı) gerektiren bir işlemdir (endotermik). Sıcaklık arttığında, çözücü molekülleri daha hızlı hareket eder ve katıyı daha etkili bir şekilde parçalayarak daha fazla maddenin çözünmesine olanak tanır.
+· İstisnalar:
+  · Bazı maddelerin (örneğin Seryum(III) sülfat - Ce₂(SO₄)₃) çözünürlüğü sıcaklıkla çok az değişir.
+  · Nadiren, bazı maddelerin (örneğin Sodyum sülfat - Na₂SO₄) çözünürlüğü belirli bir sıcaklıktan sonra azalabilir.
+
+Grafikte Gösterim: Katıların çözünürlük-sıcaklık grafiği genellikle yukarı doğru eğimlidir.
+
+b) Gaz Maddelerin Çözünürlüğüne Etkisi
+
+· Genel Kural: Sıcaklık arttıkça, gazların çözünürlüğü azalır.
+· Nedeni: Gazların çözünmesi genellikle enerji (ısı) açığa çıkaran bir işlemdir (ekzotermik). Sıcaklık arttığında, denge, açığa çıkan bu ısıyı azaltacak yöne, yani gazın çözeltiden ayrılması (kabarcıklar oluşturması) yönüne kayar. Ayrıca, sıcaklık arttıkça çözücüdeki gaz molekülleri daha fazla kinetik enerji kazanır ve çözeltiyi terk etme eğilimi artar.
+· Günlük Örnek: Bir kola şişesini oda sıcaklığında bıraktığınızda, buzdolabındakine göre daha çabuk "gazını kaçırır". Sebebi, sıcaklık arttıkça karbondioksit gazının (CO₂) sudaki çözünürlüğünün azalmasıdır.
+
+Grafikte Gösterim: Gazların çözünürlük-sıcaklık grafiği aşağı doğru eğimlidir.</p>
+            </div>
             <button class="close-btn" id="closeCoderModal">Kapat</button>
         </div>
     </div>
@@ -358,7 +457,15 @@
     <div class="modal" id="designModal">
         <div class="modal-content">
             <h2>Basınç</h2>
-            <p>SuriyeliRecep Ve Tomar123..</p>
+            <div class="modal-text-content">
+                <p>Basıncın etkisi, neredeyse tamamen gazlar için geçerlidir. Katı ve sıvıların çözünürlüğü basınçtan pratik olarak etkilenmez.
+
+· Genel Kural: Basınç arttıkça, gazların çözünürlüğü artar.
+· Nedeni: Bu etki Henry Yasası ile açıklanır. Basınç arttığında, gaz molekülleri daha küçük bir hacme sıkıştırılır, bu da çözücü yüzeyiyle daha fazla temas etmelerini ve çözünmelerini sağlar. Basınç azaldığında ise çözünmüş gaz molekülleri genleşerek kabarcıklar oluşturur ve çözeltiden ayrılır.
+· Günlük Örnek:
+  · Gazlı İçecekler: Konserve veya şişeler, basınç altında yüksek miktarda CO₂ gazı ile doldurulur. Kapağı açtığınızda basınç aniden düşer ve çözünürlük azalır. Gaz kabarcıkları oluşur ve yavaş yavaş dışarı çıkar.
+  · Vurgun (Dekompresyon Hastalığı): Derin dalgıçlar, yüksek basınç altında soludukları havadaki azot gazının kanda daha fazla çözünmesini sağlar. Eğer yüzeye çok hızlı çıkarlarsa (basınç hızla düşer), kanda çözünmüş azot gazı aniden kabarcıklar haline gelir. Bu kabarcıklar damarları tıkayarak ciddi sağlık sorunlarına yol açar.</p>
+            </div>
             <button class="close-btn" id="closeDesignModal">Kapat</button>
         </div>
     </div>
@@ -366,9 +473,56 @@
     <!-- Mobil Modal -->
     <div class="modal" id="mobileModal">
         <div class="modal-content">
-            <h2>Vb</h2>
-            <p>Şimdilik birşey eklenmedi yakında..</p>
+            <h2>Madde Cinsi</h2>
+            <div class="modal-text-content">
+                <p>Çözünürlük, çözünen ve çözücünün kimyasal doğasına bağlıdır. Temel kural şudur:
+
+"Benzer, benzeri çözer." (Like dissolves like)
+
+Buradaki "benzerlik", moleküllerin kutupluluk (polarite) özelliği ile ilgilidir.
+
+a) Polar Çözücüler (Örn: Su - H₂O)
+
+· Polar Maddeleri Çözer: Polar maddelerin (örneğin sofra tuzu - NaCl, şeker - C₁₂H₂₂O₁₁) pozitif ve negatif yüklü kısımları, su moleküllerinin zıt yükleri tarafından çekilir. Bu etkileşim maddeyi çözerek etrafını sarar (hidratasyon).
+· İyonik Bileşikleri Çözer: İyonik bileşikler (tuzlar) suda çözündüğünde, su molekülleri katyon ve anyonların etrafını sararak onları birbirinden ayırır ve çözelti içinde hareket etmelerini sağlar.
+· Polar Olmayan Maddeleri Çözmez: Polar olmayan maddeler (örneğin yağ, benzin) suda çözünmez. Çünkü su molekülleri, bu polar olmayan moleküllerle güçlü bir etkileşime giremez. Bunun yerine, su molekülleri kendi aralarında hidrojen bağlarını sürdürmeyi tercih eder ve polar olmayan molekülleri dışlar. Bu yüzden "yağ ve su karışmaz".
+
+b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
+
+· Polar Olmayan Maddeleri Çözer: Polar olmayan çözücüler, polar olmayan maddeleri (örneğin yağ, mum, naftalin) iyi çözer. Aralarındaki zayıf London kuvvetleri (geçici dipol etkileşimleri) çözünmeyi sağlar.
+· Polar ve İyonik Maddeleri Çözmez: Polar veya iyonik maddeleri çözemezler çünkü bu çözücüler, iyonları veya polar molekülleri stabilize edecek kadar kuvvetli etkileşim kuramazlar.</p>
+            </div>
             <button class="close-btn" id="closeMobileModal">Kapat</button>
+        </div>
+    </div>
+
+    <!-- Özet Modal -->
+    <div class="modal summary-modal" id="summaryModal">
+        <div class="modal-content">
+            <h2>ÖZET</h2>
+            <div class="modal-text-content">
+                <p><strong>ÇÖZÜNÜRLÜĞE ETKİ EDEN FAKTÖRLER - ÖZET</strong></p>
+                <br>
+                <p><strong>1. SICAKLIK:</strong></p>
+                <p>• Katı ve sıvılar: Sıcaklık arttıkça çözünürlük genellikle artar (endotermik)</p>
+                <p>• Gazlar: Sıcaklık arttıkça çözünürlük azalır (ekzotermik)</p>
+                <p>• Örnek: Sıcak kola daha çabuk gazını kaybeder</p>
+                <br>
+                <p><strong>2. BASINÇ:</strong></p>
+                <p>• Gazlar: Basınç arttıkça çözünürlük artar (Henry Yasası)</p>
+                <p>• Katı ve sıvılar: Basınçtan pratik olarak etkilenmez</p>
+                <p>• Örnek: Gazlı içecekler basınç altında üretilir</p>
+                <br>
+                <p><strong>3. MADDE CİNSİ:</strong></p>
+                <p>• "Benzer benzeri çözer" kuralı geçerlidir</p>
+                <p>• Polar çözücüler (su): Polar ve iyonik maddeleri çözer</p>
+                <p>• Polar olmayan çözücüler: Polar olmayan maddeleri çözer</p>
+                <p>• Örnek: Yağ ve su karışmaz</p>
+                <br>
+                <p><strong>GENEL TANIM:</strong></p>
+                <p>Çözünürlük = Belirli sıcaklık ve basınçta, 100 gram çözücüde çözünebilen maksimum madde miktarıdır.</p>
+            </div>
+            <button class="close-btn" id="closeSummaryModal">Kapat</button>
         </div>
     </div>
 
@@ -380,12 +534,21 @@
             const coderCard = document.getElementById('coderCard');
             const designCard = document.getElementById('designCard');
             const mobileCard = document.getElementById('mobileCard');
+            const summaryBtn = document.getElementById('summaryBtn');
+            const summarySection = document.getElementById('summarySection');
+            
             const coderModal = document.getElementById('coderModal');
             const designModal = document.getElementById('designModal');
             const mobileModal = document.getElementById('mobileModal');
+            const summaryModal = document.getElementById('summaryModal');
+            
             const closeCoderModal = document.getElementById('closeCoderModal');
             const closeDesignModal = document.getElementById('closeDesignModal');
             const closeMobileModal = document.getElementById('closeMobileModal');
+            const closeSummaryModal = document.getElementById('closeSummaryModal');
+            
+            // Başlangıçta özet butonunu gizle
+            summarySection.style.display = 'none';
             
             // Otomatik geçiş için (5 saniye sonra)
             setTimeout(function() {
@@ -395,19 +558,22 @@
             // Butona tıklanınca geçiş
             continueBtn.addEventListener('click', hideSplashScreen);
             
-            // Coder kartına tıklanınca modal aç
+            // Kartlara tıklanınca modal aç
             coderCard.addEventListener('click', function() {
                 coderModal.style.display = 'flex';
             });
             
-            // Tasarım kartına tıklanınca modal aç
             designCard.addEventListener('click', function() {
                 designModal.style.display = 'flex';
             });
             
-            // Mobil kartına tıklanınca modal aç
             mobileCard.addEventListener('click', function() {
                 mobileModal.style.display = 'flex';
+            });
+            
+            // Özet butonuna tıklanınca modal aç
+            summaryBtn.addEventListener('click', function() {
+                summaryModal.style.display = 'flex';
             });
             
             // Modal kapatma
@@ -421,6 +587,10 @@
             
             closeMobileModal.addEventListener('click', function() {
                 mobileModal.style.display = 'none';
+            });
+            
+            closeSummaryModal.addEventListener('click', function() {
+                summaryModal.style.display = 'none';
             });
             
             // Modal dışına tıklanınca kapat
@@ -442,12 +612,19 @@
                 }
             });
             
+            summaryModal.addEventListener('click', function(e) {
+                if (e.target === summaryModal) {
+                    summaryModal.style.display = 'none';
+                }
+            });
+            
             // ESC tuşu ile modal kapatma
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     coderModal.style.display = 'none';
                     designModal.style.display = 'none';
                     mobileModal.style.display = 'none';
+                    summaryModal.style.display = 'none';
                 }
             });
             
@@ -460,6 +637,8 @@
                 setTimeout(function() {
                     splashScreen.style.display = 'none';
                     mainContent.classList.add('visible');
+                    // Özet butonunu göster
+                    summarySection.style.display = 'block';
                 }, 1000);
             }
         });
