@@ -4,10 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>- Bilgilendirme -</title>
-    <!-- CSS dosyasını ekliyoruz -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- SVG Filtreleri -->
+    <svg style="position: absolute; width: 0; height: 0;">
+        <defs>
+            <filter id="turbulent-displace" colorInterpolationFilters="sRGB" x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise1" seed="1" />
+                <feOffset in="noise1" dx="0" dy="0" result="offsetNoise1">
+                    <animate attributeName="dy" values="700; 0" dur="6s" repeatCount="indefinite" calcMode="linear" />
+                </feOffset>
+
+                <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise2" seed="1" />
+                <feOffset in="noise2" dx="0" dy="0" result="offsetNoise2">
+                    <animate attributeName="dy" values="0; -700" dur="6s" repeatCount="indefinite" calcMode="linear" />
+                </feOffset>
+
+                <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise1" seed="2" />
+                <feOffset in="noise1" dx="0" dy="0" result="offsetNoise3">
+                    <animate attributeName="dx" values="490; 0" dur="6s" repeatCount="indefinite" calcMode="linear" />
+                </feOffset>
+
+                <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise2" seed="2" />
+                <feOffset in="noise2" dx="0" dy="0" result="offsetNoise4">
+                    <animate attributeName="dx" values="0; -490" dur="6s" repeatCount="indefinite" calcMode="linear" />
+                </feOffset>
+
+                <feComposite in="offsetNoise1" in2="offsetNoise2" result="part1" />
+                <feComposite in="offsetNoise3" in2="offsetNoise4" result="part2" />
+                <feBlend in="part1" in2="part2" mode="color-dodge" result="combinedNoise" />
+
+                <feDisplacementMap in="SourceGraphic" in2="combinedNoise" scale="30" xChannelSelector="R" yChannelSelector="B" />
+            </filter>
+        </defs>
+    </svg>
+
     <!-- Giriş Ekranı -->
     <div class="splash-screen" id="splashScreen">
         <div class="logo">
@@ -24,24 +56,65 @@
     <!-- Ana İçerik -->
     <div class="main-content" id="mainContent">
         <h1>Sitemize Hoş Geldiniz</h1>
-        <p>Bu site, Çözünürlüğe katkısı olan şeylerin anlatıldığı içerik alanıdır.
+        <p>Bu site, Çözünürlüğe katkısı olan şeylerin anlatıldığı içerik alanıdır.<br>
         Çözünürlük = Belirli bir sıcaklık ve basınçta, 100 gram çözücüde (genellikle su) çözünebilen maksimum madde miktarına (gram cinsinden) denir.</p>
         
         <div class="features">
             <div class="feature-card" id="coderCard">
-                <div class="feature-icon">🚀</div>
-                <h3>Sıcaklık</h3>
-                <p>Bilgi Kutusu İçin Tıklayınız. </p>
+                <div class="electric-card-container">
+                    <div class="electric-inner-container">
+                        <div class="electric-border-outer">
+                            <div class="electric-main-card">
+                                <div class="feature-icon">🌡️</div>
+                                <h3>Sıcaklık</h3>
+                                <p>Bilgi Kutusu İçin Tıklayınız</p>
+                            </div>
+                        </div>
+                        <div class="electric-glow-layer-1"></div>
+                        <div class="electric-glow-layer-2"></div>
+                        <div class="electric-overlay-1"></div>
+                        <div class="electric-overlay-2"></div>
+                        <div class="electric-background-glow"></div>
+                    </div>
+                </div>
             </div>
+            
             <div class="feature-card" id="designCard">
-                <div class="feature-icon">🎨</div>
-                <h3>Basınç</h3>
-                <p>Bilgi Kutusu İçin Tıklayınız.</p>
+                <div class="electric-card-container">
+                    <div class="electric-inner-container">
+                        <div class="electric-border-outer">
+                            <div class="electric-main-card">
+                                <div class="feature-icon">⚖️</div>
+                                <h3>Basınç</h3>
+                                <p>Bilgi Kutusu İçin Tıklayınız</p>
+                            </div>
+                        </div>
+                        <div class="electric-glow-layer-1"></div>
+                        <div class="electric-glow-layer-2"></div>
+                        <div class="electric-overlay-1"></div>
+                        <div class="electric-overlay-2"></div>
+                        <div class="electric-background-glow"></div>
+                    </div>
+                </div>
             </div>
+            
             <div class="feature-card" id="mobileCard">
-                <div class="feature-icon">📱</div>
-                <h3>Madde Cinsi</h3>
-                <p>Bilgi Kutusu İçin Tıklayınız.</p>
+                <div class="electric-card-container">
+                    <div class="electric-inner-container">
+                        <div class="electric-border-outer">
+                            <div class="electric-main-card">
+                                <div class="feature-icon">🧪</div>
+                                <h3>Madde Cinsi</h3>
+                                <p>Bilgi Kutusu İçin Tıklayınız</p>
+                            </div>
+                        </div>
+                        <div class="electric-glow-layer-1"></div>
+                        <div class="electric-glow-layer-2"></div>
+                        <div class="electric-overlay-1"></div>
+                        <div class="electric-overlay-2"></div>
+                        <div class="electric-background-glow"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
