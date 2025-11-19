@@ -179,7 +179,7 @@
             margin-bottom: 10px;
         }
 
-        /* Coder Modal Stilleri */
+        /* Modal Stilleri */
         .modal {
             display: none;
             position: fixed;
@@ -191,6 +191,7 @@
             z-index: 2000;
             justify-content: center;
             align-items: center;
+            animation: fadeIn 0.3s ease;
         }
 
         .modal-content {
@@ -202,6 +203,7 @@
             width: 90%;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             border: 2px solid rgba(255, 255, 255, 0.3);
+            animation: slideIn 0.3s ease;
         }
 
         .modal h2 {
@@ -261,6 +263,17 @@
             to { opacity: 1; }
         }
 
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
         @keyframes loading {
             0% { width: 0%; }
             100% { width: 100%; }
@@ -291,6 +304,18 @@
                 width: 100%;
                 max-width: 300px;
             }
+            
+            .modal-content {
+                padding: 30px 20px;
+            }
+            
+            .modal h2 {
+                font-size: 1.8rem;
+            }
+            
+            .modal p {
+                font-size: 1.1rem;
+            }
         }
     </style>
 </head>
@@ -319,7 +344,7 @@
                 <h3>Coder</h3>
                 <p>OnyxDesign Tarafından yapılmıştır.</p>
             </div>
-            <div class="feature-card">
+            <div class="feature-card" id="designCard">
                 <div class="feature-icon">🎨</div>
                 <h3>Tasarım</h3>
                 <p>Kolay kullanıma sahip bir panel.</p>
@@ -337,7 +362,16 @@
         <div class="modal-content">
             <h2>Coder</h2>
             <p>Şimdilik birşey eklenmedi yakında..</p>
-            <button class="close-btn" id="closeModal">Kapat</button>
+            <button class="close-btn" id="closeCoderModal">Kapat</button>
+        </div>
+    </div>
+
+    <!-- Tasarım Modal -->
+    <div class="modal" id="designModal">
+        <div class="modal-content">
+            <h2>Tasarım</h2>
+            <p>Güncellenecek..</p>
+            <button class="close-btn" id="closeDesignModal">Kapat</button>
         </div>
     </div>
 
@@ -347,8 +381,11 @@
             const mainContent = document.getElementById('mainContent');
             const continueBtn = document.getElementById('continueBtn');
             const coderCard = document.getElementById('coderCard');
+            const designCard = document.getElementById('designCard');
             const coderModal = document.getElementById('coderModal');
-            const closeModal = document.getElementById('closeModal');
+            const designModal = document.getElementById('designModal');
+            const closeCoderModal = document.getElementById('closeCoderModal');
+            const closeDesignModal = document.getElementById('closeDesignModal');
             
             // Otomatik geçiş için (5 saniye sonra)
             setTimeout(function() {
@@ -363,15 +400,38 @@
                 coderModal.style.display = 'flex';
             });
             
+            // Tasarım kartına tıklanınca modal aç
+            designCard.addEventListener('click', function() {
+                designModal.style.display = 'flex';
+            });
+            
             // Modal kapatma
-            closeModal.addEventListener('click', function() {
+            closeCoderModal.addEventListener('click', function() {
                 coderModal.style.display = 'none';
+            });
+            
+            closeDesignModal.addEventListener('click', function() {
+                designModal.style.display = 'none';
             });
             
             // Modal dışına tıklanınca kapat
             coderModal.addEventListener('click', function(e) {
                 if (e.target === coderModal) {
                     coderModal.style.display = 'none';
+                }
+            });
+            
+            designModal.addEventListener('click', function(e) {
+                if (e.target === designModal) {
+                    designModal.style.display = 'none';
+                }
+            });
+            
+            // ESC tuşu ile modal kapatma
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    coderModal.style.display = 'none';
+                    designModal.style.display = 'none';
                 }
             });
             
