@@ -45,19 +45,13 @@
             margin-bottom: 30px;
             animation: pulse 2s infinite, rotate 4s linear infinite;
             box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            overflow: hidden;
         }
 
-        .logo-inner {
-            width: 80px;
-            height: 80px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            color: #6a11cb;
-            font-size: 24px;
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .title {
@@ -294,12 +288,6 @@
                 height: 100px;
             }
             
-            .logo-inner {
-                width: 60px;
-                height: 60px;
-                font-size: 18px;
-            }
-            
             .feature-card {
                 width: 100%;
                 max-width: 300px;
@@ -323,7 +311,7 @@
     <!-- Giriş Ekranı -->
     <div class="splash-screen" id="splashScreen">
         <div class="logo">
-            <div class="logo-inner">:]</div>
+            <img src="onyx.png" alt="Onyx Logo">
         </div>
         <h1 class="title">HOŞ GELDİNİZ</h1>
         <p class="subtitle">Modern ve Şık Tasarım</p>
