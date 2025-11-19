@@ -268,6 +268,8 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 100;
+            display: flex;
+            gap: 15px;
         }
 
         .summary-btn {
@@ -290,10 +292,55 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
+        /* Video Anlatım Butonu Stilleri */
+        .video-btn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            border: 2px solid white;
+            color: white;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            font-weight: 600;
+        }
+
+        .video-btn:hover {
+            background: white;
+            color: #ff416c;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
         /* Özet Modal Stilleri */
         .summary-modal .modal-content {
             max-width: 600px;
             max-height: 70vh;
+        }
+
+        /* Video Modal Stilleri */
+        .video-modal .modal-content {
+            max-width: 800px;
+            max-height: 80vh;
+            padding: 20px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            margin-bottom: 20px;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
         }
 
         /* Animations */
@@ -373,9 +420,15 @@
                 font-size: 1rem;
             }
             
-            .summary-btn {
+            .summary-btn, .video-btn {
                 padding: 12px 30px;
                 font-size: 1.1rem;
+            }
+            
+            .summary-section {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
             }
         }
     </style>
@@ -419,9 +472,10 @@
         </div>
     </div>
 
-    <!-- Özet Butonu -->
+    <!-- Özet ve Video Butonları -->
     <div class="summary-section" id="summarySection">
         <button class="summary-btn" id="summaryBtn">ÖZET</button>
+        <button class="video-btn" id="videoBtn">VİDEO ANLATIM</button>
     </div>
 
     <!-- Coder Modal -->
@@ -526,6 +580,17 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
         </div>
     </div>
 
+    <!-- Video Modal -->
+    <div class="modal video-modal" id="videoModal">
+        <div class="modal-content">
+            <h2>Video Anlatım</h2>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/CV-616Ufv6Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <button class="close-btn" id="closeVideoModal">Kapat</button>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const splashScreen = document.getElementById('splashScreen');
@@ -535,17 +600,20 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
             const designCard = document.getElementById('designCard');
             const mobileCard = document.getElementById('mobileCard');
             const summaryBtn = document.getElementById('summaryBtn');
+            const videoBtn = document.getElementById('videoBtn');
             const summarySection = document.getElementById('summarySection');
             
             const coderModal = document.getElementById('coderModal');
             const designModal = document.getElementById('designModal');
             const mobileModal = document.getElementById('mobileModal');
             const summaryModal = document.getElementById('summaryModal');
+            const videoModal = document.getElementById('videoModal');
             
             const closeCoderModal = document.getElementById('closeCoderModal');
             const closeDesignModal = document.getElementById('closeDesignModal');
             const closeMobileModal = document.getElementById('closeMobileModal');
             const closeSummaryModal = document.getElementById('closeSummaryModal');
+            const closeVideoModal = document.getElementById('closeVideoModal');
             
             // Başlangıçta özet butonunu gizle
             summarySection.style.display = 'none';
@@ -576,6 +644,11 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 summaryModal.style.display = 'flex';
             });
             
+            // Video butonuna tıklanınca modal aç
+            videoBtn.addEventListener('click', function() {
+                videoModal.style.display = 'flex';
+            });
+            
             // Modal kapatma
             closeCoderModal.addEventListener('click', function() {
                 coderModal.style.display = 'none';
@@ -591,6 +664,10 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
             
             closeSummaryModal.addEventListener('click', function() {
                 summaryModal.style.display = 'none';
+            });
+            
+            closeVideoModal.addEventListener('click', function() {
+                videoModal.style.display = 'none';
             });
             
             // Modal dışına tıklanınca kapat
@@ -618,6 +695,12 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 }
             });
             
+            videoModal.addEventListener('click', function(e) {
+                if (e.target === videoModal) {
+                    videoModal.style.display = 'none';
+                }
+            });
+            
             // ESC tuşu ile modal kapatma
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
@@ -625,6 +708,7 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                     designModal.style.display = 'none';
                     mobileModal.style.display = 'none';
                     summaryModal.style.display = 'none';
+                    videoModal.style.display = 'none';
                 }
             });
             
@@ -638,7 +722,7 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                     splashScreen.style.display = 'none';
                     mainContent.classList.add('visible');
                     // Özet butonunu göster
-                    summarySection.style.display = 'block';
+                    summarySection.style.display = 'flex';
                 }, 1000);
             }
         });
