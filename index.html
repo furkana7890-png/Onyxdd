@@ -349,7 +349,7 @@
                 <h3>Tasarım</h3>
                 <p>Kolay kullanıma sahip bir panel.</p>
             </div>
-            <div class="feature-card" id="FeatureCard">
+            <div class="feature-card" id="mobileCard">
                 <div class="feature-icon">📱</div>
                 <h3>Mobil Uyumlu</h3>
                 <p>Tüm cihazlarda mükemmel görüntülenen responsive tasarım.</p>
@@ -375,6 +375,15 @@
         </div>
     </div>
 
+    <!-- Mobil Modal -->
+    <div class="modal" id="mobileModal">
+        <div class="modal-content">
+            <h2>Mobil Uyumlu</h2>
+            <p>Şimdilik birşey eklenmedi yakında..</p>
+            <button class="close-btn" id="closeMobileModal">Kapat</button>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const splashScreen = document.getElementById('splashScreen');
@@ -382,10 +391,13 @@
             const continueBtn = document.getElementById('continueBtn');
             const coderCard = document.getElementById('coderCard');
             const designCard = document.getElementById('designCard');
+            const mobileCard = document.getElementById('mobileCard');
             const coderModal = document.getElementById('coderModal');
             const designModal = document.getElementById('designModal');
+            const mobileModal = document.getElementById('mobileModal');
             const closeCoderModal = document.getElementById('closeCoderModal');
             const closeDesignModal = document.getElementById('closeDesignModal');
+            const closeMobileModal = document.getElementById('closeMobileModal');
             
             // Otomatik geçiş için (5 saniye sonra)
             setTimeout(function() {
@@ -405,6 +417,11 @@
                 designModal.style.display = 'flex';
             });
             
+            // Mobil kartına tıklanınca modal aç
+            mobileCard.addEventListener('click', function() {
+                mobileModal.style.display = 'flex';
+            });
+            
             // Modal kapatma
             closeCoderModal.addEventListener('click', function() {
                 coderModal.style.display = 'none';
@@ -412,6 +429,10 @@
             
             closeDesignModal.addEventListener('click', function() {
                 designModal.style.display = 'none';
+            });
+            
+            closeMobileModal.addEventListener('click', function() {
+                mobileModal.style.display = 'none';
             });
             
             // Modal dışına tıklanınca kapat
@@ -427,11 +448,18 @@
                 }
             });
             
+            mobileModal.addEventListener('click', function(e) {
+                if (e.target === mobileModal) {
+                    mobileModal.style.display = 'none';
+                }
+            });
+            
             // ESC tuşu ile modal kapatma
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     coderModal.style.display = 'none';
                     designModal.style.display = 'none';
+                    mobileModal.style.display = 'none';
                 }
             });
             
