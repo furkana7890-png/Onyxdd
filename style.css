@@ -5,8 +5,28 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Arkaplan Videosu */
+#bgVideo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: -1;
+}
+
 body {
-    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
     color: white;
     min-height: 100vh;
     overflow-x: hidden;
@@ -23,9 +43,10 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    background: rgba(0, 0, 0, 0.85);
     z-index: 1000;
     transition: opacity 1s ease, transform 1s ease;
+    backdrop-filter: blur(5px);
 }
 
 .logo {
@@ -112,6 +133,11 @@ body {
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 1s ease, transform 1s ease;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 30px;
+    backdrop-filter: blur(10px);
+    margin-top: 50px;
+    margin-bottom: 50px;
 }
 
 .main-content.visible {
@@ -141,16 +167,17 @@ p {
 }
 
 .feature-card {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     padding: 25px;
     border-radius: 15px;
     width: 300px;
     text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     transition: transform 0.3s ease;
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(5px);
 }
 
 .feature-card::before {
@@ -166,6 +193,7 @@ p {
 
 .feature-card:hover {
     transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.25);
 }
 
 .feature-icon {
@@ -186,7 +214,7 @@ p {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.9);
     z-index: 2000;
     justify-content: center;
     align-items: center;
@@ -194,7 +222,7 @@ p {
 }
 
 .modal-content {
-    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    background: linear-gradient(135deg, rgba(106, 17, 203, 0.95) 0%, rgba(37, 117, 252, 0.95) 100%);
     padding: 40px;
     border-radius: 20px;
     text-align: center;
@@ -206,6 +234,7 @@ p {
     animation: slideIn 0.3s ease;
     display: flex;
     flex-direction: column;
+    backdrop-filter: blur(10px);
 }
 
 .modal h2 {
@@ -288,6 +317,7 @@ p {
     font-weight: 600;
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(5px);
 }
 
 .summary-btn::before {
@@ -310,7 +340,7 @@ p {
 
 .video-btn {
     padding: 15px 40px;
-    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
     border: 2px solid white;
     color: white;
     font-size: 1.2rem;
@@ -340,7 +370,7 @@ p {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-/* SADECE EKLENEN TEST BUTONU STİLLERİ */
+/* EKLENEN TEST BUTONU */
 .quiz-btn {
     padding: 15px 40px;
     background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
@@ -388,7 +418,7 @@ p {
     }
 }
 
-/* SADECE EKLENEN TEST MODAL ÖZEL STİLLERİ */
+/* EKLENEN TEST MODAL ÖZEL STİLLERİ */
 .quiz-modal .modal-content {
     max-width: 550px;
     max-height: 85vh;
@@ -500,7 +530,7 @@ p {
     position: relative;
     width: 100%;
     height: 0;
-    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    padding-bottom: 56.25%;
     margin-bottom: 20px;
 }
 
@@ -557,7 +587,6 @@ p {
     100% { width: 100%; }
 }
 
-/* Sheen Shining efekti için animasyon */
 @keyframes sheen {
     0% { 
         transform: translateX(-100%) rotate(45deg); 
@@ -604,13 +633,19 @@ p {
     }
     
     .summary-btn, .video-btn, .quiz-btn {
-        padding: 12px 30px;
-        font-size: 1.1rem;
+        padding: 12px 25px;
+        font-size: 1rem;
     }
     
     .summary-section {
         flex-direction: column;
         align-items: center;
         gap: 10px;
+        bottom: 15px;
     }
-        }
+    
+    .main-content {
+        margin-top: 20px;
+        margin-bottom: 100px;
+    }
+    }
