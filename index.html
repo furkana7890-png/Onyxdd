@@ -6,43 +6,8 @@
     <title>- Bilgilendirme -</title>
     <!-- CSS dosyasını ekliyoruz -->
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Video arka plan için stiller */
-        #backgroundVideo {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
-        }
-        
-        /* İçeriklerin görünür olması için arka plan overlay */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: -1;
-        }
-        
-        body {
-            position: relative;
-            min-height: 100vh;
-        }
-    </style>
 </head>
 <body>
-    <!-- Video Arka Plan -->
-    <video id="backgroundVideo" autoplay muted loop>
-        <source src="plaj.mp4" type="video/mp4">
-        Tarayıcınız video etiketini desteklemiyor.
-    </video>
-    <div class="overlay"></div>
-
     <!-- Giriş Ekranı -->
     <div class="splash-screen" id="splashScreen">
         <div class="logo">
@@ -85,6 +50,8 @@
     <div class="summary-section" id="summarySection">
         <button class="summary-btn" id="summaryBtn">ÖZET</button>
         <button class="video-btn" id="videoBtn">VİDEO ANLATIM</button>
+        <!-- SADECE EKLENEN TEST BUTONU -->
+        <button class="quiz-btn" id="quizBtn">TEST ÇÖZ</button>
     </div>
 
     <!-- Coder Modal -->
@@ -200,6 +167,20 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
         </div>
     </div>
 
+    <!-- SADECE EKLENEN TEST MODALI -->
+    <div class="modal quiz-modal" id="quizModal">
+        <div class="modal-content">
+            <h2>📝 KENDİNİ TEST ET</h2>
+            <div class="modal-text-content" id="quizContainer"></div>
+            <div class="quiz-buttons">
+                <button class="submit-quiz-btn" id="submitQuizBtn">SONUÇLARI GÖSTER</button>
+                <button class="reset-quiz-btn" id="resetQuizBtn">SIFIRLA</button>
+            </div>
+            <div id="quizResult" class="quiz-result" style="display: none;"></div>
+            <button class="close-btn" id="closeQuizModal">Kapat</button>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const splashScreen = document.getElementById('splashScreen');
@@ -223,6 +204,92 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
             const closeMobileModal = document.getElementById('closeMobileModal');
             const closeSummaryModal = document.getElementById('closeSummaryModal');
             const closeVideoModal = document.getElementById('closeVideoModal');
+            
+            // SADECE EKLENEN TEST ELEMANLARI
+            const quizBtn = document.getElementById('quizBtn');
+            const quizModal = document.getElementById('quizModal');
+            const closeQuizModal = document.getElementById('closeQuizModal');
+            
+            // Test soruları
+            const questions = [
+                { text: "Sıcaklık arttıkça gazların çözünürlüğü artar.", correct: false },
+                { text: "Katı maddelerin çözünürlüğü genellikle sıcaklık arttıkça artar.", correct: true },
+                { text: "Basınç arttıkça gazların çözünürlüğü azalır (Henry Yasası).", correct: false },
+                { text: "'Benzer benzeri çözer' kuralı polarite ile ilgilidir.", correct: true },
+                { text: "Yağ, polar bir çözücü olan suda iyi çözünür.", correct: false }
+            ];
+            
+            let userAnswers = new Array(questions.length).fill(null);
+            
+            function buildQuiz() {
+                const container = document.getElementById('quizContainer');
+                container.innerHTML = '';
+                questions.forEach((q, index) => {
+                    const questionDiv = document.createElement('div');
+                    questionDiv.className = 'quiz-question';
+                    questionDiv.innerHTML = `
+                        <p>${index + 1}. ${q.text}</p>
+                        <div class="quiz-option">
+                            <input type="radio" name="q${index}" value="true" id="q${index}_true">
+                            <label for="q${index}_true">✅ Doğru</label>
+                        </div>
+                        <div class="quiz-option">
+                            <input type="radio" name="q${index}" value="false" id="q${index}_false">
+                            <label for="q${index}_false">❌ Yanlış</label>
+                        </div>
+                    `;
+                    container.appendChild(questionDiv);
+                    
+                    const radios = document.querySelectorAll(`input[name="q${index}"]`);
+                    radios.forEach(radio => {
+                        radio.addEventListener('change', (e) => {
+                            userAnswers[index] = e.target.value === 'true';
+                        });
+                    });
+                });
+            }
+            
+            function showResults() {
+                let correctCount = 0;
+                const results = [];
+                for (let i = 0; i < questions.length; i++) {
+                    const isCorrect = userAnswers[i] === questions[i].correct;
+                    if (isCorrect) correctCount++;
+                    results.push(`${i + 1}. ${isCorrect ? '✓ Doğru' : '✗ Yanlış'}`);
+                }
+                
+                const resultDiv = document.getElementById('quizResult');
+                const percentage = (correctCount / questions.length) * 100;
+                let message = '';
+                if (percentage === 100) message = '🎉 Mükemmel! Konuyu çok iyi kavramışsın! 🎉';
+                else if (percentage >= 60) message = '👍 İyi! Konuyu gözden geçirmen faydalı olabilir.';
+                else message = '📚 Tekrar çalışmanı öneririm. Konuyu bir daha gözden geçir!';
+                
+                resultDiv.innerHTML = `
+                    <strong>📊 SONUÇ:</strong><br>
+                    ${correctCount} / ${questions.length} doğru (${Math.round(percentage)}%)<br><br>
+                    ${results.join(' | ')}<br><br>
+                    ${message}
+                `;
+                
+                if (percentage >= 70) {
+                    resultDiv.className = 'quiz-result correct';
+                } else {
+                    resultDiv.className = 'quiz-result wrong';
+                }
+                resultDiv.style.display = 'block';
+            }
+            
+            function resetQuiz() {
+                userAnswers.fill(null);
+                const radios = document.querySelectorAll('#quizContainer input[type="radio"]');
+                radios.forEach(radio => {
+                    radio.checked = false;
+                });
+                const resultDiv = document.getElementById('quizResult');
+                resultDiv.style.display = 'none';
+                resultDiv.innerHTML = '';
+            }
             
             // Başlangıçta özet butonunu gizle
             summarySection.style.display = 'none';
@@ -258,6 +325,13 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 videoModal.style.display = 'flex';
             });
             
+            // SADECE EKLENEN TEST BUTONU İŞLEMLERİ
+            quizBtn.addEventListener('click', function() {
+                buildQuiz();
+                resetQuiz();
+                quizModal.style.display = 'flex';
+            });
+            
             // Modal kapatma
             closeCoderModal.addEventListener('click', function() {
                 coderModal.style.display = 'none';
@@ -278,6 +352,14 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
             closeVideoModal.addEventListener('click', function() {
                 videoModal.style.display = 'none';
             });
+            
+            // SADECE EKLENEN TEST MODAL KAPATMA
+            closeQuizModal.addEventListener('click', function() {
+                quizModal.style.display = 'none';
+            });
+            
+            document.getElementById('submitQuizBtn').addEventListener('click', showResults);
+            document.getElementById('resetQuizBtn').addEventListener('click', resetQuiz);
             
             // Modal dışına tıklanınca kapat
             coderModal.addEventListener('click', function(e) {
@@ -310,6 +392,13 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 }
             });
             
+            // SADECE EKLENEN TEST MODAL DIŞI KAPATMA
+            quizModal.addEventListener('click', function(e) {
+                if (e.target === quizModal) {
+                    quizModal.style.display = 'none';
+                }
+            });
+            
             // ESC tuşu ile modal kapatma
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
@@ -318,6 +407,7 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                     mobileModal.style.display = 'none';
                     summaryModal.style.display = 'none';
                     videoModal.style.display = 'none';
+                    quizModal.style.display = 'none';
                 }
             });
             
@@ -337,4 +427,4 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
         });
     </script>
 </body>
-</html>
+    </html>
