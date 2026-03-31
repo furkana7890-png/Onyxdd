@@ -160,12 +160,7 @@ p {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.4),
-        transparent
-    );
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
     animation: sheen 3s infinite;
 }
 
@@ -302,12 +297,7 @@ p {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.4),
-        transparent
-    );
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
     animation: sheen 3s infinite;
 }
 
@@ -339,12 +329,7 @@ p {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.4),
-        transparent
-    );
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
     animation: sheen 3s infinite;
 }
 
@@ -353,6 +338,149 @@ p {
     color: #ff416c;
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* SADECE EKLENEN TEST BUTONU STİLLERİ */
+.quiz-btn {
+    padding: 15px 40px;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border: 2px solid white;
+    color: white;
+    font-size: 1.2rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+    animation: pulseGlow 1.5s infinite;
+    box-shadow: 0 0 15px rgba(245, 87, 108, 0.6);
+}
+
+.quiz-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    animation: sheen 2s infinite;
+}
+
+.quiz-btn:hover {
+    background: white;
+    color: #f5576c;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 5px 25px rgba(245, 87, 108, 0.8);
+    animation: none;
+}
+
+@keyframes pulseGlow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(245, 87, 108, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(245, 87, 108, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(245, 87, 108, 0);
+    }
+}
+
+/* SADECE EKLENEN TEST MODAL ÖZEL STİLLERİ */
+.quiz-modal .modal-content {
+    max-width: 550px;
+    max-height: 85vh;
+}
+
+.quiz-question {
+    margin-bottom: 25px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    text-align: left;
+}
+
+.quiz-question p {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    text-align: left;
+    color: white;
+}
+
+.quiz-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: background 0.2s ease;
+}
+
+.quiz-option:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.quiz-option input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #f5576c;
+}
+
+.quiz-option label {
+    font-size: 1rem;
+    cursor: pointer;
+    color: white;
+}
+
+.quiz-result {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.quiz-result.correct {
+    background: rgba(76, 175, 80, 0.3);
+    border: 1px solid #4caf50;
+}
+
+.quiz-result.wrong {
+    background: rgba(244, 67, 54, 0.3);
+    border: 1px solid #f44336;
+}
+
+.quiz-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.submit-quiz-btn, .reset-quiz-btn {
+    padding: 10px 25px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    color: white;
+    font-size: 1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.submit-quiz-btn:hover, .reset-quiz-btn:hover {
+    background: white;
+    color: #6a11cb;
+    transform: translateY(-2px);
 }
 
 /* Özet Modal Stilleri */
@@ -475,7 +603,7 @@ p {
         font-size: 1rem;
     }
     
-    .summary-btn, .video-btn {
+    .summary-btn, .video-btn, .quiz-btn {
         padding: 12px 30px;
         font-size: 1.1rem;
     }
@@ -485,4 +613,4 @@ p {
         align-items: center;
         gap: 10px;
     }
-}
+        }
