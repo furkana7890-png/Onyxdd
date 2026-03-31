@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Arkaplan Videosu -->
+    <video autoplay muted loop id="bgVideo">
+        <source src="plaj.mp4" type="video/mp4">
+    </video>
+    <div class="overlay"></div>
+
     <!-- Giriş Ekranı -->
     <div class="splash-screen" id="splashScreen">
         <div class="logo">
@@ -50,7 +56,7 @@
     <div class="summary-section" id="summarySection">
         <button class="summary-btn" id="summaryBtn">ÖZET</button>
         <button class="video-btn" id="videoBtn">VİDEO ANLATIM</button>
-        <!-- SADECE EKLENEN TEST BUTONU -->
+        <!-- EKLENEN TEST BUTONU -->
         <button class="quiz-btn" id="quizBtn">TEST ÇÖZ</button>
     </div>
 
@@ -167,7 +173,7 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
         </div>
     </div>
 
-    <!-- SADECE EKLENEN TEST MODALI -->
+    <!-- EKLENEN TEST MODALI -->
     <div class="modal quiz-modal" id="quizModal">
         <div class="modal-content">
             <h2>📝 KENDİNİ TEST ET</h2>
@@ -205,7 +211,7 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
             const closeSummaryModal = document.getElementById('closeSummaryModal');
             const closeVideoModal = document.getElementById('closeVideoModal');
             
-            // SADECE EKLENEN TEST ELEMANLARI
+            // EKLENEN TEST ELEMANLARI
             const quizBtn = document.getElementById('quizBtn');
             const quizModal = document.getElementById('quizModal');
             const closeQuizModal = document.getElementById('closeQuizModal');
@@ -325,7 +331,7 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 videoModal.style.display = 'flex';
             });
             
-            // SADECE EKLENEN TEST BUTONU İŞLEMLERİ
+            // EKLENEN TEST BUTONU İŞLEMLERİ
             quizBtn.addEventListener('click', function() {
                 buildQuiz();
                 resetQuiz();
@@ -353,7 +359,7 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 videoModal.style.display = 'none';
             });
             
-            // SADECE EKLENEN TEST MODAL KAPATMA
+            // EKLENEN TEST MODAL KAPATMA
             closeQuizModal.addEventListener('click', function() {
                 quizModal.style.display = 'none';
             });
@@ -392,7 +398,7 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 }
             });
             
-            // SADECE EKLENEN TEST MODAL DIŞI KAPATMA
+            // EKLENEN TEST MODAL DIŞI KAPATMA
             quizModal.addEventListener('click', function(e) {
                 if (e.target === quizModal) {
                     quizModal.style.display = 'none';
@@ -427,4 +433,4 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
         });
     </script>
 </body>
-    </html>
+</html>
