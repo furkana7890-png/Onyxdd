@@ -599,6 +599,213 @@ p {
     }
 }
 
+/* ============================================ */
+/* HAVA DURUMU BUTONU VE SIDEBAR                */
+/* ============================================ */
+
+/* Hava Durumu Butonu - Sağ Alt */
+.weather-toggle-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 150;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.weather-toggle-btn:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #2a5298, #1e3c72);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.weather-btn-icon {
+    font-size: 1.5rem;
+}
+
+.weather-btn-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+}
+
+/* Sidebar (Açılır Menü) */
+.weather-sidebar {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 380px;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(30, 60, 114, 0.95));
+    backdrop-filter: blur(15px);
+    z-index: 1000;
+    transition: right 0.4s ease;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+}
+
+.weather-sidebar.open {
+    right: 0;
+}
+
+/* Sidebar içindeki çizgi canvas */
+#lineCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Sidebar Header */
+.weather-sidebar-header {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.weather-sidebar-header h3 {
+    color: white;
+    font-size: 1.3rem;
+    margin: 0;
+}
+
+.weather-sidebar-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.weather-sidebar-close:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: rotate(90deg);
+}
+
+/* Sidebar İçerik */
+.weather-sidebar-content {
+    position: relative;
+    z-index: 2;
+    padding: 25px 20px;
+    text-align: center;
+}
+
+.weather-label-sidebar {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #ffd89b, #c7e9fb);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-style: italic;
+}
+
+/* ============================================ */
+/* MÜZİK KONTROL STILLERI                       */
+/* ============================================ */
+
+.music-control {
+    position: fixed;
+    bottom: 20px;
+    right: 160px;
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    padding: 5px 15px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.music-toggle-btn {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    border: none;
+    border-radius: 50px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    font-weight: 600;
+}
+
+.music-toggle-btn:hover {
+    transform: scale(1.05);
+}
+
+.music-btn-icon {
+    font-size: 1.2rem;
+}
+
+.music-btn-text {
+    font-size: 0.85rem;
+}
+
+.volume-slider-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.volume-slider {
+    width: 80px;
+    height: 4px;
+    -webkit-appearance: none;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.volume-icon {
+    font-size: 0.9rem;
+    color: white;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .title {
@@ -648,4 +855,37 @@ p {
         margin-top: 20px;
         margin-bottom: 100px;
     }
+
+    /* Hava durumu sidebar responsive */
+    .weather-sidebar {
+        width: 100%;
+        right: -100%;
     }
+    
+    .weather-toggle-btn {
+        padding: 10px 15px;
+    }
+    
+    .weather-btn-text {
+        font-size: 0.85rem;
+    }
+    
+    .weather-btn-icon {
+        font-size: 1.2rem;
+    }
+
+    /* Müzik kontrol responsive */
+    .music-control {
+        right: 140px;
+        padding: 3px 10px;
+        bottom: 15px;
+    }
+    
+    .music-btn-text {
+        display: none;
+    }
+    
+    .volume-slider {
+        width: 60px;
+    }
+}
