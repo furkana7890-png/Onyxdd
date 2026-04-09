@@ -56,9 +56,44 @@
     <div class="summary-section" id="summarySection">
         <button class="summary-btn" id="summaryBtn">ÖZET</button>
         <button class="video-btn" id="videoBtn">VİDEO ANLATIM</button>
-        <!-- EKLENEN TEST BUTONU -->
         <button class="quiz-btn" id="quizBtn">TEST ÇÖZ</button>
     </div>
+
+    <!-- MÜZİK KONTROL (Sağ Alt) -->
+    <div class="music-control">
+        <button class="music-toggle-btn" id="musicToggleBtn">
+            <span class="music-btn-icon">🔊</span>
+            <span class="music-btn-text">Müzik</span>
+        </button>
+        <div class="volume-slider-container">
+            <input type="range" id="volumeSlider" min="0" max="100" value="30" class="volume-slider">
+            <span class="volume-icon">🔊</span>
+        </div>
+    </div>
+
+    <!-- HAVA DURUMU BUTONU (Sağ Alt) -->
+    <button class="weather-toggle-btn" id="weatherToggleBtn">
+        <span class="weather-btn-icon">🌤️</span>
+        <span class="weather-btn-text">Hava Durumu</span>
+    </button>
+
+    <!-- HAVA DURUMU SIDEBAR (Açılır Menü) - İçinde çizgi efekti var -->
+    <div class="weather-sidebar" id="weatherSidebar">
+        <canvas id="lineCanvas"></canvas>
+        <div class="weather-sidebar-header">
+            <h3>🌊 Adana Hava Durumu</h3>
+            <button class="weather-sidebar-close" id="weatherSidebarClose">✕</button>
+        </div>
+        <div class="weather-sidebar-content">
+            <div class="weather-label-sidebar">🌤️ HAVA DURUMU EĞLENCESİNE EKLENDİ 🌊</div>
+            <a class="weatherwidget-io" href="https://forecast7.com/tr/37d2635d39/adana/" data-label_1="ADANA" data-label_2="Hava" data-theme="original">ADANA Hava</a>
+        </div>
+    </div>
+
+    <!-- Arkaplan Müziği -->
+    <audio id="bgMusic" loop autoplay>
+        <source src="muzik.mp3" type="audio/mpeg">
+    </audio>
 
     <!-- Coder Modal -->
     <div class="modal" id="coderModal">
@@ -187,6 +222,214 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
         </div>
     </div>
 
+    <!-- HAVA DURUMU WIDGET SCRIPT -->
+    <script>
+        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+    </script>
+
+    <!-- SIDEBAR İÇİ ÇİZGİ EFECT SCRIPT -->
+    <script>
+        (function() {
+            const canvas = document.getElementById('lineCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            let lines = [];
+            let lineCount = 15;
+            let animationId = null;
+            let sidebar = document.getElementById('weatherSidebar');
+            
+            function resizeCanvas() {
+                canvas.width = sidebar.offsetWidth;
+                canvas.height = sidebar.offsetHeight;
+            }
+            
+            function createLines() {
+                lines = [];
+                for (let i = 0; i < lineCount; i++) {
+                    lines.push({
+                        x1: Math.random() * canvas.width,
+                        y1: Math.random() * canvas.height,
+                        x2: Math.random() * canvas.width,
+                        y2: Math.random() * canvas.height,
+                        speedX1: (Math.random() - 0.5) * 0.8,
+                        speedY1: (Math.random() - 0.5) * 0.8,
+                        speedX2: (Math.random() - 0.5) * 0.8,
+                        speedY2: (Math.random() - 0.5) * 0.8,
+                        opacity: Math.random() * 0.4 + 0.1,
+                        color: `rgba(100, 200, 255, ${Math.random() * 0.3 + 0.1})`,
+                        lineWidth: Math.random() * 2 + 0.5
+                    });
+                }
+            }
+            
+            function drawLines() {
+                if (!sidebar.classList.contains('open')) {
+                    animationId = requestAnimationFrame(drawLines);
+                    return;
+                }
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const l = lines[i];
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(l.x1, l.y1);
+                    ctx.lineTo(l.x2, l.y2);
+                    ctx.strokeStyle = l.color;
+                    ctx.lineWidth = l.lineWidth;
+                    ctx.stroke();
+                    
+                    // Hareket
+                    l.x1 += l.speedX1;
+                    l.y1 += l.speedY1;
+                    l.x2 += l.speedX2;
+                    l.y2 += l.speedY2;
+                    
+                    // Sınırları aşınca geri döndür
+                    if (l.x1 < -50) l.x1 = canvas.width + 50;
+                    if (l.x1 > canvas.width + 50) l.x1 = -50;
+                    if (l.y1 < -50) l.y1 = canvas.height + 50;
+                    if (l.y1 > canvas.height + 50) l.y1 = -50;
+                    if (l.x2 < -50) l.x2 = canvas.width + 50;
+                    if (l.x2 > canvas.width + 50) l.x2 = -50;
+                    if (l.y2 < -50) l.y2 = canvas.height + 50;
+                    if (l.y2 > canvas.height + 50) l.y2 = -50;
+                }
+                
+                animationId = requestAnimationFrame(drawLines);
+            }
+            
+            function initLines() {
+                resizeCanvas();
+                createLines();
+                drawLines();
+            }
+            
+            // Sidebar açılıp kapanınca canvas boyutunu güncelle
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === 'class') {
+                        setTimeout(() => {
+                            resizeCanvas();
+                            createLines();
+                        }, 300);
+                    }
+                });
+            });
+            
+            observer.observe(sidebar, { attributes: true });
+            
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                createLines();
+            });
+            
+            initLines();
+        })();
+    </script>
+
+    <!-- HAVA DURUMU SIDEBAR KONTROL SCRIPT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const weatherToggleBtn = document.getElementById('weatherToggleBtn');
+            const weatherSidebar = document.getElementById('weatherSidebar');
+            const weatherSidebarClose = document.getElementById('weatherSidebarClose');
+            
+            weatherToggleBtn.addEventListener('click', function() {
+                weatherSidebar.classList.add('open');
+            });
+            
+            weatherSidebarClose.addEventListener('click', function() {
+                weatherSidebar.classList.remove('open');
+            });
+            
+            weatherSidebar.addEventListener('click', function(e) {
+                if (e.target === weatherSidebar) {
+                    weatherSidebar.classList.remove('open');
+                }
+            });
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && weatherSidebar.classList.contains('open')) {
+                    weatherSidebar.classList.remove('open');
+                }
+            });
+        });
+    </script>
+
+    <!-- MÜZİK KONTROL SCRIPT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const bgMusic = document.getElementById('bgMusic');
+            const musicToggleBtn = document.getElementById('musicToggleBtn');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const musicBtnIcon = document.querySelector('.music-btn-icon');
+            const volumeIcon = document.querySelector('.volume-icon');
+            
+            let isMusicPlaying = true;
+            
+            // Ses seviyesini ayarla (başlangıçta %30)
+            bgMusic.volume = 0.3;
+            
+            // Slider ile ses ayarı
+            volumeSlider.addEventListener('input', function() {
+                const volumeValue = this.value / 100;
+                bgMusic.volume = volumeValue;
+                
+                // Ses ikonunu güncelle
+                if (volumeValue === 0) {
+                    volumeIcon.textContent = '🔇';
+                } else if (volumeValue < 0.3) {
+                    volumeIcon.textContent = '🔈';
+                } else if (volumeValue < 0.7) {
+                    volumeIcon.textContent = '🔉';
+                } else {
+                    volumeIcon.textContent = '🔊';
+                }
+            });
+            
+            // Müzik aç/kapa butonu
+            musicToggleBtn.addEventListener('click', function() {
+                if (isMusicPlaying) {
+                    bgMusic.pause();
+                    musicBtnIcon.textContent = '🔇';
+                    musicToggleBtn.style.background = 'linear-gradient(135deg, #555, #333)';
+                } else {
+                    bgMusic.play();
+                    musicBtnIcon.textContent = '🔊';
+                    musicToggleBtn.style.background = 'linear-gradient(135deg, #1e3c72, #2a5298)';
+                }
+                isMusicPlaying = !isMusicPlaying;
+            });
+            
+            // Sayfa yüklendiğinde müziğin başlamasını sağla (otomatik oynatma politikası nedeniyle kullanıcı etkileşimi gerekebilir)
+            // Kullanıcı herhangi bir yere tıklayınca müzik başlasın
+            const startMusicOnInteraction = function() {
+                if (bgMusic.paused && isMusicPlaying) {
+                    bgMusic.play().catch(e => console.log('Müzik başlatılamadı:', e));
+                }
+                document.removeEventListener('click', startMusicOnInteraction);
+                document.removeEventListener('keydown', startMusicOnInteraction);
+            };
+            
+            document.addEventListener('click', startMusicOnInteraction);
+            document.addEventListener('keydown', startMusicOnInteraction);
+            
+            // Splash screen'den çıkışta müziği başlat
+            const continueBtn = document.getElementById('continueBtn');
+            if (continueBtn) {
+                continueBtn.addEventListener('click', function() {
+                    if (bgMusic.paused && isMusicPlaying) {
+                        bgMusic.play().catch(e => console.log('Müzik başlatılamadı:', e));
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- ANA JS KODUN -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const splashScreen = document.getElementById('splashScreen');
@@ -211,12 +454,10 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
             const closeSummaryModal = document.getElementById('closeSummaryModal');
             const closeVideoModal = document.getElementById('closeVideoModal');
             
-            // EKLENEN TEST ELEMANLARI
             const quizBtn = document.getElementById('quizBtn');
             const quizModal = document.getElementById('quizModal');
             const closeQuizModal = document.getElementById('closeQuizModal');
             
-            // Test soruları
             const questions = [
                 { text: "Sıcaklık arttıkça gazların çözünürlüğü artar.", correct: false },
                 { text: "Katı maddelerin çözünürlüğü genellikle sıcaklık arttıkça artar.", correct: true },
@@ -297,18 +538,14 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 resultDiv.innerHTML = '';
             }
             
-            // Başlangıçta özet butonunu gizle
             summarySection.style.display = 'none';
             
-            // Otomatik geçiş için (5 saniye sonra)
             setTimeout(function() {
                 hideSplashScreen();
             }, 5000);
             
-            // Butona tıklanınca geçiş
             continueBtn.addEventListener('click', hideSplashScreen);
             
-            // Kartlara tıklanınca modal aç
             coderCard.addEventListener('click', function() {
                 coderModal.style.display = 'flex';
             });
@@ -321,24 +558,20 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 mobileModal.style.display = 'flex';
             });
             
-            // Özet butonuna tıklanınca modal aç
             summaryBtn.addEventListener('click', function() {
                 summaryModal.style.display = 'flex';
             });
             
-            // Video butonuna tıklanınca modal aç
             videoBtn.addEventListener('click', function() {
                 videoModal.style.display = 'flex';
             });
             
-            // EKLENEN TEST BUTONU İŞLEMLERİ
             quizBtn.addEventListener('click', function() {
                 buildQuiz();
                 resetQuiz();
                 quizModal.style.display = 'flex';
             });
             
-            // Modal kapatma
             closeCoderModal.addEventListener('click', function() {
                 coderModal.style.display = 'none';
             });
@@ -359,7 +592,6 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 videoModal.style.display = 'none';
             });
             
-            // EKLENEN TEST MODAL KAPATMA
             closeQuizModal.addEventListener('click', function() {
                 quizModal.style.display = 'none';
             });
@@ -367,7 +599,6 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
             document.getElementById('submitQuizBtn').addEventListener('click', showResults);
             document.getElementById('resetQuizBtn').addEventListener('click', resetQuiz);
             
-            // Modal dışına tıklanınca kapat
             coderModal.addEventListener('click', function(e) {
                 if (e.target === coderModal) {
                     coderModal.style.display = 'none';
@@ -398,14 +629,12 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 }
             });
             
-            // EKLENEN TEST MODAL DIŞI KAPATMA
             quizModal.addEventListener('click', function(e) {
                 if (e.target === quizModal) {
                     quizModal.style.display = 'none';
                 }
             });
             
-            // ESC tuşu ile modal kapatma
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     coderModal.style.display = 'none';
@@ -418,15 +647,12 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
             });
             
             function hideSplashScreen() {
-                // Giriş ekranını gizle
                 splashScreen.style.opacity = '0';
                 splashScreen.style.transform = 'scale(1.1)';
                 
-                // Ana içeriği göster
                 setTimeout(function() {
                     splashScreen.style.display = 'none';
                     mainContent.classList.add('visible');
-                    // Özet butonunu göster
                     summarySection.style.display = 'flex';
                 }, 1000);
             }
