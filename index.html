@@ -4,23 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>- Bilgilendirme -</title>
-    <!-- CSS dosyasını ekliyoruz -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Arkaplan Videosu -->
     <video autoplay muted loop id="bgVideo">
         <source src="plaj.mp4" type="video/mp4">
     </video>
     <div class="overlay"></div>
 
-    <!-- Giriş Ekranı -->
     <div class="splash-screen" id="splashScreen">
         <div class="logo">
             <img src="onyx.png" alt="Onyx Logo">
         </div>
         <h1 class="title">HOŞ GELDİNİZ</h1>
-        <p class="subtitle">İşte Kimya Projem! </p>
+        <p class="subtitle">İşte Kimya Projem!</p>
         <div class="loading-bar">
             <div class="loading-progress"></div>
         </div>
@@ -41,7 +38,7 @@
 
     <!-- Ana İçerik -->
     <div class="main-content" id="mainContent">
-        <h1>Sitemize Hoş Geldiniz - 𝘿𝙚𝙨𝙞𝙜𝙣𝙚𝙧 > 𝙕𝙚𝙡𝙙 </h1>
+        <h1>Sitemize Hoş Geldiniz - Designer > Zeld</h1>
         <p>Bu site, Çözünürlüğe katkısı olan şeylerin anlatıldığı içerik alanıdır.
         Çözünürlük = Belirli bir sıcaklık ve basınçta, 100 gram çözücüde (genellikle su) çözünebilen maksimum madde miktarına (gram cinsinden) denir.</p>
         
@@ -49,7 +46,7 @@
             <div class="feature-card" id="coderCard">
                 <div class="feature-icon">🚀</div>
                 <h3>Sıcaklık</h3>
-                <p>Bilgi Kutusu İçin Tıklayınız. </p>
+                <p>Bilgi Kutusu İçin Tıklayınız.</p>
             </div>
             <div class="feature-card" id="designCard">
                 <div class="feature-icon">🎨</div>
@@ -64,7 +61,7 @@
         </div>
 
         <!-- SICAKLIK & BASINÇ SİMÜLASYONU -->
-        <div class="simulation-card" id="simulationCard">
+        <div class="simulation-card">
             <div class="simulation-header">
                 <span class="simulation-icon">🌡️</span>
                 <h3>Sıcaklık & Basınç Simülasyonu</h3>
@@ -72,7 +69,6 @@
             </div>
             <p class="simulation-desc">Sürgüleri hareket ettirerek çözünürlüğün nasıl değiştiğini gör!</p>
             
-            <!-- Sıcaklık Kontrolü -->
             <div class="simulation-control">
                 <label class="simulation-label">
                     <span>🌡️ Sıcaklık</span>
@@ -82,7 +78,6 @@
                 <div class="simulation-hint">⬅️ Soğuk | Sıcak ➡️</div>
             </div>
 
-            <!-- Basınç Kontrolü -->
             <div class="simulation-control">
                 <label class="simulation-label">
                     <span>⏲️ Basınç</span>
@@ -92,7 +87,6 @@
                 <div class="simulation-hint">⬅️ Düşük | Yüksek ➡️</div>
             </div>
 
-            <!-- Çözünürlük Göstergesi -->
             <div class="solubility-meter">
                 <div class="solubility-label">
                     <span>🧪 Çözünürlük Seviyesi</span>
@@ -104,7 +98,6 @@
                 <div class="solubility-feedback" id="solubilityFeedback">Orta seviyede çözünürlük</div>
             </div>
 
-            <!-- Açıklama -->
             <div class="simulation-note">
                 💡 <strong>Not:</strong> Sıcaklık arttıkça katıların çözünürlüğü artar.<br>
                 💨 Basınç arttıkça gazların çözünürlüğü artar (Henry Yasası).
@@ -125,7 +118,7 @@
         <span class="weather-btn-text">Hava Durumu</span>
     </button>
 
-    <!-- HAVA DURUMU SIDEBAR (Açılır Menü) -->
+    <!-- HAVA DURUMU SIDEBAR -->
     <div class="weather-sidebar" id="weatherSidebar">
         <canvas id="lineCanvas"></canvas>
         <div class="weather-sidebar-header">
@@ -138,78 +131,57 @@
         </div>
     </div>
 
-    <!-- Arkaplan Müziği -->
     <audio id="bgMusic" loop autoplay>
         <source src="muzik.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Coder Modal -->
+    <!-- Modaller -->
     <div class="modal" id="coderModal">
         <div class="modal-content">
             <h2>Sıcaklık</h2>
             <div class="modal-text-content">
-                <p>Sıcaklığın etkisi, çözünen maddenin katı, sıvı veya gaz olmasına bağlı olarak değişir.
-
-a) Katı ve Sıvı Maddelerin Çözünürlüğüne Etkisi
-
-· Genel Kural: Sıcaklık arttıkça, katıların ve sıvıların çözünürlüğü genellikle artar.
-· Nedeni: Katıları çözmek genellikle enerji (ısı) gerektiren bir işlemdir (endotermik). Sıcaklık arttığında, çözücü molekülleri daha hızlı hareket eder ve katıyı daha etkili bir şekilde parçalayarak daha fazla maddenin çözünmesine olanak tanır.
-· İstisnalar:
-  · Bazı maddelerin (örneğin Seryum(III) sülfat - Ce₂(SO₄)₃) çözünürlüğü sıcaklıkla çok az değişir.
-  · Nadiren, bazı maddelerin (örneğin Sodyum sülfat - Na₂SO₄) çözünürlüğü belirli bir sıcaklıktan sonra azalabilir.
-
-Grafikte Gösterim: Katıların çözünürlük-sıcaklık grafiği genellikle yukarı doğru eğimlidir.
-
-b) Gaz Maddelerin Çözünürlüğüne Etkisi
-
-· Genel Kural: Sıcaklık arttıkça, gazların çözünürlüğü azalır.
-· Nedeni: Gazların çözünmesi genellikle enerji (ısı) açığa çıkaran bir işlemdir (ekzotermik). Sıcaklık arttığında, denge, açığa çıkan bu ısıyı azaltacak yöne, yani gazın çözeltiden ayrılması (kabarcıklar oluşturması) yönüne kayar. Ayrıca, sıcaklık arttıkça çözücüdeki gaz molekülleri daha fazla kinetik enerji kazanır ve çözeltiyi terk etme eğilimi artar.
-· Günlük Örnek: Bir kola şişesini oda sıcaklığında bıraktığınızda, buzdolabındakine göre daha çabuk "gazını kaçırır". Sebebi, sıcaklık arttıkça karbondioksit gazının (CO₂) sudaki çözünürlüğünün azalmasıdır.
-
-Grafikte Gösterim: Gazların çözünürlük-sıcaklık grafiği aşağı doğru eğimlidir.</p>
+                <p>Sıcaklığın etkisi, çözünen maddenin katı, sıvı veya gaz olmasına bağlı olarak değişir.<br><br>
+<b>a) Katı ve Sıvı Maddelerin Çözünürlüğüne Etkisi</b><br>
+· Genel Kural: Sıcaklık arttıkça, katıların ve sıvıların çözünürlüğü genellikle artar.<br>
+· Nedeni: Katıları çözmek genellikle enerji (ısı) gerektiren bir işlemdir (endotermik).<br>
+· İstisnalar: Bazı maddelerin (Seryum(III) sülfat) çözünürlüğü sıcaklıkla çok az değişir.<br><br>
+<b>b) Gaz Maddelerin Çözünürlüğüne Etkisi</b><br>
+· Genel Kural: Sıcaklık arttıkça, gazların çözünürlüğü azalır.<br>
+· Nedeni: Gazların çözünmesi genellikle enerji (ısı) açığa çıkaran bir işlemdir (ekzotermik).<br>
+· Günlük Örnek: Bir kola şişesini oda sıcaklığında bıraktığınızda, buzdolabındakine göre daha çabuk "gazını kaçırır".</p>
             </div>
             <button class="close-btn" id="closeCoderModal">Kapat</button>
         </div>
     </div>
 
-    <!-- Tasarım Modal -->
     <div class="modal" id="designModal">
         <div class="modal-content">
             <h2>Basınç</h2>
             <div class="modal-text-content">
-                <p>Basıncın etkisi, neredeyse tamamen gazlar için geçerlidir. Katı ve sıvıların çözünürlüğü basınçtan pratik olarak etkilenmez.
-
-· Genel Kural: Basınç arttıkça, gazların çözünürlüğü artar.
-· Nedeni: Bu etki Henry Yasası ile açıklanır. Basınç arttığında, gaz molekülleri daha küçük bir hacme sıkıştırılır, bu da çözücü yüzeyiyle daha fazla temas etmelerini ve çözünmelerini sağlar. Basınç azaldığında ise çözünmüş gaz molekülleri genleşerek kabarcıklar oluşturur ve çözeltiden ayrılır.
-· Günlük Örnek:
-  · Gazlı İçecekler: Konserve veya şişeler, basınç altında yüksek miktarda CO₂ gazı ile doldurulur. Kapağı açtığınızda basınç anında düşer ve çözünürlük azalır. Gaz kabarcıkları oluşur ve yavaş yavaş dışarı çıkar.
-  · Vurgun (Dekompresyon Hastalığı): Derin dalgıçlar, yüksek basınç altında soludukları havadaki azot gazının kanda daha fazla çözünmesini sağlar. Eğer yüzeye çok hızlı çıkarlarsa (basınç hızla düşer), kanda çözünmüş azot gazı aniden kabarcıklar haline gelir. Bu kabarcıklar damarları tıkayarak ciddi sağlık sorunlarına yol açar.</p>
+                <p>Basıncın etkisi, neredeyse tamamen gazlar için geçerlidir. Katı ve sıvıların çözünürlüğü basınçtan pratik olarak etkilenmez.<br><br>
+· Genel Kural: Basınç arttıkça, gazların çözünürlüğü artar.<br>
+· Nedeni: Henry Yasası ile açıklanır.<br>
+· Günlük Örnek:<br>
+  · Gazlı İçecekler: Konserve veya şişeler, basınç altında yüksek miktarda CO₂ gazı ile doldurulur.<br>
+  · Vurgun (Dekompresyon Hastalığı): Derin dalgıçlar, yüksek basınç altında soludukları havadaki azot gazının kanda daha fazla çözünmesini sağlar.</p>
             </div>
             <button class="close-btn" id="closeDesignModal">Kapat</button>
         </div>
     </div>
 
-    <!-- Mobil Modal -->
     <div class="modal" id="mobileModal">
         <div class="modal-content">
             <h2>Madde Cinsi</h2>
             <div class="modal-text-content">
-                <p>Çözünürlük, çözünen ve çözücünün kimyasal doğasına bağlıdır. Temel kural şudur:
-
-"Benzer, benzeri çözer." (Like dissolves like)
-
-Buradaki "benzerlik", moleküllerin kutupluluk (polarite) özelliği ile ilgilidir.
-
-a) Polar Çözücüler (Örn: Su - H₂O)
-
-· Polar Maddeleri Çözer: Polar maddelerin (örneğin sofra tuzu - NaCl, şeker - C₁₂H₂₂O₁₁) pozitif ve negatif yüklü kısımları, su moleküllerinin zıt yükleri tarafından çekilir. Bu etkileşim maddeyi çözerek etrafını sarar (hidratasyon).
-· İyonik Bileşikleri Çözer: İyonik bileşikler (tuzlar) suda çözündüğünde, su molekülleri katyon ve anyonların etrafını sararak onları birbirinden ayırır ve çözelti içinde hareket etmelerini sağlar.
-· Polar Olmayan Maddeleri Çözmez: Polar olmayan maddeler (örneğin yağ, benzin) suda çözünmez. Çünkü su molekülleri, bu polar olmayan moleküllerle güçlü bir etkileşime giremez. Bunun yerine, su molekülleri kendi aralarında hidrojen bağlarını sürdürmeyi tercih eder ve polar olmayan molekülleri dışlar. Bu yüzden "yağ ve su karışmaz".
-
-b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
-
-· Polar Olmayan Maddeleri Çözer: Polar olmayan çözücüler, polar olmayan maddeleri (örneğin yağ, mum, naftalin) iyi çözer. Aralarındaki zayıf London kuvvetleri (geçici dipol etkileşimleri) çözünmeyi sağlar.
-· Polar ve İyonik Maddeleri Çözmez: Polar veya iyonik maddeleri çözemezler çünkü bu çözücüler, iyonları veya polar molekülleri stabilize edecek kadar kuvvetli etkileşim kuramazlar.</p>
+                <p>Çözünürlük, çözünen ve çözücünün kimyasal doğasına bağlıdır. Temel kural:<br><br>
+"Benzer, benzeri çözer." (Like dissolves like)<br><br>
+<b>a) Polar Çözücüler (Örn: Su)</b><br>
+· Polar Maddeleri Çözer (tuz, şeker)<br>
+· İyonik Bileşikleri Çözer<br>
+· Polar Olmayan Maddeleri Çözmez (yağ, benzin)<br><br>
+<b>b) Polar Olmayan Çözücüler (Örn: Benzen, Gazyağı)</b><br>
+· Polar Olmayan Maddeleri Çözer (yağ, mum)<br>
+· Polar ve İyonik Maddeleri Çözmez</p>
             </div>
             <button class="close-btn" id="closeMobileModal">Kapat</button>
         </div>
@@ -220,7 +192,7 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
         <div class="modal-content">
             <h2>ÖZET</h2>
             <div class="modal-text-content" id="summaryTextContent">
-                <p><strong>ÇÖZÜNÜRLÜĞE ETKİ EDEN FAKTÖRLER - ÖZET</strong></p>
+                <p><strong>COZUNURLUGE ETKI EDEN FAKTORLER - OZET</strong></p>
                 <br>
                 <p><strong>1. SICAKLIK:</strong></p>
                 <p>• Katı ve sıvılar: Sıcaklık arttıkça çözünürlük genellikle artar (endotermik)</p>
@@ -232,14 +204,14 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 <p>• Katı ve sıvılar: Basınçtan pratik olarak etkilenmez</p>
                 <p>• Örnek: Gazlı içecekler basınç altında üretilir</p>
                 <br>
-                <p><strong>3. MADDE CİNSİ:</strong></p>
+                <p><strong>3. MADDE CINSI:</strong></p>
                 <p>• "Benzer benzeri çözer" kuralı geçerlidir</p>
                 <p>• Polar çözücüler (su): Polar ve iyonik maddeleri çözer</p>
                 <p>• Polar olmayan çözücüler: Polar olmayan maddeleri çözer</p>
                 <p>• Örnek: Yağ ve su karışmaz</p>
                 <br>
                 <p><strong>GENEL TANIM:</strong></p>
-                <p>Çözünürlük = Belirli sıcaklık ve basınçta, 100 gram çözücüde çözünebilen maksimum madde miktarıdır.</p>
+                <p>Çözünürlük = Belirli bir sıcaklık ve basınçta, 100 gram çözücüde çözünebilen maksimum madde miktarıdır.</p>
             </div>
             <div class="modal-buttons">
                 <button class="close-btn" id="closeSummaryModal">Kapat</button>
@@ -248,18 +220,16 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
         </div>
     </div>
 
-    <!-- Video Modal -->
     <div class="modal video-modal" id="videoModal">
         <div class="modal-content">
             <h2>Video Anlatım</h2>
             <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/CV-616Ufv6Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe src="https://www.youtube.com/embed/CV-616Ufv6Q" frameborder="0" allowfullscreen></iframe>
             </div>
             <button class="close-btn" id="closeVideoModal">Kapat</button>
         </div>
     </div>
 
-    <!-- EKLENEN TEST MODALI -->
     <div class="modal quiz-modal" id="quizModal">
         <div class="modal-content">
             <h2>📝 KENDİNİ TEST ET</h2>
@@ -278,16 +248,14 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
         !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
     </script>
 
-    <!-- SIDEBAR İÇİ ÇİZGİ EFECT SCRIPT -->
+    <!-- SIDEBAR ÇİZGİ SCRIPT -->
     <script>
         (function() {
             const canvas = document.getElementById('lineCanvas');
             if (!canvas) return;
-            
             const ctx = canvas.getContext('2d');
             let lines = [];
             let lineCount = 15;
-            let animationId = null;
             let sidebar = document.getElementById('weatherSidebar');
             
             function resizeCanvas() {
@@ -299,15 +267,10 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 lines = [];
                 for (let i = 0; i < lineCount; i++) {
                     lines.push({
-                        x1: Math.random() * canvas.width,
-                        y1: Math.random() * canvas.height,
-                        x2: Math.random() * canvas.width,
-                        y2: Math.random() * canvas.height,
-                        speedX1: (Math.random() - 0.5) * 0.8,
-                        speedY1: (Math.random() - 0.5) * 0.8,
-                        speedX2: (Math.random() - 0.5) * 0.8,
-                        speedY2: (Math.random() - 0.5) * 0.8,
-                        opacity: Math.random() * 0.4 + 0.1,
+                        x1: Math.random() * canvas.width, y1: Math.random() * canvas.height,
+                        x2: Math.random() * canvas.width, y2: Math.random() * canvas.height,
+                        speedX1: (Math.random() - 0.5) * 0.8, speedY1: (Math.random() - 0.5) * 0.8,
+                        speedX2: (Math.random() - 0.5) * 0.8, speedY2: (Math.random() - 0.5) * 0.8,
                         color: `rgba(100, 200, 255, ${Math.random() * 0.3 + 0.1})`,
                         lineWidth: Math.random() * 2 + 0.5
                     });
@@ -316,27 +279,19 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
             
             function drawLines() {
                 if (!sidebar.classList.contains('open')) {
-                    animationId = requestAnimationFrame(drawLines);
+                    requestAnimationFrame(drawLines);
                     return;
                 }
-                
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                for (let i = 0; i < lines.length; i++) {
-                    const l = lines[i];
-                    
+                for (let l of lines) {
                     ctx.beginPath();
                     ctx.moveTo(l.x1, l.y1);
                     ctx.lineTo(l.x2, l.y2);
                     ctx.strokeStyle = l.color;
                     ctx.lineWidth = l.lineWidth;
                     ctx.stroke();
-                    
-                    l.x1 += l.speedX1;
-                    l.y1 += l.speedY1;
-                    l.x2 += l.speedX2;
-                    l.y2 += l.speedY2;
-                    
+                    l.x1 += l.speedX1; l.y1 += l.speedY1;
+                    l.x2 += l.speedX2; l.y2 += l.speedY2;
                     if (l.x1 < -50) l.x1 = canvas.width + 50;
                     if (l.x1 > canvas.width + 50) l.x1 = -50;
                     if (l.y1 < -50) l.y1 = canvas.height + 50;
@@ -346,68 +301,38 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                     if (l.y2 < -50) l.y2 = canvas.height + 50;
                     if (l.y2 > canvas.height + 50) l.y2 = -50;
                 }
-                
-                animationId = requestAnimationFrame(drawLines);
+                requestAnimationFrame(drawLines);
             }
             
-            function initLines() {
+            function init() {
                 resizeCanvas();
                 createLines();
                 drawLines();
             }
             
-            const observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    if (mutation.attributeName === 'class') {
-                        setTimeout(() => {
-                            resizeCanvas();
-                            createLines();
-                        }, 300);
-                    }
-                });
+            const observer = new MutationObserver(() => {
+                setTimeout(() => { resizeCanvas(); createLines(); }, 300);
             });
-            
             observer.observe(sidebar, { attributes: true });
-            
-            window.addEventListener('resize', () => {
-                resizeCanvas();
-                createLines();
-            });
-            
-            initLines();
+            window.addEventListener('resize', () => { resizeCanvas(); createLines(); });
+            init();
         })();
     </script>
 
-    <!-- HAVA DURUMU SIDEBAR KONTROL SCRIPT -->
+    <!-- SIDEBAR KONTROL -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const weatherToggleBtn = document.getElementById('weatherToggleBtn');
-            const weatherSidebar = document.getElementById('weatherSidebar');
-            const weatherSidebarClose = document.getElementById('weatherSidebarClose');
-            
-            weatherToggleBtn.addEventListener('click', function() {
-                weatherSidebar.classList.add('open');
-            });
-            
-            weatherSidebarClose.addEventListener('click', function() {
-                weatherSidebar.classList.remove('open');
-            });
-            
-            weatherSidebar.addEventListener('click', function(e) {
-                if (e.target === weatherSidebar) {
-                    weatherSidebar.classList.remove('open');
-                }
-            });
-            
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && weatherSidebar.classList.contains('open')) {
-                    weatherSidebar.classList.remove('open');
-                }
-            });
+            const btn = document.getElementById('weatherToggleBtn');
+            const sidebar = document.getElementById('weatherSidebar');
+            const close = document.getElementById('weatherSidebarClose');
+            btn.addEventListener('click', () => sidebar.classList.add('open'));
+            close.addEventListener('click', () => sidebar.classList.remove('open'));
+            sidebar.addEventListener('click', (e) => { if (e.target === sidebar) sidebar.classList.remove('open'); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && sidebar.classList.contains('open')) sidebar.classList.remove('open'); });
         });
     </script>
 
-    <!-- SICAKLIK & BASINÇ SİMÜLASYONU SCRIPT -->
+    <!-- SİMÜLASYON SCRIPT -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const tempSlider = document.getElementById('tempSlider');
@@ -418,179 +343,136 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
             const solubilityPercent = document.getElementById('solubilityPercent');
             const solubilityFeedback = document.getElementById('solubilityFeedback');
             
-            function updateSolubility() {
+            function update() {
                 let temp = parseFloat(tempSlider.value);
                 let pressure = parseFloat(pressureSlider.value);
-                
                 tempValue.textContent = Math.round(temp) + '°C';
                 pressureValue.textContent = pressure.toFixed(1) + ' atm';
-                
                 let tempEffect = ((temp + 20) / 120) * 60;
                 let pressureEffect = ((pressure - 0.5) / 4.5) * 30;
-                
-                let totalSolubility = Math.min(98, Math.max(2, tempEffect + pressureEffect + 10));
-                totalSolubility = Math.round(totalSolubility);
-                
-                solubilityBar.style.width = totalSolubility + '%';
-                solubilityPercent.textContent = '%' + totalSolubility;
-                
-                if (totalSolubility >= 70) {
+                let total = Math.min(98, Math.max(2, tempEffect + pressureEffect + 10));
+                total = Math.round(total);
+                solubilityBar.style.width = total + '%';
+                solubilityPercent.textContent = '%' + total;
+                if (total >= 70) {
                     solubilityBar.style.background = 'linear-gradient(90deg, #4caf50, #8bc34a)';
-                    solubilityFeedback.innerHTML = '🔥 Yüksek çözünürlük! Sıcaklık ve/veya basınç çok yüksek.';
-                    solubilityFeedback.style.color = '#ffd700';
-                } else if (totalSolubility >= 40) {
+                    solubilityFeedback.innerHTML = '🔥 Yüksek çözünürlük!';
+                } else if (total >= 40) {
                     solubilityBar.style.background = 'linear-gradient(90deg, #ff9800, #ffc107)';
-                    solubilityFeedback.innerHTML = '👍 Orta seviyede çözünürlük. Normal koşullar.';
-                    solubilityFeedback.style.color = '#fff';
+                    solubilityFeedback.innerHTML = '👍 Orta seviyede çözünürlük.';
                 } else {
                     solubilityBar.style.background = 'linear-gradient(90deg, #f44336, #ff5722)';
-                    solubilityFeedback.innerHTML = '❄️ Düşük çözünürlük! Soğuk ve/veya düşük basınç.';
-                    solubilityFeedback.style.color = '#ffaaaa';
-                }
-                
-                if (temp < 0) {
-                    solubilityFeedback.innerHTML += ' Su donma noktasının altında!';
-                } else if (temp > 80) {
-                    solubilityFeedback.innerHTML += ' Kaynama noktasına yakın!';
-                }
-                
-                if (pressure > 3) {
-                    solubilityFeedback.innerHTML += ' Yüksek basınç gaz çözünürlüğünü artırır.';
+                    solubilityFeedback.innerHTML = '❄️ Düşük çözünürlük!';
                 }
             }
-            
-            tempSlider.addEventListener('input', updateSolubility);
-            pressureSlider.addEventListener('input', updateSolubility);
-            
-            updateSolubility();
+            tempSlider.addEventListener('input', update);
+            pressureSlider.addEventListener('input', update);
+            update();
         });
     </script>
 
-    <!-- MÜZİK KONTROL SCRIPT -->
+    <!-- MÜZİK KONTROL -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const bgMusic = document.getElementById('bgMusic');
-            const musicToggleBtn = document.getElementById('musicToggleBtn');
+            const music = document.getElementById('bgMusic');
+            const toggleBtn = document.getElementById('musicToggleBtn');
             const volumeSlider = document.getElementById('volumeSlider');
-            const musicBtnIcon = document.querySelector('.music-btn-icon');
-            const volumeIcon = document.querySelector('.volume-icon');
-            
-            let isMusicPlaying = true;
-            
-            bgMusic.volume = 0.3;
-            
+            const icon = document.querySelector('.music-btn-icon');
+            const volIcon = document.querySelector('.volume-icon');
+            let isPlaying = true;
+            music.volume = 0.3;
             volumeSlider.addEventListener('input', function() {
-                const volumeValue = this.value / 100;
-                bgMusic.volume = volumeValue;
-                
-                if (volumeValue === 0) {
-                    volumeIcon.textContent = '🔇';
-                } else if (volumeValue < 0.3) {
-                    volumeIcon.textContent = '🔈';
-                } else if (volumeValue < 0.7) {
-                    volumeIcon.textContent = '🔉';
-                } else {
-                    volumeIcon.textContent = '🔊';
-                }
+                let val = this.value / 100;
+                music.volume = val;
+                if (val === 0) volIcon.textContent = '🔇';
+                else if (val < 0.3) volIcon.textContent = '🔈';
+                else if (val < 0.7) volIcon.textContent = '🔉';
+                else volIcon.textContent = '🔊';
             });
-            
-            musicToggleBtn.addEventListener('click', function() {
-                if (isMusicPlaying) {
-                    bgMusic.pause();
-                    musicBtnIcon.textContent = '🔇';
-                    musicToggleBtn.style.background = 'linear-gradient(135deg, #555, #333)';
+            toggleBtn.addEventListener('click', function() {
+                if (isPlaying) {
+                    music.pause();
+                    icon.textContent = '🔇';
+                    toggleBtn.style.background = 'linear-gradient(135deg, #555, #333)';
                 } else {
-                    bgMusic.play();
-                    musicBtnIcon.textContent = '🔊';
-                    musicToggleBtn.style.background = 'linear-gradient(135deg, #1e3c72, #2a5298)';
+                    music.play();
+                    icon.textContent = '🔊';
+                    toggleBtn.style.background = 'linear-gradient(135deg, #1e3c72, #2a5298)';
                 }
-                isMusicPlaying = !isMusicPlaying;
+                isPlaying = !isPlaying;
             });
-            
-            const startMusicOnInteraction = function() {
-                if (bgMusic.paused && isMusicPlaying) {
-                    bgMusic.play().catch(e => console.log('Müzik başlatılamadı:', e));
-                }
-                document.removeEventListener('click', startMusicOnInteraction);
-                document.removeEventListener('keydown', startMusicOnInteraction);
+            const startMusic = function() {
+                if (music.paused && isPlaying) music.play().catch(e => console.log(e));
+                document.removeEventListener('click', startMusic);
+                document.removeEventListener('keydown', startMusic);
             };
-            
-            document.addEventListener('click', startMusicOnInteraction);
-            document.addEventListener('keydown', startMusicOnInteraction);
-            
-            const continueBtn = document.getElementById('continueBtn');
-            if (continueBtn) {
-                continueBtn.addEventListener('click', function() {
-                    if (bgMusic.paused && isMusicPlaying) {
-                        bgMusic.play().catch(e => console.log('Müzik başlatılamadı:', e));
-                    }
-                });
-            }
+            document.addEventListener('click', startMusic);
+            document.addEventListener('keydown', startMusic);
         });
     </script>
 
-    <!-- TXT İNDİRME SCRIPT -->
+    <!-- TXT İNDİRME -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const downloadTxtBtn = document.getElementById('downloadTxtBtn');
-            
-            downloadTxtBtn.addEventListener('click', function() {
-                // Özet içeriğini al
-                const summaryContent = document.getElementById('summaryTextContent');
-                let text = '';
-                
-                // İçeriği düz metne çevir
-                const paragraphs = summaryContent.querySelectorAll('p');
-                paragraphs.forEach(p => {
-                    text += p.innerText + '\n\n';
-                });
-                
-                // Başlık ekle
-                const header = 'ÇÖZÜNÜRLÜK ÖZETİ\n========================\n\n';
-                text = header + text;
-                
-                // Blob oluştur ve indir
-                const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const btn = document.getElementById('downloadTxtBtn');
+            btn.addEventListener('click', function() {
+                const text = `COZUNURLUGE ETKI EDEN FAKTORLER - OZET
+
+1. SICAKLIK:
+• Katı ve sıvılar: Sıcaklık arttıkça çözünürlük genellikle artar (endotermik)
+• Gazlar: Sıcaklık arttıkça çözünürlük azalır (ekzotermik)
+• Örnek: Sıcak kola daha çabuk gazını kaybeder
+
+2. BASINÇ:
+• Gazlar: Basınç arttıkça çözünürlük artar (Henry Yasası)
+• Katı ve sıvılar: Basınçtan pratik olarak etkilenmez
+• Örnek: Gazlı içecekler basınç altında üretilir
+
+3. MADDE CINSI:
+• "Benzer benzeri çözer" kuralı geçerlidir
+• Polar çözücüler (su): Polar ve iyonik maddeleri çözer
+• Polar olmayan çözücüler: Polar olmayan maddeleri çözer
+• Örnek: Yağ ve su karışmaz
+
+GENEL TANIM:
+Çözünürlük = Belirli bir sıcaklık ve basınçta, 100 gram çözücüde çözünebilen maksimum madde miktarıdır.
+
+--- Bu belge Kimya Projesi kapsamında oluşturulmuştur. ---`;
+                const blob = new Blob(["\uFEFF" + text], { type: 'text/plain;charset=utf-8' });
                 const link = document.createElement('a');
-                const url = URL.createObjectURL(blob);
-                link.href = url;
+                link.href = URL.createObjectURL(blob);
                 link.download = 'cozunurluk_ozeti.txt';
-                document.body.appendChild(link);
                 link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
+                URL.revokeObjectURL(link.href);
             });
         });
     </script>
 
-    <!-- ANA JS KODUN -->
+    <!-- ANA JS -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const splashScreen = document.getElementById('splashScreen');
-            const mainContent = document.getElementById('mainContent');
-            const continueBtn = document.getElementById('continueBtn');
-            const coderCard = document.getElementById('coderCard');
-            const designCard = document.getElementById('designCard');
-            const mobileCard = document.getElementById('mobileCard');
-            const summaryBtn = document.getElementById('summaryBtn');
-            const videoBtn = document.getElementById('videoBtn');
-            const summarySection = document.getElementById('summarySection');
+            const splash = document.getElementById('splashScreen');
+            const main = document.getElementById('mainContent');
+            const contBtn = document.getElementById('continueBtn');
+            const summarySec = document.getElementById('summarySection');
             
             const coderModal = document.getElementById('coderModal');
             const designModal = document.getElementById('designModal');
             const mobileModal = document.getElementById('mobileModal');
             const summaryModal = document.getElementById('summaryModal');
             const videoModal = document.getElementById('videoModal');
+            const quizModal = document.getElementById('quizModal');
             
-            const closeCoderModal = document.getElementById('closeCoderModal');
-            const closeDesignModal = document.getElementById('closeDesignModal');
-            const closeMobileModal = document.getElementById('closeMobileModal');
-            const closeSummaryModal = document.getElementById('closeSummaryModal');
-            const closeVideoModal = document.getElementById('closeVideoModal');
+            const closeCoder = document.getElementById('closeCoderModal');
+            const closeDesign = document.getElementById('closeDesignModal');
+            const closeMobile = document.getElementById('closeMobileModal');
+            const closeSummary = document.getElementById('closeSummaryModal');
+            const closeVideo = document.getElementById('closeVideoModal');
+            const closeQuiz = document.getElementById('closeQuizModal');
             
             const quizBtn = document.getElementById('quizBtn');
-            const quizModal = document.getElementById('quizModal');
-            const closeQuizModal = document.getElementById('closeQuizModal');
+            const submitBtn = document.getElementById('submitQuizBtn');
+            const resetBtn = document.getElementById('resetQuizBtn');
             
             const questions = [
                 { text: "Sıcaklık arttıkça gazların çözünürlüğü artar.", correct: false },
@@ -599,195 +481,79 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 { text: "'Benzer benzeri çözer' kuralı polarite ile ilgilidir.", correct: true },
                 { text: "Yağ, polar bir çözücü olan suda iyi çözünür.", correct: false }
             ];
-            
-            let userAnswers = new Array(questions.length).fill(null);
+            let userAnswers = new Array(5).fill(null);
             
             function buildQuiz() {
                 const container = document.getElementById('quizContainer');
                 container.innerHTML = '';
-                questions.forEach((q, index) => {
-                    const questionDiv = document.createElement('div');
-                    questionDiv.className = 'quiz-question';
-                    questionDiv.innerHTML = `
-                        <p>${index + 1}. ${q.text}</p>
-                        <div class="quiz-option">
-                            <input type="radio" name="q${index}" value="true" id="q${index}_true">
-                            <label for="q${index}_true">✅ Doğru</label>
-                        </div>
-                        <div class="quiz-option">
-                            <input type="radio" name="q${index}" value="false" id="q${index}_false">
-                            <label for="q${index}_false">❌ Yanlış</label>
-                        </div>
+                questions.forEach((q, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'quiz-question';
+                    div.innerHTML = `
+                        <p>${i+1}. ${q.text}</p>
+                        <div class="quiz-option"><input type="radio" name="q${i}" value="true" id="q${i}_t"><label for="q${i}_t">✅ Doğru</label></div>
+                        <div class="quiz-option"><input type="radio" name="q${i}" value="false" id="q${i}_f"><label for="q${i}_f">❌ Yanlış</label></div>
                     `;
-                    container.appendChild(questionDiv);
-                    
-                    const radios = document.querySelectorAll(`input[name="q${index}"]`);
-                    radios.forEach(radio => {
-                        radio.addEventListener('change', (e) => {
-                            userAnswers[index] = e.target.value === 'true';
-                        });
+                    container.appendChild(div);
+                    document.querySelectorAll(`input[name="q${i}"]`).forEach(radio => {
+                        radio.addEventListener('change', (e) => { userAnswers[i] = e.target.value === 'true'; });
                     });
                 });
             }
             
             function showResults() {
-                let correctCount = 0;
-                const results = [];
-                for (let i = 0; i < questions.length; i++) {
-                    const isCorrect = userAnswers[i] === questions[i].correct;
-                    if (isCorrect) correctCount++;
-                    results.push(`${i + 1}. ${isCorrect ? '✓ Doğru' : '✗ Yanlış'}`);
-                }
-                
+                let correct = 0;
+                for (let i = 0; i < questions.length; i++) if (userAnswers[i] === questions[i].correct) correct++;
+                const percent = (correct / questions.length) * 100;
+                let msg = percent === 100 ? '🎉 Mükemmel!' : (percent >= 60 ? '👍 İyi!' : '📚 Tekrar çalış!');
                 const resultDiv = document.getElementById('quizResult');
-                const percentage = (correctCount / questions.length) * 100;
-                let message = '';
-                if (percentage === 100) message = '🎉 Mükemmel! Konuyu çok iyi kavramışsın! 🎉';
-                else if (percentage >= 60) message = '👍 İyi! Konuyu gözden geçirmen faydalı olabilir.';
-                else message = '📚 Tekrar çalışmanı öneririm. Konuyu bir daha gözden geçir!';
-                
-                resultDiv.innerHTML = `
-                    <strong>📊 SONUÇ:</strong><br>
-                    ${correctCount} / ${questions.length} doğru (${Math.round(percentage)}%)<br><br>
-                    ${results.join(' | ')}<br><br>
-                    ${message}
-                `;
-                
-                if (percentage >= 70) {
-                    resultDiv.className = 'quiz-result correct';
-                } else {
-                    resultDiv.className = 'quiz-result wrong';
-                }
+                resultDiv.innerHTML = `<strong>${correct}/${questions.length} doğru (${Math.round(percent)}%)</strong><br>${msg}`;
+                resultDiv.className = percent >= 70 ? 'quiz-result correct' : 'quiz-result wrong';
                 resultDiv.style.display = 'block';
             }
             
             function resetQuiz() {
                 userAnswers.fill(null);
-                const radios = document.querySelectorAll('#quizContainer input[type="radio"]');
-                radios.forEach(radio => {
-                    radio.checked = false;
-                });
-                const resultDiv = document.getElementById('quizResult');
-                resultDiv.style.display = 'none';
-                resultDiv.innerHTML = '';
+                document.querySelectorAll('#quizContainer input').forEach(r => r.checked = false);
+                document.getElementById('quizResult').style.display = 'none';
             }
             
-            summarySection.style.display = 'none';
+            summarySec.style.display = 'none';
+            setTimeout(() => { if (splash.style.display !== 'none') hideSplash(); }, 5000);
+            contBtn.addEventListener('click', hideSplash);
             
-            setTimeout(function() {
-                hideSplashScreen();
-            }, 5000);
+            document.getElementById('coderCard').addEventListener('click', () => coderModal.style.display = 'flex');
+            document.getElementById('designCard').addEventListener('click', () => designModal.style.display = 'flex');
+            document.getElementById('mobileCard').addEventListener('click', () => mobileModal.style.display = 'flex');
+            document.getElementById('summaryBtn').addEventListener('click', () => summaryModal.style.display = 'flex');
+            document.getElementById('videoBtn').addEventListener('click', () => videoModal.style.display = 'flex');
+            quizBtn.addEventListener('click', () => { buildQuiz(); resetQuiz(); quizModal.style.display = 'flex'; });
             
-            continueBtn.addEventListener('click', hideSplashScreen);
+            closeCoder.addEventListener('click', () => coderModal.style.display = 'none');
+            closeDesign.addEventListener('click', () => designModal.style.display = 'none');
+            closeMobile.addEventListener('click', () => mobileModal.style.display = 'none');
+            closeSummary.addEventListener('click', () => summaryModal.style.display = 'none');
+            closeVideo.addEventListener('click', () => videoModal.style.display = 'none');
+            closeQuiz.addEventListener('click', () => quizModal.style.display = 'none');
+            submitBtn.addEventListener('click', showResults);
+            resetBtn.addEventListener('click', resetQuiz);
             
-            coderCard.addEventListener('click', function() {
-                coderModal.style.display = 'flex';
+            [coderModal, designModal, mobileModal, summaryModal, videoModal, quizModal].forEach(modal => {
+                modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
             });
-            
-            designCard.addEventListener('click', function() {
-                designModal.style.display = 'flex';
-            });
-            
-            mobileCard.addEventListener('click', function() {
-                mobileModal.style.display = 'flex';
-            });
-            
-            summaryBtn.addEventListener('click', function() {
-                summaryModal.style.display = 'flex';
-            });
-            
-            videoBtn.addEventListener('click', function() {
-                videoModal.style.display = 'flex';
-            });
-            
-            quizBtn.addEventListener('click', function() {
-                buildQuiz();
-                resetQuiz();
-                quizModal.style.display = 'flex';
-            });
-            
-            closeCoderModal.addEventListener('click', function() {
-                coderModal.style.display = 'none';
-            });
-            
-            closeDesignModal.addEventListener('click', function() {
-                designModal.style.display = 'none';
-            });
-            
-            closeMobileModal.addEventListener('click', function() {
-                mobileModal.style.display = 'none';
-            });
-            
-            closeSummaryModal.addEventListener('click', function() {
-                summaryModal.style.display = 'none';
-            });
-            
-            closeVideoModal.addEventListener('click', function() {
-                videoModal.style.display = 'none';
-            });
-            
-            closeQuizModal.addEventListener('click', function() {
-                quizModal.style.display = 'none';
-            });
-            
-            document.getElementById('submitQuizBtn').addEventListener('click', showResults);
-            document.getElementById('resetQuizBtn').addEventListener('click', resetQuiz);
-            
-            coderModal.addEventListener('click', function(e) {
-                if (e.target === coderModal) {
-                    coderModal.style.display = 'none';
-                }
-            });
-            
-            designModal.addEventListener('click', function(e) {
-                if (e.target === designModal) {
-                    designModal.style.display = 'none';
-                }
-            });
-            
-            mobileModal.addEventListener('click', function(e) {
-                if (e.target === mobileModal) {
-                    mobileModal.style.display = 'none';
-                }
-            });
-            
-            summaryModal.addEventListener('click', function(e) {
-                if (e.target === summaryModal) {
-                    summaryModal.style.display = 'none';
-                }
-            });
-            
-            videoModal.addEventListener('click', function(e) {
-                if (e.target === videoModal) {
-                    videoModal.style.display = 'none';
-                }
-            });
-            
-            quizModal.addEventListener('click', function(e) {
-                if (e.target === quizModal) {
-                    quizModal.style.display = 'none';
-                }
-            });
-            
-            document.addEventListener('keydown', function(e) {
+            document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
-                    coderModal.style.display = 'none';
-                    designModal.style.display = 'none';
-                    mobileModal.style.display = 'none';
-                    summaryModal.style.display = 'none';
-                    videoModal.style.display = 'none';
-                    quizModal.style.display = 'none';
+                    [coderModal, designModal, mobileModal, summaryModal, videoModal, quizModal].forEach(m => m.style.display = 'none');
                 }
             });
             
-            function hideSplashScreen() {
-                splashScreen.style.opacity = '0';
-                splashScreen.style.transform = 'scale(1.1)';
-                
-                setTimeout(function() {
-                    splashScreen.style.display = 'none';
-                    mainContent.classList.add('visible');
-                    summarySection.style.display = 'flex';
+            function hideSplash() {
+                splash.style.opacity = '0';
+                splash.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    main.classList.add('visible');
+                    summarySec.style.display = 'flex';
                 }, 1000);
             }
         });
