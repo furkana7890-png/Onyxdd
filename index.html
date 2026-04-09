@@ -6,9 +6,6 @@
     <title>- Bilgilendirme -</title>
     <!-- CSS dosyasını ekliyoruz -->
     <link rel="stylesheet" href="style.css">
-    <!-- jsPDF ve html2canvas kütüphaneleri -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <!-- Arkaplan Videosu -->
@@ -30,14 +27,20 @@
         <button class="continue-btn" id="continueBtn">Devam Et</button>
     </div>
 
-    <!-- PDF İndirme Butonu (Sağ Üst) -->
-    <button class="pdf-btn" id="pdfBtn">
-        <span>📄</span>
-        <span>PDF İndir</span>
-    </button>
+    <!-- MÜZİK KONTROL (Sol Üst) -->
+    <div class="music-control">
+        <button class="music-toggle-btn" id="musicToggleBtn">
+            <span class="music-btn-icon">🔊</span>
+            <span class="music-btn-text">Müzik</span>
+        </button>
+        <div class="volume-slider-container">
+            <input type="range" id="volumeSlider" min="0" max="100" value="30" class="volume-slider">
+            <span class="volume-icon">🔊</span>
+        </div>
+    </div>
 
-    <!-- Ana İçerik (PDF için hedef alan) -->
-    <div class="main-content" id="mainContent" id="pdfContent">
+    <!-- Ana İçerik -->
+    <div class="main-content" id="mainContent">
         <h1>Sitemize Hoş Geldiniz - 𝘿𝙚𝙨𝙞𝙜𝙣𝙚𝙧 > 𝙕𝙚𝙡𝙙 </h1>
         <p>Bu site, Çözünürlüğe katkısı olan şeylerin anlatıldığı içerik alanıdır.
         Çözünürlük = Belirli bir sıcaklık ve basınçta, 100 gram çözücüde (genellikle su) çözünebilen maksimum madde miktarına (gram cinsinden) denir.</p>
@@ -114,18 +117,6 @@
         <button class="summary-btn" id="summaryBtn">ÖZET</button>
         <button class="video-btn" id="videoBtn">VİDEO ANLATIM</button>
         <button class="quiz-btn" id="quizBtn">TEST ÇÖZ</button>
-    </div>
-
-    <!-- MÜZİK KONTROL (Sağ Alt) -->
-    <div class="music-control">
-        <button class="music-toggle-btn" id="musicToggleBtn">
-            <span class="music-btn-icon">🔊</span>
-            <span class="music-btn-text">Müzik</span>
-        </button>
-        <div class="volume-slider-container">
-            <input type="range" id="volumeSlider" min="0" max="100" value="30" class="volume-slider">
-            <span class="volume-icon">🔊</span>
-        </div>
     </div>
 
     <!-- HAVA DURUMU BUTONU (Sağ Alt) -->
@@ -228,7 +219,7 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
     <div class="modal summary-modal" id="summaryModal">
         <div class="modal-content">
             <h2>ÖZET</h2>
-            <div class="modal-text-content">
+            <div class="modal-text-content" id="summaryTextContent">
                 <p><strong>ÇÖZÜNÜRLÜĞE ETKİ EDEN FAKTÖRLER - ÖZET</strong></p>
                 <br>
                 <p><strong>1. SICAKLIK:</strong></p>
@@ -250,7 +241,10 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 <p><strong>GENEL TANIM:</strong></p>
                 <p>Çözünürlük = Belirli sıcaklık ve basınçta, 100 gram çözücüde çözünebilen maksimum madde miktarıdır.</p>
             </div>
-            <button class="close-btn" id="closeSummaryModal">Kapat</button>
+            <div class="modal-buttons">
+                <button class="close-btn" id="closeSummaryModal">Kapat</button>
+                <button class="download-txt-btn" id="downloadTxtBtn">📄 TXT Olarak İndir</button>
+            </div>
         </div>
     </div>
 
@@ -535,47 +529,36 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
         });
     </script>
 
-    <!-- PDF İNDİRME SCRIPT -->
+    <!-- TXT İNDİRME SCRIPT -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const pdfBtn = document.getElementById('pdfBtn');
+            const downloadTxtBtn = document.getElementById('downloadTxtBtn');
             
-            pdfBtn.addEventListener('click', async function() {
-                const element = document.getElementById('mainContent');
-                const originalDisplay = element.style.display;
+            downloadTxtBtn.addEventListener('click', function() {
+                // Özet içeriğini al
+                const summaryContent = document.getElementById('summaryTextContent');
+                let text = '';
                 
-                // Geçici olarak PDF için düzenle
-                element.style.display = 'block';
-                element.style.opacity = '1';
-                element.style.visibility = 'visible';
+                // İçeriği düz metne çevir
+                const paragraphs = summaryContent.querySelectorAll('p');
+                paragraphs.forEach(p => {
+                    text += p.innerText + '\n\n';
+                });
                 
-                try {
-                    const canvas = await html2canvas(element, {
-                        scale: 2,
-                        backgroundColor: '#1a1a2e',
-                        logging: false,
-                        useCORS: true
-                    });
-                    
-                    const imgData = canvas.toDataURL('image/png');
-                    const { jsPDF } = window.jspdf;
-                    const pdf = new jsPDF({
-                        orientation: 'portrait',
-                        unit: 'mm',
-                        format: 'a4'
-                    });
-                    
-                    const imgWidth = 210;
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    
-                    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-                    pdf.save('cozunurluk_ozeti.pdf');
-                } catch (error) {
-                    console.error('PDF oluşturulurken hata:', error);
-                    alert('PDF oluşturulurken bir hata oluştu.');
-                }
+                // Başlık ekle
+                const header = 'ÇÖZÜNÜRLÜK ÖZETİ\n========================\n\n';
+                text = header + text;
                 
-                element.style.display = originalDisplay;
+                // Blob oluştur ve indir
+                const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.href = url;
+                link.download = 'cozunurluk_ozeti.txt';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
             });
         });
     </script>
