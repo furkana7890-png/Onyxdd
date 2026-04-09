@@ -2,10 +2,13 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>- Bilgilendirme -</title>
     <!-- CSS dosyasını ekliyoruz -->
     <link rel="stylesheet" href="style.css">
+    <!-- jsPDF ve html2canvas kütüphaneleri -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <!-- Arkaplan Videosu -->
@@ -27,8 +30,14 @@
         <button class="continue-btn" id="continueBtn">Devam Et</button>
     </div>
 
-    <!-- Ana İçerik -->
-    <div class="main-content" id="mainContent">
+    <!-- PDF İndirme Butonu (Sağ Üst) -->
+    <button class="pdf-btn" id="pdfBtn">
+        <span>📄</span>
+        <span>PDF İndir</span>
+    </button>
+
+    <!-- Ana İçerik (PDF için hedef alan) -->
+    <div class="main-content" id="mainContent" id="pdfContent">
         <h1>Sitemize Hoş Geldiniz - 𝘿𝙚𝙨𝙞𝙜𝙣𝙚𝙧 > 𝙕𝙚𝙡𝙙 </h1>
         <p>Bu site, Çözünürlüğe katkısı olan şeylerin anlatıldığı içerik alanıdır.
         Çözünürlük = Belirli bir sıcaklık ve basınçta, 100 gram çözücüde (genellikle su) çözünebilen maksimum madde miktarına (gram cinsinden) denir.</p>
@@ -125,7 +134,7 @@
         <span class="weather-btn-text">Hava Durumu</span>
     </button>
 
-    <!-- HAVA DURUMU SIDEBAR (Açılır Menü) - İçinde çizgi efekti var -->
+    <!-- HAVA DURUMU SIDEBAR (Açılır Menü) -->
     <div class="weather-sidebar" id="weatherSidebar">
         <canvas id="lineCanvas"></canvas>
         <div class="weather-sidebar-header">
@@ -422,11 +431,7 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 tempValue.textContent = Math.round(temp) + '°C';
                 pressureValue.textContent = pressure.toFixed(1) + ' atm';
                 
-                // Çözünürlük hesaplama: Sıcaklık ve basıncın etkisi
-                // Sıcaklık -20°C'de %10, 100°C'de %90 (katılar için artan)
                 let tempEffect = ((temp + 20) / 120) * 60;
-                
-                // Basınç 0.5 atm'de %0, 5 atm'de %40 (gazlar için artan)
                 let pressureEffect = ((pressure - 0.5) / 4.5) * 30;
                 
                 let totalSolubility = Math.min(98, Math.max(2, tempEffect + pressureEffect + 10));
@@ -435,7 +440,6 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 solubilityBar.style.width = totalSolubility + '%';
                 solubilityPercent.textContent = '%' + totalSolubility;
                 
-                // Renk ve geri bildirim
                 if (totalSolubility >= 70) {
                     solubilityBar.style.background = 'linear-gradient(90deg, #4caf50, #8bc34a)';
                     solubilityFeedback.innerHTML = '🔥 Yüksek çözünürlük! Sıcaklık ve/veya basınç çok yüksek.';
@@ -450,7 +454,6 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                     solubilityFeedback.style.color = '#ffaaaa';
                 }
                 
-                // Ek bilgi
                 if (temp < 0) {
                     solubilityFeedback.innerHTML += ' Su donma noktasının altında!';
                 } else if (temp > 80) {
@@ -529,6 +532,51 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                     }
                 });
             }
+        });
+    </script>
+
+    <!-- PDF İNDİRME SCRIPT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const pdfBtn = document.getElementById('pdfBtn');
+            
+            pdfBtn.addEventListener('click', async function() {
+                const element = document.getElementById('mainContent');
+                const originalDisplay = element.style.display;
+                
+                // Geçici olarak PDF için düzenle
+                element.style.display = 'block';
+                element.style.opacity = '1';
+                element.style.visibility = 'visible';
+                
+                try {
+                    const canvas = await html2canvas(element, {
+                        scale: 2,
+                        backgroundColor: '#1a1a2e',
+                        logging: false,
+                        useCORS: true
+                    });
+                    
+                    const imgData = canvas.toDataURL('image/png');
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF({
+                        orientation: 'portrait',
+                        unit: 'mm',
+                        format: 'a4'
+                    });
+                    
+                    const imgWidth = 210;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    
+                    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                    pdf.save('cozunurluk_ozeti.pdf');
+                } catch (error) {
+                    console.error('PDF oluşturulurken hata:', error);
+                    alert('PDF oluşturulurken bir hata oluştu.');
+                }
+                
+                element.style.display = originalDisplay;
+            });
         });
     </script>
 
@@ -762,4 +810,4 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
         });
     </script>
 </body>
-                    </html>
+</html>
