@@ -960,7 +960,10 @@ p {
     color: white;
 }
 
-/* Responsive */
+/* ============================================ */
+/* RESPONSIVE (MOBİL DÜZELTMELİ)               */
+/* ============================================ */
+
 @media (max-width: 768px) {
     .title {
         font-size: 2.5rem;
@@ -993,16 +996,30 @@ p {
         font-size: 1rem;
     }
     
+    /* Butonlar daha küçük ve yan yana */
     .summary-btn, .video-btn, .quiz-btn {
-        padding: 12px 25px;
-        font-size: 1rem;
+        padding: 8px 16px;
+        font-size: 0.8rem;
     }
     
+    /* Buton grubu - mobilde altta ortalanmış, arkaplanlı */
     .summary-section {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
+        position: fixed;
         bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        padding: 8px 15px;
+        border-radius: 50px;
+        width: auto;
+        max-width: 95%;
     }
     
     .main-content {
@@ -1016,43 +1033,67 @@ p {
         right: -100%;
     }
     
+    /* Hava durumu butonu - mobilde küçük */
     .weather-toggle-btn {
-        padding: 10px 15px;
+        padding: 8px 12px;
+        bottom: 15px;
+        right: 15px;
     }
     
     .weather-btn-text {
-        font-size: 0.85rem;
+        font-size: 0.7rem;
     }
     
     .weather-btn-icon {
-        font-size: 1.2rem;
+        font-size: 1rem;
     }
 
-    /* Müzik kontrol responsive */
+    /* Müzik kontrol - mobilde daha kompakt, butonların solunda */
     .music-control {
-        right: 140px;
-        padding: 3px 10px;
         bottom: 15px;
+        right: 85px;
+        padding: 4px 10px;
+        gap: 6px;
     }
     
     .music-btn-text {
         display: none;
     }
     
+    .music-btn-icon {
+        font-size: 1rem;
+    }
+    
     .volume-slider {
-        width: 60px;
+        width: 50px;
+    }
+    
+    .volume-icon {
+        font-size: 0.8rem;
     }
 
     /* Simülasyon responsive */
     .simulation-header h3 {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
     }
     
     .simulation-icon {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
     }
     
     .simulation-card {
         padding: 15px;
     }
+    
+    .simulation-label {
+        font-size: 0.85rem;
     }
+    
+    .solubility-value {
+        font-size: 1rem;
+    }
+    
+    .simulation-note {
+        font-size: 0.7rem;
+    }
+                     }
