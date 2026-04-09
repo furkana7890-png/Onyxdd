@@ -164,6 +164,7 @@ p {
     justify-content: center;
     gap: 20px;
     margin-top: 40px;
+    margin-bottom: 40px;
 }
 
 .feature-card {
@@ -204,6 +205,159 @@ p {
 .feature-card h3 {
     font-size: 1.5rem;
     margin-bottom: 10px;
+}
+
+/* ============================================ */
+/* SICAKLIK & BASINÇ SİMÜLASYONU STILLERI      */
+/* ============================================ */
+
+.simulation-card {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(30, 60, 114, 0.7));
+    backdrop-filter: blur(10px);
+    border-radius: 25px;
+    padding: 25px;
+    margin-top: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    transition: all 0.3s ease;
+}
+
+.simulation-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.simulation-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.simulation-icon {
+    font-size: 2rem;
+}
+
+.simulation-header h3 {
+    font-size: 1.5rem;
+    margin: 0;
+    background: linear-gradient(135deg, #ffd89b, #c7e9fb);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.simulation-desc {
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 25px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.simulation-control {
+    margin-bottom: 25px;
+}
+
+.simulation-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.simulation-value {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.simulation-slider {
+    width: 100%;
+    height: 6px;
+    -webkit-appearance: none;
+    background: linear-gradient(90deg, #2196f3, #ff9800);
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+}
+
+.simulation-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+}
+
+.simulation-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.simulation-hint {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 5px;
+    text-align: center;
+}
+
+/* Çözünürlük Göstergesi */
+.solubility-meter {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.solubility-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.solubility-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ffd700;
+}
+
+.solubility-bar-container {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    height: 20px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.solubility-bar {
+    width: 45%;
+    height: 100%;
+    background: linear-gradient(90deg, #4caf50, #8bc34a);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.solubility-feedback {
+    font-size: 0.85rem;
+    text-align: center;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+.simulation-note {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    border-left: 3px solid #ff9800;
 }
 
 /* Modal Stilleri */
@@ -888,4 +1042,17 @@ p {
     .volume-slider {
         width: 60px;
     }
-}
+
+    /* Simülasyon responsive */
+    .simulation-header h3 {
+        font-size: 1.2rem;
+    }
+    
+    .simulation-icon {
+        font-size: 1.5rem;
+    }
+    
+    .simulation-card {
+        padding: 15px;
+    }
+    }
