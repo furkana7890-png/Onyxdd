@@ -50,6 +50,54 @@
                 <p>Bilgi Kutusu İçin Tıklayınız.</p>
             </div>
         </div>
+
+        <!-- SICAKLIK & BASINÇ SİMÜLASYONU -->
+        <div class="simulation-card" id="simulationCard">
+            <div class="simulation-header">
+                <span class="simulation-icon">🌡️</span>
+                <h3>Sıcaklık & Basınç Simülasyonu</h3>
+                <span class="simulation-icon">⏲️</span>
+            </div>
+            <p class="simulation-desc">Sürgüleri hareket ettirerek çözünürlüğün nasıl değiştiğini gör!</p>
+            
+            <!-- Sıcaklık Kontrolü -->
+            <div class="simulation-control">
+                <label class="simulation-label">
+                    <span>🌡️ Sıcaklık</span>
+                    <span id="tempValue" class="simulation-value">25°C</span>
+                </label>
+                <input type="range" id="tempSlider" min="-20" max="100" value="25" class="simulation-slider">
+                <div class="simulation-hint">⬅️ Soğuk | Sıcak ➡️</div>
+            </div>
+
+            <!-- Basınç Kontrolü -->
+            <div class="simulation-control">
+                <label class="simulation-label">
+                    <span>⏲️ Basınç</span>
+                    <span id="pressureValue" class="simulation-value">1.0 atm</span>
+                </label>
+                <input type="range" id="pressureSlider" min="0.5" max="5" step="0.1" value="1" class="simulation-slider">
+                <div class="simulation-hint">⬅️ Düşük | Yüksek ➡️</div>
+            </div>
+
+            <!-- Çözünürlük Göstergesi -->
+            <div class="solubility-meter">
+                <div class="solubility-label">
+                    <span>🧪 Çözünürlük Seviyesi</span>
+                    <span id="solubilityPercent" class="solubility-value">%45</span>
+                </div>
+                <div class="solubility-bar-container">
+                    <div class="solubility-bar" id="solubilityBar"></div>
+                </div>
+                <div class="solubility-feedback" id="solubilityFeedback">Orta seviyede çözünürlük</div>
+            </div>
+
+            <!-- Açıklama -->
+            <div class="simulation-note">
+                💡 <strong>Not:</strong> Sıcaklık arttıkça katıların çözünürlüğü artar.<br>
+                💨 Basınç arttıkça gazların çözünürlüğü artar (Henry Yasası).
+            </div>
+        </div>
     </div>
 
     <!-- Özet ve Video Butonları -->
@@ -281,13 +329,11 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                     ctx.lineWidth = l.lineWidth;
                     ctx.stroke();
                     
-                    // Hareket
                     l.x1 += l.speedX1;
                     l.y1 += l.speedY1;
                     l.x2 += l.speedX2;
                     l.y2 += l.speedY2;
                     
-                    // Sınırları aşınca geri döndür
                     if (l.x1 < -50) l.x1 = canvas.width + 50;
                     if (l.x1 > canvas.width + 50) l.x1 = -50;
                     if (l.y1 < -50) l.y1 = canvas.height + 50;
@@ -307,7 +353,6 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 drawLines();
             }
             
-            // Sidebar açılıp kapanınca canvas boyutunu güncelle
             const observer = new MutationObserver(function(mutations) {
                 mutations.forEach(function(mutation) {
                     if (mutation.attributeName === 'class') {
@@ -359,6 +404,71 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
         });
     </script>
 
+    <!-- SICAKLIK & BASINÇ SİMÜLASYONU SCRIPT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tempSlider = document.getElementById('tempSlider');
+            const pressureSlider = document.getElementById('pressureSlider');
+            const tempValue = document.getElementById('tempValue');
+            const pressureValue = document.getElementById('pressureValue');
+            const solubilityBar = document.getElementById('solubilityBar');
+            const solubilityPercent = document.getElementById('solubilityPercent');
+            const solubilityFeedback = document.getElementById('solubilityFeedback');
+            
+            function updateSolubility() {
+                let temp = parseFloat(tempSlider.value);
+                let pressure = parseFloat(pressureSlider.value);
+                
+                tempValue.textContent = Math.round(temp) + '°C';
+                pressureValue.textContent = pressure.toFixed(1) + ' atm';
+                
+                // Çözünürlük hesaplama: Sıcaklık ve basıncın etkisi
+                // Sıcaklık -20°C'de %10, 100°C'de %90 (katılar için artan)
+                let tempEffect = ((temp + 20) / 120) * 60;
+                
+                // Basınç 0.5 atm'de %0, 5 atm'de %40 (gazlar için artan)
+                let pressureEffect = ((pressure - 0.5) / 4.5) * 30;
+                
+                let totalSolubility = Math.min(98, Math.max(2, tempEffect + pressureEffect + 10));
+                totalSolubility = Math.round(totalSolubility);
+                
+                solubilityBar.style.width = totalSolubility + '%';
+                solubilityPercent.textContent = '%' + totalSolubility;
+                
+                // Renk ve geri bildirim
+                if (totalSolubility >= 70) {
+                    solubilityBar.style.background = 'linear-gradient(90deg, #4caf50, #8bc34a)';
+                    solubilityFeedback.innerHTML = '🔥 Yüksek çözünürlük! Sıcaklık ve/veya basınç çok yüksek.';
+                    solubilityFeedback.style.color = '#ffd700';
+                } else if (totalSolubility >= 40) {
+                    solubilityBar.style.background = 'linear-gradient(90deg, #ff9800, #ffc107)';
+                    solubilityFeedback.innerHTML = '👍 Orta seviyede çözünürlük. Normal koşullar.';
+                    solubilityFeedback.style.color = '#fff';
+                } else {
+                    solubilityBar.style.background = 'linear-gradient(90deg, #f44336, #ff5722)';
+                    solubilityFeedback.innerHTML = '❄️ Düşük çözünürlük! Soğuk ve/veya düşük basınç.';
+                    solubilityFeedback.style.color = '#ffaaaa';
+                }
+                
+                // Ek bilgi
+                if (temp < 0) {
+                    solubilityFeedback.innerHTML += ' Su donma noktasının altında!';
+                } else if (temp > 80) {
+                    solubilityFeedback.innerHTML += ' Kaynama noktasına yakın!';
+                }
+                
+                if (pressure > 3) {
+                    solubilityFeedback.innerHTML += ' Yüksek basınç gaz çözünürlüğünü artırır.';
+                }
+            }
+            
+            tempSlider.addEventListener('input', updateSolubility);
+            pressureSlider.addEventListener('input', updateSolubility);
+            
+            updateSolubility();
+        });
+    </script>
+
     <!-- MÜZİK KONTROL SCRIPT -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -370,15 +480,12 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
             
             let isMusicPlaying = true;
             
-            // Ses seviyesini ayarla (başlangıçta %30)
             bgMusic.volume = 0.3;
             
-            // Slider ile ses ayarı
             volumeSlider.addEventListener('input', function() {
                 const volumeValue = this.value / 100;
                 bgMusic.volume = volumeValue;
                 
-                // Ses ikonunu güncelle
                 if (volumeValue === 0) {
                     volumeIcon.textContent = '🔇';
                 } else if (volumeValue < 0.3) {
@@ -390,7 +497,6 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 }
             });
             
-            // Müzik aç/kapa butonu
             musicToggleBtn.addEventListener('click', function() {
                 if (isMusicPlaying) {
                     bgMusic.pause();
@@ -404,8 +510,6 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
                 isMusicPlaying = !isMusicPlaying;
             });
             
-            // Sayfa yüklendiğinde müziğin başlamasını sağla (otomatik oynatma politikası nedeniyle kullanıcı etkileşimi gerekebilir)
-            // Kullanıcı herhangi bir yere tıklayınca müzik başlasın
             const startMusicOnInteraction = function() {
                 if (bgMusic.paused && isMusicPlaying) {
                     bgMusic.play().catch(e => console.log('Müzik başlatılamadı:', e));
@@ -417,7 +521,6 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
             document.addEventListener('click', startMusicOnInteraction);
             document.addEventListener('keydown', startMusicOnInteraction);
             
-            // Splash screen'den çıkışta müziği başlat
             const continueBtn = document.getElementById('continueBtn');
             if (continueBtn) {
                 continueBtn.addEventListener('click', function() {
@@ -659,4 +762,4 @@ b) Polar Olmayan Çözücüler (Örn: Benzen, CCl₄, Gazyağı)
         });
     </script>
 </body>
-</html>
+                    </html>
