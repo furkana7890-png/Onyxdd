@@ -3,14 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>- Bilgilendirme -</title>
+    <title>Kimya Projesi - Çözünürlük</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <video autoplay muted loop id="bgVideo">
-        <source src="plaj.mp4" type="video/mp4">
-    </video>
-    <div class="overlay"></div>
 
     <div class="splash-screen" id="splashScreen">
         <div class="logo">
@@ -24,7 +20,6 @@
         <button class="continue-btn" id="continueBtn">Devam Et</button>
     </div>
 
-    <!-- MÜZİK KONTROL (Sol Üst) -->
     <div class="music-control">
         <button class="music-toggle-btn" id="musicToggleBtn">
             <span class="music-btn-icon">🔊</span>
@@ -36,7 +31,6 @@
         </div>
     </div>
 
-    <!-- Ana İçerik -->
     <div class="main-content" id="mainContent">
         <h1>Sitemize Hoş Geldiniz - Designer > Zeld</h1>
         <p>Bu site, Çözünürlüğe katkısı olan şeylerin anlatıldığı içerik alanıdır.
@@ -60,7 +54,6 @@
             </div>
         </div>
 
-        <!-- SICAKLIK & BASINÇ SİMÜLASYONU -->
         <div class="simulation-card">
             <div class="simulation-header">
                 <span class="simulation-icon">🌡️</span>
@@ -105,30 +98,10 @@
         </div>
     </div>
 
-    <!-- Özet ve Video Butonları -->
     <div class="summary-section" id="summarySection">
         <button class="summary-btn" id="summaryBtn">ÖZET</button>
         <button class="video-btn" id="videoBtn">VİDEO ANLATIM</button>
         <button class="quiz-btn" id="quizBtn">TEST ÇÖZ</button>
-    </div>
-
-    <!-- HAVA DURUMU BUTONU (Sağ Alt) -->
-    <button class="weather-toggle-btn" id="weatherToggleBtn">
-        <span class="weather-btn-icon">🌤️</span>
-        <span class="weather-btn-text">Hava Durumu</span>
-    </button>
-
-    <!-- HAVA DURUMU SIDEBAR -->
-    <div class="weather-sidebar" id="weatherSidebar">
-        <canvas id="lineCanvas"></canvas>
-        <div class="weather-sidebar-header">
-            <h3>🌊 Adana Hava Durumu</h3>
-            <button class="weather-sidebar-close" id="weatherSidebarClose">✕</button>
-        </div>
-        <div class="weather-sidebar-content">
-            <div class="weather-label-sidebar">🌤️ HAVA DURUMU EĞLENCESİNE EKLENDİ 🌊</div>
-            <a class="weatherwidget-io" href="https://forecast7.com/tr/37d2635d39/adana/" data-label_1="ADANA" data-label_2="Hava" data-theme="original">ADANA Hava</a>
-        </div>
     </div>
 
     <audio id="bgMusic" loop autoplay>
@@ -187,7 +160,6 @@
         </div>
     </div>
 
-    <!-- Özet Modal -->
     <div class="modal summary-modal" id="summaryModal">
         <div class="modal-content">
             <h2>ÖZET</h2>
@@ -243,212 +215,6 @@
         </div>
     </div>
 
-    <!-- HAVA DURUMU WIDGET SCRIPT -->
-    <script>
-        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
-    </script>
-
-    <!-- SIDEBAR ÇİZGİ SCRIPT -->
-    <script>
-        (function() {
-            const canvas = document.getElementById('lineCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            let lines = [];
-            let lineCount = 15;
-            let sidebar = document.getElementById('weatherSidebar');
-            
-            function resizeCanvas() {
-                canvas.width = sidebar.offsetWidth;
-                canvas.height = sidebar.offsetHeight;
-            }
-            
-            function createLines() {
-                lines = [];
-                for (let i = 0; i < lineCount; i++) {
-                    lines.push({
-                        x1: Math.random() * canvas.width, y1: Math.random() * canvas.height,
-                        x2: Math.random() * canvas.width, y2: Math.random() * canvas.height,
-                        speedX1: (Math.random() - 0.5) * 0.8, speedY1: (Math.random() - 0.5) * 0.8,
-                        speedX2: (Math.random() - 0.5) * 0.8, speedY2: (Math.random() - 0.5) * 0.8,
-                        color: `rgba(100, 200, 255, ${Math.random() * 0.3 + 0.1})`,
-                        lineWidth: Math.random() * 2 + 0.5
-                    });
-                }
-            }
-            
-            function drawLines() {
-                if (!sidebar.classList.contains('open')) {
-                    requestAnimationFrame(drawLines);
-                    return;
-                }
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                for (let l of lines) {
-                    ctx.beginPath();
-                    ctx.moveTo(l.x1, l.y1);
-                    ctx.lineTo(l.x2, l.y2);
-                    ctx.strokeStyle = l.color;
-                    ctx.lineWidth = l.lineWidth;
-                    ctx.stroke();
-                    l.x1 += l.speedX1; l.y1 += l.speedY1;
-                    l.x2 += l.speedX2; l.y2 += l.speedY2;
-                    if (l.x1 < -50) l.x1 = canvas.width + 50;
-                    if (l.x1 > canvas.width + 50) l.x1 = -50;
-                    if (l.y1 < -50) l.y1 = canvas.height + 50;
-                    if (l.y1 > canvas.height + 50) l.y1 = -50;
-                    if (l.x2 < -50) l.x2 = canvas.width + 50;
-                    if (l.x2 > canvas.width + 50) l.x2 = -50;
-                    if (l.y2 < -50) l.y2 = canvas.height + 50;
-                    if (l.y2 > canvas.height + 50) l.y2 = -50;
-                }
-                requestAnimationFrame(drawLines);
-            }
-            
-            function init() {
-                resizeCanvas();
-                createLines();
-                drawLines();
-            }
-            
-            const observer = new MutationObserver(() => {
-                setTimeout(() => { resizeCanvas(); createLines(); }, 300);
-            });
-            observer.observe(sidebar, { attributes: true });
-            window.addEventListener('resize', () => { resizeCanvas(); createLines(); });
-            init();
-        })();
-    </script>
-
-    <!-- SIDEBAR KONTROL -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const btn = document.getElementById('weatherToggleBtn');
-            const sidebar = document.getElementById('weatherSidebar');
-            const close = document.getElementById('weatherSidebarClose');
-            btn.addEventListener('click', () => sidebar.classList.add('open'));
-            close.addEventListener('click', () => sidebar.classList.remove('open'));
-            sidebar.addEventListener('click', (e) => { if (e.target === sidebar) sidebar.classList.remove('open'); });
-            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && sidebar.classList.contains('open')) sidebar.classList.remove('open'); });
-        });
-    </script>
-
-    <!-- SİMÜLASYON SCRIPT -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const tempSlider = document.getElementById('tempSlider');
-            const pressureSlider = document.getElementById('pressureSlider');
-            const tempValue = document.getElementById('tempValue');
-            const pressureValue = document.getElementById('pressureValue');
-            const solubilityBar = document.getElementById('solubilityBar');
-            const solubilityPercent = document.getElementById('solubilityPercent');
-            const solubilityFeedback = document.getElementById('solubilityFeedback');
-            
-            function update() {
-                let temp = parseFloat(tempSlider.value);
-                let pressure = parseFloat(pressureSlider.value);
-                tempValue.textContent = Math.round(temp) + '°C';
-                pressureValue.textContent = pressure.toFixed(1) + ' atm';
-                let tempEffect = ((temp + 20) / 120) * 60;
-                let pressureEffect = ((pressure - 0.5) / 4.5) * 30;
-                let total = Math.min(98, Math.max(2, tempEffect + pressureEffect + 10));
-                total = Math.round(total);
-                solubilityBar.style.width = total + '%';
-                solubilityPercent.textContent = '%' + total;
-                if (total >= 70) {
-                    solubilityBar.style.background = 'linear-gradient(90deg, #4caf50, #8bc34a)';
-                    solubilityFeedback.innerHTML = '🔥 Yüksek çözünürlük!';
-                } else if (total >= 40) {
-                    solubilityBar.style.background = 'linear-gradient(90deg, #ff9800, #ffc107)';
-                    solubilityFeedback.innerHTML = '👍 Orta seviyede çözünürlük.';
-                } else {
-                    solubilityBar.style.background = 'linear-gradient(90deg, #f44336, #ff5722)';
-                    solubilityFeedback.innerHTML = '❄️ Düşük çözünürlük!';
-                }
-            }
-            tempSlider.addEventListener('input', update);
-            pressureSlider.addEventListener('input', update);
-            update();
-        });
-    </script>
-
-    <!-- MÜZİK KONTROL -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const music = document.getElementById('bgMusic');
-            const toggleBtn = document.getElementById('musicToggleBtn');
-            const volumeSlider = document.getElementById('volumeSlider');
-            const icon = document.querySelector('.music-btn-icon');
-            const volIcon = document.querySelector('.volume-icon');
-            let isPlaying = true;
-            music.volume = 0.3;
-            volumeSlider.addEventListener('input', function() {
-                let val = this.value / 100;
-                music.volume = val;
-                if (val === 0) volIcon.textContent = '🔇';
-                else if (val < 0.3) volIcon.textContent = '🔈';
-                else if (val < 0.7) volIcon.textContent = '🔉';
-                else volIcon.textContent = '🔊';
-            });
-            toggleBtn.addEventListener('click', function() {
-                if (isPlaying) {
-                    music.pause();
-                    icon.textContent = '🔇';
-                    toggleBtn.style.background = 'linear-gradient(135deg, #555, #333)';
-                } else {
-                    music.play();
-                    icon.textContent = '🔊';
-                    toggleBtn.style.background = 'linear-gradient(135deg, #1e3c72, #2a5298)';
-                }
-                isPlaying = !isPlaying;
-            });
-            const startMusic = function() {
-                if (music.paused && isPlaying) music.play().catch(e => console.log(e));
-                document.removeEventListener('click', startMusic);
-                document.removeEventListener('keydown', startMusic);
-            };
-            document.addEventListener('click', startMusic);
-            document.addEventListener('keydown', startMusic);
-        });
-    </script>
-
-    <!-- TXT İNDİRME -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const btn = document.getElementById('downloadTxtBtn');
-            btn.addEventListener('click', function() {
-                const text = `COZUNURLUGE ETKI EDEN FAKTORLER - OZET
-
-1. SICAKLIK:
-• Katı ve sıvılar: Sıcaklık arttıkça çözünürlük genellikle artar (endotermik)
-• Gazlar: Sıcaklık arttıkça çözünürlük azalır (ekzotermik)
-• Örnek: Sıcak kola daha çabuk gazını kaybeder
-
-2. BASINÇ:
-• Gazlar: Basınç arttıkça çözünürlük artar (Henry Yasası)
-• Katı ve sıvılar: Basınçtan pratik olarak etkilenmez
-• Örnek: Gazlı içecekler basınç altında üretilir
-
-3. MADDE CINSI:
-• "Benzer benzeri çözer" kuralı geçerlidir
-• Polar çözücüler (su): Polar ve iyonik maddeleri çözer
-• Polar olmayan çözücüler: Polar olmayan maddeleri çözer
-• Örnek: Yağ ve su karışmaz
-
-GENEL TANIM:
-Çözünürlük = Belirli bir sıcaklık ve basınçta, 100 gram çözücüde çözünebilen maksimum madde miktarıdır.
-
---- Bu belge Kimya Projesi kapsamında oluşturulmuştur. ---`;
-                const blob = new Blob(["\uFEFF" + text], { type: 'text/plain;charset=utf-8' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = 'cozunurluk_ozeti.txt';
-                link.click();
-                URL.revokeObjectURL(link.href);
-            });
-        });
-    </script>
-
-    <!-- ANA JS -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const splash = document.getElementById('splashScreen');
@@ -555,6 +321,116 @@ GENEL TANIM:
                     main.classList.add('visible');
                     summarySec.style.display = 'flex';
                 }, 1000);
+            }
+
+            // Simülasyon
+            const tempSlider = document.getElementById('tempSlider');
+            const pressureSlider = document.getElementById('pressureSlider');
+            const tempValue = document.getElementById('tempValue');
+            const pressureValue = document.getElementById('pressureValue');
+            const solubilityBar = document.getElementById('solubilityBar');
+            const solubilityPercent = document.getElementById('solubilityPercent');
+            const solubilityFeedback = document.getElementById('solubilityFeedback');
+            
+            function update() {
+                let temp = parseFloat(tempSlider.value);
+                let pressure = parseFloat(pressureSlider.value);
+                tempValue.textContent = Math.round(temp) + '°C';
+                pressureValue.textContent = pressure.toFixed(1) + ' atm';
+                let tempEffect = ((temp + 20) / 120) * 60;
+                let pressureEffect = ((pressure - 0.5) / 4.5) * 30;
+                let total = Math.min(98, Math.max(2, tempEffect + pressureEffect + 10));
+                total = Math.round(total);
+                solubilityBar.style.width = total + '%';
+                solubilityPercent.textContent = '%' + total;
+                if (total >= 70) {
+                    solubilityBar.style.background = 'linear-gradient(90deg, #4caf50, #8bc34a)';
+                    solubilityFeedback.innerHTML = '🔥 Yüksek çözünürlük!';
+                } else if (total >= 40) {
+                    solubilityBar.style.background = 'linear-gradient(90deg, #ff9800, #ffc107)';
+                    solubilityFeedback.innerHTML = '👍 Orta seviyede çözünürlük.';
+                } else {
+                    solubilityBar.style.background = 'linear-gradient(90deg, #f44336, #ff5722)';
+                    solubilityFeedback.innerHTML = '❄️ Düşük çözünürlük!';
+                }
+            }
+            if (tempSlider && pressureSlider) {
+                tempSlider.addEventListener('input', update);
+                pressureSlider.addEventListener('input', update);
+                update();
+            }
+
+            // Müzik kontrolü
+            const music = document.getElementById('bgMusic');
+            const toggleBtn = document.getElementById('musicToggleBtn');
+            const volumeSlider2 = document.getElementById('volumeSlider');
+            const icon = document.querySelector('.music-btn-icon');
+            const volIcon = document.querySelector('.volume-icon');
+            let isPlaying = true;
+            if (music) {
+                music.volume = 0.3;
+                volumeSlider2.addEventListener('input', function() {
+                    let val = this.value / 100;
+                    music.volume = val;
+                    if (val === 0) volIcon.textContent = '🔇';
+                    else if (val < 0.3) volIcon.textContent = '🔈';
+                    else if (val < 0.7) volIcon.textContent = '🔉';
+                    else volIcon.textContent = '🔊';
+                });
+                toggleBtn.addEventListener('click', function() {
+                    if (isPlaying) {
+                        music.pause();
+                        icon.textContent = '🔇';
+                        toggleBtn.style.background = 'linear-gradient(135deg, #555, #333)';
+                    } else {
+                        music.play();
+                        icon.textContent = '🔊';
+                        toggleBtn.style.background = 'linear-gradient(135deg, #1e3c72, #2a5298)';
+                    }
+                    isPlaying = !isPlaying;
+                });
+                const startMusic = function() {
+                    if (music.paused && isPlaying) music.play().catch(e => console.log(e));
+                    document.removeEventListener('click', startMusic);
+                    document.removeEventListener('keydown', startMusic);
+                };
+                document.addEventListener('click', startMusic);
+                document.addEventListener('keydown', startMusic);
+            }
+
+            // TXT indirme
+            const downloadBtn = document.getElementById('downloadTxtBtn');
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', function() {
+                    const text = `COZUNURLUGE ETKI EDEN FAKTORLER - OZET
+
+1. SICAKLIK:
+• Katı ve sıvılar: Sıcaklık arttıkça çözünürlük genellikle artar (endotermik)
+• Gazlar: Sıcaklık arttıkça çözünürlük azalır (ekzotermik)
+• Örnek: Sıcak kola daha çabuk gazını kaybeder
+
+2. BASINÇ:
+• Gazlar: Basınç arttıkça çözünürlük artar (Henry Yasası)
+• Katı ve sıvılar: Basınçtan pratik olarak etkilenmez
+• Örnek: Gazlı içecekler basınç altında üretilir
+
+3. MADDE CINSI:
+• "Benzer benzeri çözer" kuralı geçerlidir
+• Polar çözücüler (su): Polar ve iyonik maddeleri çözer
+• Polar olmayan çözücüler: Polar olmayan maddeleri çözer
+• Örnek: Yağ ve su karışmaz
+
+GENEL TANIM:
+Çözünürlük = Belirli bir sıcaklık ve basınçta, 100 gram çözücüde çözünebilen maksimum madde miktarıdır.
+
+--- Bu belge Kimya Projesi kapsamında oluşturulmuştur. ---`;
+                    const blob = new Blob(["\uFEFF" + text], { type: 'text/plain;charset=utf-8' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'cozunurluk_ozeti.txt';
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                });
             }
         });
     </script>
