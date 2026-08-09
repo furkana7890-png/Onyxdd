@@ -4,12 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Kırp · QR · Zeld</title>
-  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    
     :root {
       --bg-main: #0b0d12;
       --bg-surface: #12151c;
@@ -36,7 +33,6 @@
       flex-direction: column;
     }
 
-   
     .menu-btn {
       position: fixed;
       top: 18px;
@@ -57,7 +53,6 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
     .menu-btn:hover { background: var(--bg-elevated); border-color: var(--accent); }
-
 
     .sidepanel {
       position: fixed;
@@ -127,7 +122,6 @@
       box-shadow: 0 0 8px var(--accent);
     }
 
-    
     .page {
       display: none;
       flex-direction: column;
@@ -139,7 +133,27 @@
     }
     .page.active { display: flex; }
 
-    /* 1. sayfa (kırpıcı) */
+    .page-header {
+      width: 100%;
+      max-width: 1100px;
+      margin-bottom: 28px;
+      padding: 0 4px;
+    }
+    .page-header h1 {
+      font-size: clamp(26px, 5vw, 36px);
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+    .page-header h1 span { color: var(--accent); }
+    .page-header p {
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-top: 6px;
+      line-height: 1.5;
+      max-width: 600px;
+    }
+
     .page-1 .main-container {
       display: grid;
       grid-template-columns: 1fr 300px;
@@ -217,10 +231,7 @@
     .btn-action:disabled { opacity:0.4; pointer-events:none; }
     .btn-reset { background:transparent; border:1.5px solid var(--border); color:var(--text); }
 
-   
-    .page-2 {
-      padding-top: 80px;
-    }
+    .page-2 { padding-top: 80px; }
     .qr-container {
       background: var(--bg-surface);
       border: 1px solid var(--border);
@@ -234,13 +245,6 @@
       flex-direction: column;
       gap: 18px;
     }
-    .qr-container h2 {
-      font-weight: 700;
-      font-size: 24px;
-      letter-spacing: -0.02em;
-      color: #fff;
-    }
-    .qr-container h2 span { color: var(--accent); }
 
     .qr-field-group {
       display: flex;
@@ -298,20 +302,7 @@
       height: auto;
       image-rendering: pixelated;
     }
-    .qr-footer {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 6px;
-      font-size: 13px;
-      color: var(--text-muted);
-      gap: 6px;
-      align-items: center;
-    }
-    .qr-footer b { color: var(--accent); }
-    .qr-footer .dot {
-      width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
-      box-shadow: 0 0 8px var(--accent);
-    }
+
     .qr-type-selector {
       display: flex;
       gap: 8px;
@@ -335,7 +326,6 @@
     }
     .qr-type-btn i { margin-right: 6px; }
 
- 
     .signature-float {
       position: fixed;
       bottom: 18px;
@@ -369,12 +359,10 @@
 </head>
 <body>
 
-  
   <div class="menu-btn" id="menuBtn">
     <i class="fas fa-bars"></i>
   </div>
 
-  
   <div class="sidepanel" id="sidepanel">
     <div class="logo-area">Görsel <span>Kırp</span></div>
     <div class="nav-item active" data-page="page1"><i class="fas fa-crop-alt"></i> Kırpıcı</div>
@@ -384,8 +372,12 @@
     </div>
   </div>
 
-
+  <!-- SAYFA 1: Kırpıcı -->
   <div class="page page-1 active" id="page1">
+    <div class="page-header">
+      <h1>Görsel <span>Kırpıcı</span></h1>
+      <p>Resimlerinizi istediğiniz oranda ve şekilde (kare, daire, 16:9, 9:16) kırpın. Önizlemeyi izleyin ve indirin.</p>
+    </div>
     <div style="width:100%; max-width:1100px; margin:0 auto;">
       <div class="main-container">
         <div class="workspace" id="drop-zone">
@@ -431,12 +423,13 @@
     </div>
   </div>
 
-
+  <!-- SAYFA 2: QR OLUŞTURUCU -->
   <div class="page page-2" id="page2">
+    <div class="page-header">
+      <h1>QR <span>Oluşturucu</span></h1>
+      <p>Metin, URL, WiFi bağlantısı veya kişi kartı (vCard) için QR kod üretin. Renk ve boyutu özelleştirin.</p>
+    </div>
     <div class="qr-container">
-      <h2>QR <span>Oluşturucu</span></h2>
-      
-      
       <div class="qr-field-group">
         <label><i class="fas fa-tag"></i> QR Tipi</label>
         <div class="qr-type-selector" id="qrTypeSelector">
@@ -446,9 +439,7 @@
         </div>
       </div>
 
-      
       <div id="qrDynamicFields">
-        
         <div class="qr-field-group" id="field-text">
           <label><i class="fas fa-link"></i> İçerik (URL / Metin)</label>
           <input type="text" id="qrText" value="https://zeld.com" placeholder="https://...">
@@ -475,7 +466,6 @@
         </div>
       </div>
 
-      
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
         <div class="qr-field-group">
           <label><i class="fas fa-arrows-alt"></i> Boyut</label>
@@ -501,20 +491,16 @@
       <div class="qr-box" id="qrBox">
         <div id="qrcode"></div>
       </div>
-      <div class="qr-footer">
-        <span class="dot"></span> Made by <b>Zeld</b> 
-      </div>
     </div>
   </div>
 
-  
+  <!-- SAĞ ALT İMZA (sadece burada) -->
   <div class="signature-float">
     <span class="dot"></span> Made by <b>Zeld</b>
   </div>
 
   <script>
     (function() {
-
       const menuBtn = document.getElementById('menuBtn');
       const sidepanel = document.getElementById('sidepanel');
       const navItems = document.querySelectorAll('.nav-item');
@@ -553,7 +539,6 @@
         });
       });
 
-      
       const typeBtns = document.querySelectorAll('.qr-type-btn');
       const fieldText = document.getElementById('field-text');
       const fieldWifi = document.getElementById('field-wifi');
@@ -564,22 +549,18 @@
           typeBtns.forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
           const type = btn.dataset.type;
-          
           fieldText.style.display = (type === 'text') ? 'block' : 'none';
           fieldWifi.style.display = (type === 'wifi') ? 'block' : 'none';
           fieldContact.style.display = (type === 'contact') ? 'block' : 'none';
-          
           generateQR();
         });
       });
 
-      
       let qrCodeInstance = null;
       const qrContainer = document.getElementById('qrcode');
       const qrSize = document.getElementById('qrSize');
       const qrColorDark = document.getElementById('qrColorDark');
 
-      
       const qrText = document.getElementById('qrText');
       const wifiSsid = document.getElementById('wifiSsid');
       const wifiPassword = document.getElementById('wifiPassword');
@@ -605,14 +586,12 @@
           const name = contactName.value.trim() || 'Kişi';
           const phone = contactPhone.value.trim() || '';
           const email = contactEmail.value.trim() || '';
-          
           let vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\n`;
           if (phone) vcard += `TEL:${phone}\n`;
           if (email) vcard += `EMAIL:${email}\n`;
           vcard += `END:VCARD`;
           return vcard;
         } else {
-          
           return qrText.value.trim() || 'https://zeld.com';
         }
       }
@@ -621,7 +600,7 @@
         const text = getQRContent();
         const size = parseInt(qrSize.value, 10) || 200;
         const dark = qrColorDark.value || '#00f3ff';
-        const light = '#0b0d12'; 
+        const light = '#0b0d12';
 
         qrContainer.innerHTML = '';
         qrCodeInstance = new QRCode(qrContainer, {
@@ -636,10 +615,8 @@
 
       setTimeout(generateQR, 100);
 
-      
       document.getElementById('generateQRBtn').addEventListener('click', generateQR);
 
-      
       const allInputs = [qrText, wifiSsid, wifiPassword, wifiEncryption, contactName, contactPhone, contactEmail, qrSize, qrColorDark];
       allInputs.forEach(el => {
         if (el) {
@@ -648,7 +625,6 @@
         }
       });
 
-      
       document.getElementById('downloadQRBtn').addEventListener('click', () => {
         const canvas = qrContainer.querySelector('canvas');
         if (!canvas) {
@@ -661,7 +637,6 @@
         link.click();
       });
 
-      
       const fileInput = document.getElementById('file-input');
       const uploadUi = document.getElementById('upload-ui');
       const cropWrapper = document.getElementById('crop-wrapper');
