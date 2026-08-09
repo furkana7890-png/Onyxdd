@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Kırp · QR · Zeld</title>
+  <title>Kırp · QR · Pixel · Zeld</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
@@ -154,6 +154,7 @@
       max-width: 600px;
     }
 
+    /* SAYFA 1: Kırpıcı */
     .page-1 .main-container {
       display: grid;
       grid-template-columns: 1fr 300px;
@@ -225,12 +226,17 @@
     #preview-canvas { max-width:100%; max-height:100%; }
     #preview-canvas.round-preview { border-radius:50%; }
 
-    .btn { background:#fff; color:#000; border:none; padding:13px 20px; border-radius:10px; font-weight:700; font-size:14px; cursor:pointer; width:100%; transition: transform .12s, opacity .12s; display:flex; justify-content:center; align-items:center; gap:8px; }
-    .btn:active { transform:scale(0.97); }
-    .btn-action { background:var(--accent); color:#04191c; }
-    .btn-action:disabled { opacity:0.4; pointer-events:none; }
-    .btn-reset { background:transparent; border:1.5px solid var(--border); color:var(--text); }
+    .btn {
+      background: #fff; color: #000; border: none; padding: 13px 20px; border-radius: 10px;
+      font-weight: 700; font-size: 14px; cursor: pointer; width: 100%;
+      transition: transform .12s, opacity .12s; display: flex; justify-content: center; align-items: center; gap: 8px;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-action { background: var(--accent); color: #04191c; }
+    .btn-action:disabled { opacity: 0.4; pointer-events: none; }
+    .btn-reset { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
 
+    /* SAYFA 2: QR */
     .page-2 { padding-top: 80px; }
     .qr-container {
       background: var(--bg-surface);
@@ -245,7 +251,6 @@
       flex-direction: column;
       gap: 18px;
     }
-
     .qr-field-group {
       display: flex;
       flex-direction: column;
@@ -260,7 +265,6 @@
       gap: 6px;
     }
     .qr-field-group label i { color: var(--accent); width: 18px; }
-
     .qr-container input, .qr-container select {
       background: var(--bg-elevated);
       border: 1px solid var(--border);
@@ -302,7 +306,6 @@
       height: auto;
       image-rendering: pixelated;
     }
-
     .qr-type-selector {
       display: flex;
       gap: 8px;
@@ -325,6 +328,158 @@
       color: var(--accent);
     }
     .qr-type-btn i { margin-right: 6px; }
+
+    /* SAYFA 3: PIXEL ART MAKER */
+    .page-3 { padding-top: 80px; }
+    .pixel-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 30px 24px;
+      max-width: 750px;
+      width: 100%;
+      margin: 0 auto;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .pixel-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+    }
+    .pixel-controls .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .pixel-controls .control-group label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .pixel-controls input[type="number"],
+    .pixel-controls input[type="color"] {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      width: 100%;
+    }
+    .pixel-controls input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .pixel-controls input[type="color"] {
+      height: 40px;
+      padding: 4px;
+      cursor: pointer;
+    }
+    .pixel-controls .color-presets {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .pixel-controls .color-presets .preset {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .pixel-controls .color-presets .preset:hover {
+      transform: scale(1.1);
+    }
+    .pixel-controls .color-presets .preset.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-soft);
+    }
+
+    /* Silgi modu butonu */
+    .mode-toggle {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: var(--bg-elevated);
+      border-radius: 30px;
+      padding: 4px;
+      border: 1px solid var(--border);
+    }
+    .mode-toggle .mode-btn {
+      padding: 6px 14px;
+      border-radius: 30px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mode-toggle .mode-btn.active {
+      background: var(--accent);
+      color: #04191c;
+    }
+    .mode-toggle .mode-btn i { font-size: 13px; }
+
+    .pixel-grid-wrapper {
+      overflow: auto;
+      max-width: 100%;
+      display: flex;
+      justify-content: center;
+      background: var(--bg-elevated);
+      border-radius: 10px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      min-height: 300px;
+      touch-action: none;
+    }
+    #pixelGrid {
+      display: grid;
+      gap: 1px;
+      background: var(--border);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+    #pixelGrid .cell {
+      width: 24px;
+      height: 24px;
+      background: #1a1f2b;
+      cursor: pointer;
+      transition: background 0.05s;
+      border-radius: 1px;
+      touch-action: none;
+    }
+    #pixelGrid .cell:hover {
+      opacity: 0.8;
+    }
+    .pixel-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .pixel-actions .btn {
+      flex: 1;
+      min-width: 100px;
+    }
+    .pixel-info {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .pixel-info span { color: var(--accent); font-weight: 600; }
 
     .signature-float {
       position: fixed;
@@ -352,8 +507,13 @@
     @media (max-width: 480px) {
       .sidepanel { width: 240px; left: -250px; }
       .page { padding: 70px 12px 90px; }
-      .qr-container { padding: 20px 16px; }
-      .qr-type-btn { font-size: 11px; padding: 5px 12px; }
+      .qr-container, .pixel-container { padding: 20px 16px; }
+      .pixel-controls { grid-template-columns: 1fr 1fr; }
+      #pixelGrid .cell { width: 18px; height: 18px; }
+      .mode-toggle .mode-btn { padding: 4px 10px; font-size: 11px; }
+    }
+    @media (max-width: 380px) {
+      #pixelGrid .cell { width: 14px; height: 14px; }
     }
   </style>
 </head>
@@ -367,6 +527,7 @@
     <div class="logo-area">Görsel <span>Kırp</span></div>
     <div class="nav-item active" data-page="page1"><i class="fas fa-crop-alt"></i> Kırpıcı</div>
     <div class="nav-item" data-page="page2"><i class="fas fa-qrcode"></i> QR Oluştur</div>
+    <div class="nav-item" data-page="page3"><i class="fas fa-paint-brush"></i> Pixel Art</div>
     <div class="footer-imza">
       <span class="dot"></span> Made by <b>Zeld</b>
     </div>
@@ -446,9 +607,9 @@
         </div>
         <div class="qr-field-group" id="field-wifi" style="display:none;">
           <label><i class="fas fa-wifi"></i> WiFi Adı (SSID)</label>
-          <input type="text" id="wifiSsid" value="ZeldNet" placeholder="WiFi adı">
+          <input type="text" id="wifiSsid" placeholder="WiFi adı">
           <label><i class="fas fa-key"></i> Şifre</label>
-          <input type="text" id="wifiPassword" value="12345678" placeholder="Şifre">
+          <input type="text" id="wifiPassword" placeholder="Şifre">
           <label><i class="fas fa-lock"></i> Güvenlik</label>
           <select id="wifiEncryption">
             <option value="WPA">WPA/WPA2</option>
@@ -494,6 +655,70 @@
     </div>
   </div>
 
+  <!-- SAYFA 3: PIXEL ART MAKER -->
+  <div class="page page-3" id="page3">
+    <div class="page-header">
+      <h1>Pixel <span>Art</span> Maker</h1>
+      <p>Özelleştirilebilir grid üzerinde tıklayarak veya basılı tutarak pixel sanatı oluşturun. Silgi modu ile hataları kolayca düzeltin.</p>
+    </div>
+    <div class="pixel-container">
+      <div class="pixel-controls">
+        <div class="control-group">
+          <label><i class="fas fa-arrows-alt-h"></i> Kolon</label>
+          <input type="number" id="gridCols" value="16" min="4" max="50">
+        </div>
+        <div class="control-group">
+          <label><i class="fas fa-arrows-alt-v"></i> Satır</label>
+          <input type="number" id="gridRows" value="16" min="4" max="50">
+        </div>
+        <div class="control-group">
+          <label><i class="fas fa-palette"></i> Renk</label>
+          <input type="color" id="pixelColor" value="#00f3ff">
+        </div>
+        <div class="control-group">
+          <label>Hızlı Renkler</label>
+          <div class="color-presets" id="colorPresets">
+            <span class="preset active" style="background:#00f3ff;" data-color="#00f3ff"></span>
+            <span class="preset" style="background:#ff6b6b;" data-color="#ff6b6b"></span>
+            <span class="preset" style="background:#ffd93d;" data-color="#ffd93d"></span>
+            <span class="preset" style="background:#6bcb77;" data-color="#6bcb77"></span>
+            <span class="preset" style="background:#4d96ff;" data-color="#4d96ff"></span>
+            <span class="preset" style="background:#ff6bff;" data-color="#ff6bff"></span>
+            <span class="preset" style="background:#ffffff;" data-color="#ffffff"></span>
+            <span class="preset" style="background:#1a1f2b;" data-color="#1a1f2b"></span>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Mod</label>
+          <div class="mode-toggle">
+            <button class="mode-btn active" id="paintModeBtn"><i class="fas fa-paint-brush"></i> Fırça</button>
+            <button class="mode-btn" id="eraseModeBtn"><i class="fas fa-eraser"></i> Silgi</button>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>İşlem</label>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button class="btn btn-action" id="createGridBtn" style="flex:1;padding:8px 12px;font-size:12px;"><i class="fas fa-plus"></i> Oluştur</button>
+            <button class="btn btn-reset" id="clearGridBtn" style="flex:1;padding:8px 12px;font-size:12px;"><i class="fas fa-eraser"></i> Temizle</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pixel-grid-wrapper">
+        <div id="pixelGrid"></div>
+      </div>
+
+      <div class="pixel-info">
+        <span id="pixelCount">0</span> pixel boyandı · Silgi modunda tıklayarak silin · Basılı tutarak hızlıca boyayın/silin
+      </div>
+
+      <div class="pixel-actions">
+        <button class="btn btn-action" id="downloadPixelBtn"><i class="fas fa-download"></i> PNG Olarak İndir</button>
+        <button class="btn btn-reset" id="exportPixelBtn"><i class="fas fa-code"></i> JSON Olarak Dışa Aktar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- SAĞ ALT İMZA -->
   <div class="signature-float">
     <span class="dot"></span> Made by <b>Zeld</b>
@@ -501,12 +726,14 @@
 
   <script>
     (function() {
+      // ===== MENU =====
       const menuBtn = document.getElementById('menuBtn');
       const sidepanel = document.getElementById('sidepanel');
       const navItems = document.querySelectorAll('.nav-item');
       const pages = {
         page1: document.getElementById('page1'),
-        page2: document.getElementById('page2')
+        page2: document.getElementById('page2'),
+        page3: document.getElementById('page3')
       };
 
       menuBtn.addEventListener('click', (e) => {
@@ -532,13 +759,12 @@
           sidepanel.classList.remove('open');
           if (pageId === 'page2') {
             const qrContainer = document.getElementById('qrcode');
-            if (qrContainer.children.length === 0) {
-              generateQR();
-            }
+            if (qrContainer.children.length === 0) generateQR();
           }
         });
       });
 
+      // ===== QR KOD =====
       const typeBtns = document.querySelectorAll('.qr-type-btn');
       const fieldText = document.getElementById('field-text');
       const fieldWifi = document.getElementById('field-wifi');
@@ -572,16 +798,12 @@
       function getQRContent() {
         const activeType = document.querySelector('.qr-type-btn.active');
         const type = activeType ? activeType.dataset.type : 'text';
-
         if (type === 'wifi') {
           const ssid = wifiSsid.value.trim() || 'WiFi';
           const pass = wifiPassword.value.trim() || '';
           const enc = wifiEncryption.value;
-          if (enc === 'nopass') {
-            return `WIFI:T:nopass;S:${ssid};;`;
-          } else {
-            return `WIFI:T:${enc};S:${ssid};P:${pass};;`;
-          }
+          if (enc === 'nopass') return `WIFI:T:nopass;S:${ssid};;`;
+          else return `WIFI:T:${enc};S:${ssid};P:${pass};;`;
         } else if (type === 'contact') {
           const name = contactName.value.trim() || 'Kişi';
           const phone = contactPhone.value.trim() || '';
@@ -600,9 +822,7 @@
         const text = getQRContent();
         const size = parseInt(qrSize.value, 10) || 200;
         const dark = qrColorDark.value || '#00f3ff';
-        // Arka plan rengini sabit beyaz tutuyoruz ki QR okunabilir olsun
         const light = '#ffffff';
-
         qrContainer.innerHTML = '';
         try {
           qrCodeInstance = new QRCode(qrContainer, {
@@ -627,15 +847,11 @@
             qrContainer.innerHTML = '<canvas></canvas>';
             const canvas = qrContainer.querySelector('canvas');
             if (canvas) {
-              canvas.width = size;
-              canvas.height = size;
+              canvas.width = size; canvas.height = size;
               const ctx = canvas.getContext('2d');
-              ctx.fillStyle = '#ffffff';
-              ctx.fillRect(0, 0, size, size);
-              ctx.fillStyle = dark;
-              ctx.font = '14px sans-serif';
-              ctx.textAlign = 'center';
-              ctx.fillText('QR', size/2, size/2+5);
+              ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, size, size);
+              ctx.fillStyle = dark; ctx.font = '14px sans-serif';
+              ctx.textAlign = 'center'; ctx.fillText('QR', size/2, size/2+5);
             }
           }
         }
@@ -645,8 +861,8 @@
 
       document.getElementById('generateQRBtn').addEventListener('click', generateQR);
 
-      const allInputs = [qrText, wifiSsid, wifiPassword, wifiEncryption, contactName, contactPhone, contactEmail, qrSize, qrColorDark];
-      allInputs.forEach(el => {
+      const qrInputs = [qrText, wifiSsid, wifiPassword, wifiEncryption, contactName, contactPhone, contactEmail, qrSize, qrColorDark];
+      qrInputs.forEach(el => {
         if (el) {
           el.addEventListener('input', generateQR);
           el.addEventListener('change', generateQR);
@@ -655,16 +871,264 @@
 
       document.getElementById('downloadQRBtn').addEventListener('click', () => {
         const canvas = qrContainer.querySelector('canvas');
-        if (!canvas) {
-          alert('Önce QR oluşturun!');
-          return;
-        }
+        if (!canvas) { alert('Önce QR oluşturun!'); return; }
         const link = document.createElement('a');
         link.download = 'qr-kod.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
       });
 
+      // ===== PIXEL ART MAKER =====
+      const gridCols = document.getElementById('gridCols');
+      const gridRows = document.getElementById('gridRows');
+      const pixelColor = document.getElementById('pixelColor');
+      const pixelGrid = document.getElementById('pixelGrid');
+      const createGridBtn = document.getElementById('createGridBtn');
+      const clearGridBtn = document.getElementById('clearGridBtn');
+      const downloadPixelBtn = document.getElementById('downloadPixelBtn');
+      const exportPixelBtn = document.getElementById('exportPixelBtn');
+      const pixelCount = document.getElementById('pixelCount');
+      const presets = document.querySelectorAll('.preset');
+      const paintModeBtn = document.getElementById('paintModeBtn');
+      const eraseModeBtn = document.getElementById('eraseModeBtn');
+
+      let isDrawing = false;
+      let isEraseMode = false;
+      let currentColor = '#00f3ff';
+      let gridData = [];
+
+      // Mod değiştirme
+      paintModeBtn.addEventListener('click', () => {
+        paintModeBtn.classList.add('active');
+        eraseModeBtn.classList.remove('active');
+        isEraseMode = false;
+      });
+
+      eraseModeBtn.addEventListener('click', () => {
+        eraseModeBtn.classList.add('active');
+        paintModeBtn.classList.remove('active');
+        isEraseMode = true;
+      });
+
+      // Renk presets
+      presets.forEach(preset => {
+        preset.addEventListener('click', () => {
+          presets.forEach(p => p.classList.remove('active'));
+          preset.classList.add('active');
+          currentColor = preset.dataset.color;
+          pixelColor.value = currentColor;
+        });
+      });
+
+      pixelColor.addEventListener('input', () => {
+        currentColor = pixelColor.value;
+        presets.forEach(p => p.classList.remove('active'));
+        presets.forEach(p => {
+          if (p.dataset.color.toLowerCase() === currentColor.toLowerCase()) {
+            p.classList.add('active');
+          }
+        });
+      });
+
+      function createGrid() {
+        const cols = parseInt(gridCols.value) || 16;
+        const rows = parseInt(gridRows.value) || 16;
+        const clampedCols = Math.min(Math.max(cols, 4), 50);
+        const clampedRows = Math.min(Math.max(rows, 4), 50);
+        gridCols.value = clampedCols;
+        gridRows.value = clampedRows;
+
+        pixelGrid.style.gridTemplateColumns = `repeat(${clampedCols}, 1fr)`;
+        pixelGrid.innerHTML = '';
+        gridData = [];
+
+        for (let r = 0; r < clampedRows; r++) {
+          gridData[r] = [];
+          for (let c = 0; c < clampedCols; c++) {
+            gridData[r][c] = null;
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.dataset.row = r;
+            cell.dataset.col = c;
+            cell.style.background = '#1a1f2b';
+
+            // Fare ile boyama/silme
+            cell.addEventListener('mousedown', (e) => {
+              e.preventDefault();
+              if (e.button === 0) {
+                isDrawing = true;
+                paintCell(cell);
+              }
+            });
+
+            cell.addEventListener('mouseenter', (e) => {
+              if (isDrawing && e.buttons === 1) {
+                paintCell(cell);
+              }
+            });
+
+            cell.addEventListener('contextmenu', (e) => {
+              e.preventDefault();
+              const row = parseInt(cell.dataset.row);
+              const col = parseInt(cell.dataset.col);
+              gridData[row][col] = null;
+              cell.style.background = '#1a1f2b';
+              updatePixelCount();
+            });
+
+            // Dokunmatik (basılı tutarak boyama/silme)
+            let longPressTimer = null;
+            let isLongPress = false;
+
+            cell.addEventListener('touchstart', (e) => {
+              e.preventDefault();
+              const touch = e.touches[0];
+              const target = document.elementFromPoint(touch.clientX, touch.clientY);
+              
+              longPressTimer = setTimeout(() => {
+                isLongPress = true;
+                if (target && target.classList.contains('cell')) {
+                  paintCell(target);
+                }
+              }, 300);
+            }, { passive: false });
+
+            cell.addEventListener('touchmove', (e) => {
+              e.preventDefault();
+              const touch = e.touches[0];
+              const target = document.elementFromPoint(touch.clientX, touch.clientY);
+              
+              if (isLongPress && target && target.classList.contains('cell')) {
+                paintCell(target);
+              }
+            }, { passive: false });
+
+            cell.addEventListener('touchend', (e) => {
+              e.preventDefault();
+              clearTimeout(longPressTimer);
+              if (!isLongPress) {
+                const touch = e.changedTouches[0];
+                const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                if (target && target.classList.contains('cell')) {
+                  paintCell(target);
+                }
+              }
+              isLongPress = false;
+            }, { passive: false });
+
+            cell.addEventListener('touchcancel', () => {
+              clearTimeout(longPressTimer);
+              isLongPress = false;
+            });
+
+            pixelGrid.appendChild(cell);
+          }
+        }
+        updatePixelCount();
+      }
+
+      function paintCell(cell) {
+        const row = parseInt(cell.dataset.row);
+        const col = parseInt(cell.dataset.col);
+        
+        if (isEraseMode) {
+          // Silgi modu
+          gridData[row][col] = null;
+          cell.style.background = '#1a1f2b';
+        } else {
+          // Fırça modu
+          gridData[row][col] = currentColor;
+          cell.style.background = currentColor;
+        }
+        updatePixelCount();
+      }
+
+      function updatePixelCount() {
+        let count = 0;
+        for (let r = 0; r < gridData.length; r++) {
+          for (let c = 0; c < gridData[r].length; c++) {
+            if (gridData[r][c] !== null) count++;
+          }
+        }
+        pixelCount.textContent = count;
+      }
+
+      // Global mouse up
+      document.addEventListener('mouseup', () => {
+        isDrawing = false;
+      });
+
+      createGridBtn.addEventListener('click', createGrid);
+
+      clearGridBtn.addEventListener('click', () => {
+        for (let r = 0; r < gridData.length; r++) {
+          for (let c = 0; c < gridData[r].length; c++) {
+            gridData[r][c] = null;
+            const cells = pixelGrid.children;
+            const idx = r * gridData[0].length + c;
+            if (cells[idx]) {
+              cells[idx].style.background = '#1a1f2b';
+            }
+          }
+        }
+        updatePixelCount();
+      });
+
+      // PNG İndir - Transparent arkaplan
+      downloadPixelBtn.addEventListener('click', () => {
+        const cols = gridData[0]?.length || 16;
+        const rows = gridData.length || 16;
+        const cellSize = 20;
+        const totalSize = cellSize * Math.max(cols, rows);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = totalSize;
+        canvas.height = totalSize;
+        const ctx = canvas.getContext('2d');
+
+        ctx.clearRect(0, 0, totalSize, totalSize);
+
+        const scale = totalSize / Math.max(cols, rows);
+        const size = scale * 0.9;
+
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const color = gridData[r]?.[c];
+            if (color) {
+              ctx.fillStyle = color;
+              const x = c * scale + (scale - size) / 2;
+              const y = r * scale + (scale - size) / 2;
+              ctx.fillRect(x, y, size, size);
+            }
+          }
+        }
+
+        const link = document.createElement('a');
+        link.download = 'pixel-art.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+
+      exportPixelBtn.addEventListener('click', () => {
+        const data = {
+          cols: gridData[0]?.length || 16,
+          rows: gridData.length || 16,
+          pixels: gridData
+        };
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = 'pixel-art.json';
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+
+      // İlk gridi oluştur
+      createGrid();
+
+      // ===== KIRPICI =====
       const fileInput = document.getElementById('file-input');
       const uploadUi = document.getElementById('upload-ui');
       const cropWrapper = document.getElementById('crop-wrapper');
