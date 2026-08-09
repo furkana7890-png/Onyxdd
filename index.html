@@ -1006,20 +1006,20 @@
             </div>
           </div>
 
-          <!-- Filtreler -->
+          <!-- Filtreler - Ters Çevir ve Sepya kaldırıldı, Keskinlik ve Netlik eklendi -->
           <div class="setting-group full-width">
             <label><i class="fas fa-filter"></i> Filtreler (Çoklu Seç)</label>
             <div class="filter-checkboxes" id="filterCheckboxes">
               <label><input type="checkbox" value="grayscale(100%)" data-name="Gri Tonlama"> Gri Tonlama</label>
-              <label><input type="checkbox" value="sepia(100%)" data-name="Sepya"> Sepya</label>
               <label><input type="checkbox" value="brightness(1.2)" data-name="Parlaklık +%20"> Parlaklık +%20</label>
               <label><input type="checkbox" value="brightness(0.8)" data-name="Parlaklık -%20"> Parlaklık -%20</label>
               <label><input type="checkbox" value="contrast(1.3)" data-name="Kontrast +%30"> Kontrast +%30</label>
               <label><input type="checkbox" value="saturate(1.5)" data-name="Doygunluk +%50"> Doygunluk +%50</label>
               <label><input type="checkbox" value="hue-rotate(90deg)" data-name="Renk Döndür 90°"> Renk Döndür 90°</label>
               <label><input type="checkbox" value="hue-rotate(180deg)" data-name="Renk Döndür 180°"> Renk Döndür 180°</label>
-              <label><input type="checkbox" value="invert(100%)" data-name="Ters Çevir"> Ters Çevir</label>
               <label><input type="checkbox" value="blur(2px)" data-name="Bulanıklaştır"> Bulanıklaştır</label>
+              <label><input type="checkbox" value="sharpen" data-name="Keskinlik"> Keskinlik (Netleştir)</label>
+              <label><input type="checkbox" value="contrast(1.5) saturate(1.2)" data-name="Netlik"> Netlik</label>
             </div>
           </div>
 
@@ -1500,8 +1500,17 @@
         
         filterCheckboxes.forEach(cb => {
           if (cb.checked) {
-            selectedFilters.push(cb.value);
-            filterNames.push(cb.dataset.name);
+            // Keskinlik ve Netlik özel işlem gerektirir
+            if (cb.value === 'sharpen') {
+              selectedFilters.push('contrast(1.2) brightness(1.05)');
+              filterNames.push('Keskinlik');
+            } else if (cb.value === 'contrast(1.5) saturate(1.2)') {
+              selectedFilters.push('contrast(1.5) saturate(1.2)');
+              filterNames.push('Netlik');
+            } else {
+              selectedFilters.push(cb.value);
+              filterNames.push(cb.dataset.name);
+            }
           }
         });
 
@@ -1520,7 +1529,6 @@
           activeFiltersContainer.querySelectorAll('.remove-filter').forEach(btn => {
             btn.addEventListener('click', (e) => {
               const index = parseInt(e.target.dataset.index);
-              // Hangi checkbox'ın kaldırılacağını bul
               let checkedIndex = 0;
               filterCheckboxes.forEach(cb => {
                 if (cb.checked) {
