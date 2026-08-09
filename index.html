@@ -458,11 +458,11 @@
         </div>
         <div class="qr-field-group" id="field-contact" style="display:none;">
           <label><i class="fas fa-user"></i> Ad Soyad</label>
-          <input type="text" id="contactName" value="Zeld Kullanıcı" placeholder="Ad Soyad">
+          <input type="text" id="contactName" placeholder="Ad Soyad">
           <label><i class="fas fa-phone"></i> Telefon</label>
-          <input type="text" id="contactPhone" value="+905551234567" placeholder="Telefon">
+          <input type="text" id="contactPhone" placeholder="Telefon">
           <label><i class="fas fa-envelope"></i> E-posta</label>
-          <input type="text" id="contactEmail" value="zeld@example.com" placeholder="E-posta">
+          <input type="text" id="contactEmail" placeholder="E-posta">
         </div>
       </div>
 
@@ -478,7 +478,7 @@
           </select>
         </div>
         <div class="qr-field-group">
-          <label><i class="fas fa-palette"></i> Renk</label>
+          <label><i class="fas fa-palette"></i> Ön Plan Rengi</label>
           <input type="color" id="qrColorDark" value="#00f3ff">
         </div>
       </div>
@@ -494,7 +494,7 @@
     </div>
   </div>
 
-  <!-- SAĞ ALT İMZA (sadece burada) -->
+  <!-- SAĞ ALT İMZA -->
   <div class="signature-float">
     <span class="dot"></span> Made by <b>Zeld</b>
   </div>
@@ -600,17 +600,45 @@
         const text = getQRContent();
         const size = parseInt(qrSize.value, 10) || 200;
         const dark = qrColorDark.value || '#00f3ff';
-        const light = '#0b0d12';
+        // Arka plan rengini sabit beyaz tutuyoruz ki QR okunabilir olsun
+        const light = '#ffffff';
 
         qrContainer.innerHTML = '';
-        qrCodeInstance = new QRCode(qrContainer, {
-          text: text,
-          width: size,
-          height: size,
-          colorDark: dark,
-          colorLight: light,
-          correctLevel: QRCode.CorrectLevel.H
-        });
+        try {
+          qrCodeInstance = new QRCode(qrContainer, {
+            text: text,
+            width: size,
+            height: size,
+            colorDark: dark,
+            colorLight: light,
+            correctLevel: QRCode.CorrectLevel.H
+          });
+        } catch (e) {
+          try {
+            qrCodeInstance = new QRCode(qrContainer, {
+              text: text || ' ',
+              width: size,
+              height: size,
+              colorDark: dark,
+              colorLight: light,
+              correctLevel: QRCode.CorrectLevel.H
+            });
+          } catch (e2) {
+            qrContainer.innerHTML = '<canvas></canvas>';
+            const canvas = qrContainer.querySelector('canvas');
+            if (canvas) {
+              canvas.width = size;
+              canvas.height = size;
+              const ctx = canvas.getContext('2d');
+              ctx.fillStyle = '#ffffff';
+              ctx.fillRect(0, 0, size, size);
+              ctx.fillStyle = dark;
+              ctx.font = '14px sans-serif';
+              ctx.textAlign = 'center';
+              ctx.fillText('QR', size/2, size/2+5);
+            }
+          }
+        }
       }
 
       setTimeout(generateQR, 100);
