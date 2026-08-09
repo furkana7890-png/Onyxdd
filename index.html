@@ -479,7 +479,7 @@
     }
     .pixel-info span { color: var(--accent); font-weight: 600; }
 
-    /* SAYFA 4: RESİM AYARLARI (Güncellenmiş) */
+    /* SAYFA 4: RESİM AYARLARI */
     .page-4 { padding-top: 80px; }
     .image-container {
       background: var(--bg-surface);
@@ -950,14 +950,13 @@
     </div>
   </div>
 
-  <!-- SAYFA 4: RESİM AYARLARI (Güncellenmiş - Çoklu Filtre + Canlı Önizleme) -->
+  <!-- SAYFA 4: RESİM AYARLARI -->
   <div class="page page-4" id="page4">
     <div class="page-header">
       <h1>Resim <span>Ayarı</span></h1>
       <p>Resimlerinizi dönüştürün, boyutlandırın, kalite ayarlayın ve birden fazla filtre uygulayın. PNG, JPG, WebP ve daha fazlası.</p>
     </div>
     <div class="image-container">
-      <!-- Yükleme Alanı -->
       <div class="upload-area" id="uploadArea">
         <i class="fas fa-cloud-upload-alt"></i>
         <p>Resmi buraya sürükleyin veya tıklayın</p>
@@ -965,7 +964,6 @@
         <input type="file" id="imageInput" accept="image/*">
       </div>
 
-      <!-- Önizleme ve Ayarlar -->
       <div class="preview-area" id="previewArea">
         <div class="image-wrapper">
           <img id="previewImage" src="" alt="Önizleme">
@@ -1008,24 +1006,24 @@
             </div>
           </div>
 
-          <!-- ÇOKLU FİLTRE SEÇİMİ -->
+          <!-- Filtreler -->
           <div class="setting-group full-width">
             <label><i class="fas fa-filter"></i> Filtreler (Çoklu Seç)</label>
             <div class="filter-checkboxes" id="filterCheckboxes">
-              <label><input type="checkbox" value="grayscale(100%)"> Gri Tonlama</label>
-              <label><input type="checkbox" value="sepia(100%)"> Sepya</label>
-              <label><input type="checkbox" value="brightness(1.2)"> Parlaklık +%20</label>
-              <label><input type="checkbox" value="brightness(0.8)"> Parlaklık -%20</label>
-              <label><input type="checkbox" value="contrast(1.3)"> Kontrast +%30</label>
-              <label><input type="checkbox" value="saturate(1.5)"> Doygunluk +%50</label>
-              <label><input type="checkbox" value="hue-rotate(90deg)"> Renk Döndür 90°</label>
-              <label><input type="checkbox" value="hue-rotate(180deg)"> Renk Döndür 180°</label>
-              <label><input type="checkbox" value="invert(100%)"> Ters Çevir</label>
-              <label><input type="checkbox" value="blur(2px)"> Bulanıklaştır</label>
+              <label><input type="checkbox" value="grayscale(100%)" data-name="Gri Tonlama"> Gri Tonlama</label>
+              <label><input type="checkbox" value="sepia(100%)" data-name="Sepya"> Sepya</label>
+              <label><input type="checkbox" value="brightness(1.2)" data-name="Parlaklık +%20"> Parlaklık +%20</label>
+              <label><input type="checkbox" value="brightness(0.8)" data-name="Parlaklık -%20"> Parlaklık -%20</label>
+              <label><input type="checkbox" value="contrast(1.3)" data-name="Kontrast +%30"> Kontrast +%30</label>
+              <label><input type="checkbox" value="saturate(1.5)" data-name="Doygunluk +%50"> Doygunluk +%50</label>
+              <label><input type="checkbox" value="hue-rotate(90deg)" data-name="Renk Döndür 90°"> Renk Döndür 90°</label>
+              <label><input type="checkbox" value="hue-rotate(180deg)" data-name="Renk Döndür 180°"> Renk Döndür 180°</label>
+              <label><input type="checkbox" value="invert(100%)" data-name="Ters Çevir"> Ters Çevir</label>
+              <label><input type="checkbox" value="blur(2px)" data-name="Bulanıklaştır"> Bulanıklaştır</label>
             </div>
           </div>
 
-          <!-- AKTİF FİLTRELER -->
+          <!-- Aktif filtreler -->
           <div class="setting-group full-width">
             <label><i class="fas fa-check-circle"></i> Aktif Filtreler</label>
             <div class="active-filters" id="activeFilters">
@@ -1460,7 +1458,7 @@
 
       createGrid();
 
-      // ===== RESİM AYARLARI (Güncellenmiş - Çoklu Filtre + Canlı Önizleme) =====
+      // ===== RESİM AYARLARI =====
       const uploadArea = document.getElementById('uploadArea');
       const imageInput = document.getElementById('imageInput');
       const previewArea = document.getElementById('previewArea');
@@ -1484,13 +1482,11 @@
       let originalHeight = 0;
       let selectedFilters = [];
 
-      // Kalite slider
       qualityRange.addEventListener('input', () => {
         qualityValue.textContent = qualityRange.value + '%';
         updatePreview();
       });
 
-      // Filtre seçimleri
       filterCheckboxes.forEach(cb => {
         cb.addEventListener('change', () => {
           updateActiveFilters();
@@ -1500,9 +1496,12 @@
 
       function updateActiveFilters() {
         selectedFilters = [];
+        const filterNames = [];
+        
         filterCheckboxes.forEach(cb => {
           if (cb.checked) {
             selectedFilters.push(cb.value);
+            filterNames.push(cb.dataset.name);
           }
         });
 
@@ -1510,31 +1509,34 @@
           activeFiltersContainer.innerHTML = '<span style="color:var(--text-muted);font-size:13px;">Henüz filtre seçilmedi</span>';
         } else {
           let html = '';
-          selectedFilters.forEach((filter, index) => {
-            const label = filter.replace(/\([^)]*\)/g, '').trim() || filter;
+          filterNames.forEach((name, index) => {
             html += `<span class="filter-tag">
-              ${label}
+              ${name}
               <span class="remove-filter" data-index="${index}">&times;</span>
             </span>`;
           });
           activeFiltersContainer.innerHTML = html;
 
-          // Silme butonları
           activeFiltersContainer.querySelectorAll('.remove-filter').forEach(btn => {
             btn.addEventListener('click', (e) => {
               const index = parseInt(e.target.dataset.index);
-              const cb = filterCheckboxes[index];
-              if (cb) {
-                cb.checked = false;
-                updateActiveFilters();
-                updatePreview();
-              }
+              // Hangi checkbox'ın kaldırılacağını bul
+              let checkedIndex = 0;
+              filterCheckboxes.forEach(cb => {
+                if (cb.checked) {
+                  if (checkedIndex === index) {
+                    cb.checked = false;
+                  }
+                  checkedIndex++;
+                }
+              });
+              updateActiveFilters();
+              updatePreview();
             });
           });
         }
       }
 
-      // Canlı önizleme güncelleme
       function updatePreview() {
         if (!originalImageData) return;
 
@@ -1556,7 +1558,6 @@
         canvas.width = width;
         canvas.height = height;
 
-        // Filtreleri birleştir
         if (selectedFilters.length > 0) {
           ctx.filter = selectedFilters.join(' ');
         }
@@ -1581,7 +1582,6 @@
         previewImage.src = canvas.toDataURL('image/png');
       }
 
-      // Resim yükleme
       function loadImage(file) {
         if (!file || !file.type.startsWith('image/')) return;
         const reader = new FileReader();
@@ -1596,7 +1596,6 @@
             uploadArea.style.display = 'none';
             resizeWidth.placeholder = originalWidth;
             resizeHeight.placeholder = originalHeight;
-            // Filtreleri sıfırla
             filterCheckboxes.forEach(cb => cb.checked = false);
             updateActiveFilters();
             updatePreview();
@@ -1636,7 +1635,6 @@
         if (file) loadImage(file);
       });
 
-      // Boyutlandırma oran koru
       resizeWidth.addEventListener('input', () => {
         if (keepAspect.checked && originalWidth > 0) {
           const ratio = originalHeight / originalWidth;
@@ -1659,13 +1657,11 @@
         updatePreview();
       });
 
-      // Döndürme ve ayna değişiminde önizleme güncelle
       imageRotate.addEventListener('change', updatePreview);
       imageFlip.addEventListener('change', updatePreview);
       keepAspect.addEventListener('change', updatePreview);
       outputFormat.addEventListener('change', updatePreview);
 
-      // Uygula ve İndir
       applySettingsBtn.addEventListener('click', () => {
         if (!originalImageData) {
           alert('Lütfen önce bir resim yükleyin!');
@@ -1722,7 +1718,6 @@
         link.click();
       });
 
-      // Sıfırla
       resetImageBtn.addEventListener('click', () => {
         if (originalImageData) {
           previewImage.src = originalImageData.src;
