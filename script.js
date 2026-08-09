@@ -671,4 +671,75 @@
     if (currentAction === 'move') {
       let newLeft = Math.max(0, Math.min(startLeft + dx, maxW - startWidth));
       let newTop = Math.max(0, Math.min(startTop + dy, maxH - startHeight));
-      cropBox.style
+      cropBox.style.left = newLeft + 'px';
+      cropBox.style.top = newTop + 'px';
+    } else if (currentAction === 'resize') {
+      let newLeft = startLeft, newTop = startTop, newWidth = startWidth, newHeight = startHeight;
+      if (activeRatio > 0) {
+        const dir = (activeHandle === 'tl' || activeHandle === 'bl') ? -1 : 1;
+        let delta = dx * dir;
+        newWidth = Math.max(40, startWidth + delta);
+        newHeight = newWidth / activeRatio;
+        if (activeHandle.includes('l')) newLeft = startLeft + (startWidth - newWidth);
+        if (activeHandle.includes('t')) newTop = startTop + (startHeight - newHeight);
+        if (newLeft < 0) { newWidth += newLeft; newHeight = newWidth / activeRatio; newLeft = 0; if(activeHandle.includes('t')) newTop = startTop + (startHeight - newHeight); }
+        if (newTop < 0) { newHeight += newTop; newWidth = newHeight * activeRatio; newTop = 0; if(activeHandle.includes('l')) newLeft = startLeft + (startWidth - newWidth); }
+        if (newLeft + newWidth > maxW) { newWidth = maxW - newLeft; newHeight = newWidth / activeRatio; }
+        if (newTop + newHeight > maxH) { newHeight = maxH - newTop; newWidth = newHeight * activeRatio; }
+      } else {
+        if (activeHandle.includes('r')) newWidth = Math.max(40, Math.min(startWidth + dx, maxW - startLeft));
+        if (activeHandle.includes('b')) newHeight = Math.max(40, Math.min(startHeight + dy, maxH - startTop));
+        if (activeHandle.includes('l')) { let potentialWidth = startWidth - dx; if (potentialWidth >= 40 && startLeft + dx >= 0) { newLeft = startLeft + dx; newWidth = potentialWidth; } }
+        if (activeHandle.includes('t')) { let potentialHeight = startHeight - dy; if (potentialHeight >= 40 && startTop + dy >= 0) { newTop = startTop + dy; newHeight = potentialHeight; } }
+      }
+      cropBox.style.left = newLeft + 'px';
+      cropBox.style.top = newTop + 'px';
+      cropBox.style.width = newWidth + 'px';
+      cropBox.style.height = newHeight + 'px';
+    }
+    updatePreview();
+  }
+
+  function endAction(e) {
+    currentAction = null;
+    activeHandle = null;
+    document.removeEventListener('pointermove', doAction);
+    document.removeEventListener('pointerup', endAction);
+    document.removeEventListener('pointercancel', endAction);
+  }
+
+  function updatePreview() {
+    if (!sourceImg.naturalWidth) return;
+    const ctx = previewCanvas.getContext('2d');
+    const scaleX = sourceImg.naturalWidth / sourceImg.clientWidth;
+    const scaleY = sourceImg.naturalHeight / sourceImg.clientHeight;
+    const cropX = cropBox.offsetLeft * scaleX;
+    const cropY = cropBox.offsetTop * scaleY;
+    const cropW = cropBox.offsetWidth * scaleX;
+    const cropH = cropBox.offsetHeight * scaleY;
+    previewCanvas.width = cropW;
+    previewCanvas.height = cropH;
+    ctx.clearRect(0, 0, cropW, cropH);
+    if (activeShape === 'circle') {
+      ctx.save();
+      ctx.beginPath();
+      ctx.ellipse(cropW / 2, cropH / 2, cropW / 2, cropH / 2, 0, 0, Math.PI * 2);
+      ctx.clip();
+    }
+    ctx.drawImage(sourceImg, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+    if (activeShape === 'circle') ctx.restore();
+    previewCanvas.classList.toggle('round-preview', activeShape === 'circle');
+  }
+
+  window.addEventListener('resize', updatePreview);
+
+  downloadBtn.addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.download = 'kirpilmis-gorsel.png';
+    link.href = previewCanvas.toDataURL('image/png');
+    link.click();
+  });
+
+  resetBtn.addEventListener('click', () => { location.reload(); });
+
+})();
