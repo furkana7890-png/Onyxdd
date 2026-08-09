@@ -479,7 +479,7 @@
     }
     .pixel-info span { color: var(--accent); font-weight: 600; }
 
-    /* SAYFA 4: RESİM AYARLARI */
+    /* SAYFA 4: RESİM AYARLARI (Güncellenmiş) */
     .page-4 { padding-top: 80px; }
     .image-container {
       background: var(--bg-surface);
@@ -636,6 +636,73 @@
       cursor: pointer;
     }
 
+    /* Filtre checkboxes */
+    .filter-checkboxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 8px 0;
+    }
+    .filter-checkboxes label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-elevated);
+      padding: 4px 12px 4px 8px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: 0.15s;
+      user-select: none;
+    }
+    .filter-checkboxes label:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+    .filter-checkboxes label input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+    .filter-checkboxes label:has(input:checked) {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    /* Aktif filtreler */
+    .active-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 6px 0;
+      min-height: 32px;
+    }
+    .active-filters .filter-tag {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 16px;
+      padding: 2px 12px;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .active-filters .filter-tag .remove-filter {
+      cursor: pointer;
+      font-size: 14px;
+      opacity: 0.6;
+      transition: 0.15s;
+    }
+    .active-filters .filter-tag .remove-filter:hover {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+
     .image-container .action-buttons {
       display: flex;
       gap: 10px;
@@ -673,6 +740,7 @@
       .pixel-controls { grid-template-columns: 1fr 1fr; }
       .image-container .settings-grid { grid-template-columns: 1fr; }
       #pixelGrid .cell { width: 18px; height: 18px; }
+      .filter-checkboxes label { font-size: 11px; padding: 3px 10px 3px 6px; }
     }
     @media (max-width: 380px) {
       #pixelGrid .cell { width: 14px; height: 14px; }
@@ -882,11 +950,11 @@
     </div>
   </div>
 
-  <!-- SAYFA 4: RESİM AYARLARI -->
+  <!-- SAYFA 4: RESİM AYARLARI (Güncellenmiş - Çoklu Filtre + Canlı Önizleme) -->
   <div class="page page-4" id="page4">
     <div class="page-header">
       <h1>Resim <span>Ayarı</span></h1>
-      <p>Resimlerinizi dönüştürün, boyutlandırın, kalite ayarlayın ve filtre uygulayın. PNG, JPG, WebP ve daha fazlası.</p>
+      <p>Resimlerinizi dönüştürün, boyutlandırın, kalite ayarlayın ve birden fazla filtre uygulayın. PNG, JPG, WebP ve daha fazlası.</p>
     </div>
     <div class="image-container">
       <!-- Yükleme Alanı -->
@@ -940,21 +1008,29 @@
             </div>
           </div>
 
-          <div class="setting-group">
-            <label><i class="fas fa-filter"></i> Filtre</label>
-            <select id="imageFilter">
-              <option value="none">Yok</option>
-              <option value="grayscale(100%)">Gri Tonlama</option>
-              <option value="sepia(100%)">Sepya</option>
-              <option value="brightness(1.2)">Parlaklık +%20</option>
-              <option value="brightness(0.8)">Parlaklık -%20</option>
-              <option value="contrast(1.3)">Kontrast +%30</option>
-              <option value="saturate(1.5)">Doygunluk +%50</option>
-              <option value="hue-rotate(90deg)">Renk Döndürme 90°</option>
-              <option value="hue-rotate(180deg)">Renk Döndürme 180°</option>
-              <option value="invert(100%)">Ters Çevir</option>
-              <option value="blur(2px)">Bulanıklaştırma</option>
-            </select>
+          <!-- ÇOKLU FİLTRE SEÇİMİ -->
+          <div class="setting-group full-width">
+            <label><i class="fas fa-filter"></i> Filtreler (Çoklu Seç)</label>
+            <div class="filter-checkboxes" id="filterCheckboxes">
+              <label><input type="checkbox" value="grayscale(100%)"> Gri Tonlama</label>
+              <label><input type="checkbox" value="sepia(100%)"> Sepya</label>
+              <label><input type="checkbox" value="brightness(1.2)"> Parlaklık +%20</label>
+              <label><input type="checkbox" value="brightness(0.8)"> Parlaklık -%20</label>
+              <label><input type="checkbox" value="contrast(1.3)"> Kontrast +%30</label>
+              <label><input type="checkbox" value="saturate(1.5)"> Doygunluk +%50</label>
+              <label><input type="checkbox" value="hue-rotate(90deg)"> Renk Döndür 90°</label>
+              <label><input type="checkbox" value="hue-rotate(180deg)"> Renk Döndür 180°</label>
+              <label><input type="checkbox" value="invert(100%)"> Ters Çevir</label>
+              <label><input type="checkbox" value="blur(2px)"> Bulanıklaştır</label>
+            </div>
+          </div>
+
+          <!-- AKTİF FİLTRELER -->
+          <div class="setting-group full-width">
+            <label><i class="fas fa-check-circle"></i> Aktif Filtreler</label>
+            <div class="active-filters" id="activeFilters">
+              <span style="color:var(--text-muted);font-size:13px;">Henüz filtre seçilmedi</span>
+            </div>
           </div>
 
           <div class="setting-group">
@@ -985,7 +1061,6 @@
     </div>
   </div>
 
-  <!-- SAĞ ALT İMZA -->
   <div class="signature-float">
     <span class="dot"></span> Made by <b>Zeld</b>
   </div>
@@ -1385,7 +1460,7 @@
 
       createGrid();
 
-      // ===== RESİM AYARLARI =====
+      // ===== RESİM AYARLARI (Güncellenmiş - Çoklu Filtre + Canlı Önizleme) =====
       const uploadArea = document.getElementById('uploadArea');
       const imageInput = document.getElementById('imageInput');
       const previewArea = document.getElementById('previewArea');
@@ -1397,21 +1472,116 @@
       const resizeWidth = document.getElementById('resizeWidth');
       const resizeHeight = document.getElementById('resizeHeight');
       const keepAspect = document.getElementById('keepAspect');
-      const imageFilter = document.getElementById('imageFilter');
+      const filterCheckboxes = document.querySelectorAll('#filterCheckboxes input[type="checkbox"]');
+      const activeFiltersContainer = document.getElementById('activeFilters');
       const imageRotate = document.getElementById('imageRotate');
       const imageFlip = document.getElementById('imageFlip');
       const applySettingsBtn = document.getElementById('applySettingsBtn');
       const resetImageBtn = document.getElementById('resetImageBtn');
 
       let originalImageData = null;
-      let currentImageData = null;
       let originalWidth = 0;
       let originalHeight = 0;
+      let selectedFilters = [];
 
+      // Kalite slider
       qualityRange.addEventListener('input', () => {
         qualityValue.textContent = qualityRange.value + '%';
+        updatePreview();
       });
 
+      // Filtre seçimleri
+      filterCheckboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+          updateActiveFilters();
+          updatePreview();
+        });
+      });
+
+      function updateActiveFilters() {
+        selectedFilters = [];
+        filterCheckboxes.forEach(cb => {
+          if (cb.checked) {
+            selectedFilters.push(cb.value);
+          }
+        });
+
+        if (selectedFilters.length === 0) {
+          activeFiltersContainer.innerHTML = '<span style="color:var(--text-muted);font-size:13px;">Henüz filtre seçilmedi</span>';
+        } else {
+          let html = '';
+          selectedFilters.forEach((filter, index) => {
+            const label = filter.replace(/\([^)]*\)/g, '').trim() || filter;
+            html += `<span class="filter-tag">
+              ${label}
+              <span class="remove-filter" data-index="${index}">&times;</span>
+            </span>`;
+          });
+          activeFiltersContainer.innerHTML = html;
+
+          // Silme butonları
+          activeFiltersContainer.querySelectorAll('.remove-filter').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              const index = parseInt(e.target.dataset.index);
+              const cb = filterCheckboxes[index];
+              if (cb) {
+                cb.checked = false;
+                updateActiveFilters();
+                updatePreview();
+              }
+            });
+          });
+        }
+      }
+
+      // Canlı önizleme güncelleme
+      function updatePreview() {
+        if (!originalImageData) return;
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = parseInt(resizeWidth.value) || originalWidth;
+        let height = parseInt(resizeHeight.value) || originalHeight;
+
+        if (keepAspect.checked) {
+          const ratio = originalWidth / originalHeight;
+          if (resizeWidth.value && !resizeHeight.value) {
+            height = Math.round(width / ratio);
+          } else if (!resizeWidth.value && resizeHeight.value) {
+            width = Math.round(height * ratio);
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Filtreleri birleştir
+        if (selectedFilters.length > 0) {
+          ctx.filter = selectedFilters.join(' ');
+        }
+
+        const rotate = parseInt(imageRotate.value);
+        if (rotate > 0) {
+          ctx.translate(width / 2, height / 2);
+          ctx.rotate((rotate * Math.PI) / 180);
+          ctx.translate(-width / 2, -height / 2);
+        }
+
+        const flip = imageFlip.value;
+        if (flip === 'horizontal') {
+          ctx.translate(width, 0);
+          ctx.scale(-1, 1);
+        } else if (flip === 'vertical') {
+          ctx.translate(0, height);
+          ctx.scale(1, -1);
+        }
+
+        ctx.drawImage(originalImageData, 0, 0, width, height);
+        previewImage.src = canvas.toDataURL('image/png');
+      }
+
+      // Resim yükleme
       function loadImage(file) {
         if (!file || !file.type.startsWith('image/')) return;
         const reader = new FileReader();
@@ -1421,12 +1591,15 @@
             originalWidth = img.width;
             originalHeight = img.height;
             originalImageData = img;
-            currentImageData = img;
             previewImage.src = event.target.result;
             previewArea.classList.add('show');
             uploadArea.style.display = 'none';
             resizeWidth.placeholder = originalWidth;
             resizeHeight.placeholder = originalHeight;
+            // Filtreleri sıfırla
+            filterCheckboxes.forEach(cb => cb.checked = false);
+            updateActiveFilters();
+            updatePreview();
           };
           img.src = event.target.result;
         };
@@ -1463,6 +1636,7 @@
         if (file) loadImage(file);
       });
 
+      // Boyutlandırma oran koru
       resizeWidth.addEventListener('input', () => {
         if (keepAspect.checked && originalWidth > 0) {
           const ratio = originalHeight / originalWidth;
@@ -1471,6 +1645,7 @@
             resizeHeight.value = Math.round(w * ratio);
           }
         }
+        updatePreview();
       });
 
       resizeHeight.addEventListener('input', () => {
@@ -1481,8 +1656,16 @@
             resizeWidth.value = Math.round(h * ratio);
           }
         }
+        updatePreview();
       });
 
+      // Döndürme ve ayna değişiminde önizleme güncelle
+      imageRotate.addEventListener('change', updatePreview);
+      imageFlip.addEventListener('change', updatePreview);
+      keepAspect.addEventListener('change', updatePreview);
+      outputFormat.addEventListener('change', updatePreview);
+
+      // Uygula ve İndir
       applySettingsBtn.addEventListener('click', () => {
         if (!originalImageData) {
           alert('Lütfen önce bir resim yükleyin!');
@@ -1507,9 +1690,8 @@
         canvas.width = width;
         canvas.height = height;
 
-        const filter = imageFilter.value;
-        if (filter !== 'none') {
-          ctx.filter = filter;
+        if (selectedFilters.length > 0) {
+          ctx.filter = selectedFilters.join(' ');
         }
 
         const rotate = parseInt(imageRotate.value);
@@ -1540,20 +1722,22 @@
         link.click();
       });
 
+      // Sıfırla
       resetImageBtn.addEventListener('click', () => {
         if (originalImageData) {
           previewImage.src = originalImageData.src;
-          currentImageData = originalImageData;
           resizeWidth.value = '';
           resizeHeight.value = '';
           resizeWidth.placeholder = originalWidth;
           resizeHeight.placeholder = originalHeight;
-          imageFilter.value = 'none';
+          filterCheckboxes.forEach(cb => cb.checked = false);
+          updateActiveFilters();
           imageRotate.value = '0';
           imageFlip.value = 'none';
           qualityRange.value = '92';
           qualityValue.textContent = '92%';
           outputFormat.value = 'image/png';
+          updatePreview();
         }
       });
 
@@ -1596,7 +1780,7 @@
             cropBox.style.left = ((w - size) / 2) + 'px';
             cropBox.style.top = ((h - size) / 2) + 'px';
             downloadBtn.disabled = false;
-            updatePreview();
+            updatePreviewCrop();
           };
         };
         reader.readAsDataURL(file);
@@ -1625,13 +1809,13 @@
             cropBox.style.left = left + 'px';
             cropBox.style.top = top + 'px';
           }
-          updatePreview();
+          updatePreviewCrop();
         });
       });
 
-      cropBox.addEventListener('pointerdown', startAction);
+      cropBox.addEventListener('pointerdown', startActionCrop);
 
-      function startAction(e) {
+      function startActionCrop(e) {
         e.preventDefault();
         const pos = clientPos(e);
         cropBox.setPointerCapture && e.pointerId !== undefined && cropBox.setPointerCapture(e.pointerId);
@@ -1647,12 +1831,12 @@
         } else {
           currentAction = 'move';
         }
-        document.addEventListener('pointermove', doAction);
-        document.addEventListener('pointerup', endAction);
-        document.addEventListener('pointercancel', endAction);
+        document.addEventListener('pointermove', doActionCrop);
+        document.addEventListener('pointerup', endActionCrop);
+        document.addEventListener('pointercancel', endActionCrop);
       }
 
-      function doAction(e) {
+      function doActionCrop(e) {
         if (!currentAction) return;
         e.preventDefault();
         const pos = clientPos(e);
@@ -1690,18 +1874,18 @@
           cropBox.style.width = newWidth + 'px';
           cropBox.style.height = newHeight + 'px';
         }
-        updatePreview();
+        updatePreviewCrop();
       }
 
-      function endAction(e) {
+      function endActionCrop(e) {
         currentAction = null;
         activeHandle = null;
-        document.removeEventListener('pointermove', doAction);
-        document.removeEventListener('pointerup', endAction);
-        document.removeEventListener('pointercancel', endAction);
+        document.removeEventListener('pointermove', doActionCrop);
+        document.removeEventListener('pointerup', endActionCrop);
+        document.removeEventListener('pointercancel', endActionCrop);
       }
 
-      function updatePreview() {
+      function updatePreviewCrop() {
         if (!sourceImg.naturalWidth) return;
         const ctx = previewCanvas.getContext('2d');
         const scaleX = sourceImg.naturalWidth / sourceImg.clientWidth;
@@ -1724,7 +1908,7 @@
         previewCanvas.classList.toggle('round-preview', activeShape === 'circle');
       }
 
-      window.addEventListener('resize', updatePreview);
+      window.addEventListener('resize', updatePreviewCrop);
 
       downloadBtn.addEventListener('click', () => {
         const link = document.createElement('a');
