@@ -1,0 +1,3343 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Kırp · QR · Pixel · Resim · Çevirici · Zeld</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script>
+    // Türkçe font URL'leri (Google Fonts Roboto - Unicode destekli)
+    window.JSPDF_FONT_URLS = {
+      regular: 'https://cdn.jsdelivr.net/gh/googlefonts/roboto@main/src/hinted/Roboto-Regular.ttf',
+      bold: 'https://cdn.jsdelivr.net/gh/googlefonts/roboto@main/src/hinted/Roboto-Bold.ttf'
+    };
+  </script>
+  <style>
+    :root {
+      --bg-main: #0b0d12;
+      --bg-surface: #12151c;
+      --bg-elevated: #181c26;
+      --accent: #00f3ff;
+      --accent-soft: rgba(0, 243, 255, 0.15);
+      --text: #e6ecf5;
+      --text-muted: #6b7688;
+      --border: #232838;
+      --radius: 14px;
+      --shadow: 0 12px 30px rgba(0,0,0,0.6);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(circle at 15% 0%, rgba(0,243,255,0.06), transparent 45%), var(--bg-main);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .menu-btn {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 1000;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 46px;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text);
+      font-size: 22px;
+      transition: 0.2s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .menu-btn:hover { background: var(--bg-elevated); border-color: var(--accent); }
+
+    .sidepanel {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 270px;
+      height: 100vh;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      padding: 70px 20px 30px;
+      transition: left 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+      z-index: 999;
+      backdrop-filter: blur(8px);
+      box-shadow: 4px 0 30px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      overflow-y: auto;
+    }
+    .sidepanel.open { left: 0; }
+
+    .sidepanel .logo-area {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+    }
+    .sidepanel .logo-area span { color: var(--accent); }
+
+    .sidepanel .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.15s;
+      border: 1px solid transparent;
+    }
+    .sidepanel .nav-item i { width: 22px; font-size: 18px; color: var(--text-muted); }
+    .sidepanel .nav-item.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .sidepanel .nav-item.active i { color: var(--accent); }
+    .sidepanel .nav-item:hover { background: var(--bg-elevated); color: var(--text); }
+
+    .sidepanel .footer-imza {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .sidepanel .footer-imza b { color: var(--accent); }
+    .sidepanel .footer-imza .dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    .page {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 80px 20px 100px;
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .page.active { display: flex; }
+
+    .page-header {
+      width: 100%;
+      max-width: 1100px;
+      margin-bottom: 28px;
+      padding: 0 4px;
+    }
+    .page-header h1 {
+      font-size: clamp(26px, 5vw, 36px);
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+    .page-header h1 span { color: var(--accent); }
+    .page-header p {
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-top: 6px;
+      line-height: 1.5;
+      max-width: 600px;
+    }
+
+    /* SAYFA 1: Kırpıcı */
+    .page-1 .main-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 20px;
+      width: 100%;
+    }
+    @media (max-width: 820px) {
+      .page-1 .main-container { grid-template-columns: 1fr; }
+      .page-1 .control-panel { order: -1; }
+    }
+
+    .workspace {
+      background: var(--bg-surface);
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 420px;
+      position: relative;
+      overflow: hidden;
+      touch-action: none;
+    }
+    .upload-trigger { text-align: center; cursor: pointer; color: var(--text-muted); padding: 30px 16px; }
+    .upload-trigger svg { width: 44px; height: 44px; margin-bottom: 12px; stroke: currentColor; }
+    .upload-trigger p { font-weight: 600; font-size: 14.5px; color: var(--text); }
+    .upload-trigger span { font-size: 12.5px; display: block; margin-top: 4px; }
+    #file-input { display: none; }
+
+    .crop-wrapper { position: relative; display: none; max-width: 100%; line-height: 0; touch-action: none; }
+    #source-image { max-width: 100%; max-height: 62vh; display: block; user-select: none; -webkit-user-drag: none; pointer-events: none; border-radius: 4px; }
+    .crop-box { position: absolute; box-sizing: border-box; border: 2px solid var(--accent); cursor: move; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.65); touch-action: none; }
+    .crop-box.round { border-radius: 50%; }
+    .crop-box.round .crop-grid { border-radius: 50%; overflow: hidden; }
+    .crop-grid { position: absolute; top:0;left:0;right:0;bottom:0; pointer-events:none; }
+    .crop-grid::before, .crop-grid::after { content:''; position:absolute; }
+    .crop-grid::before { top:33.33%; bottom:33.33%; left:0; right:0; border-top:1px dashed rgba(0,243,255,0.35); border-bottom:1px dashed rgba(0,243,255,0.35); }
+    .crop-grid::after { left:33.33%; right:33.33%; top:0; bottom:0; border-left:1px dashed rgba(0,243,255,0.35); border-right:1px dashed rgba(0,243,255,0.35); }
+    .handle { position:absolute; width:26px; height:26px; display:flex; align-items:center; justify-content:center; z-index:10; touch-action:none; }
+    .handle::after { content:''; width:13px; height:13px; background:#fff; border:2px solid var(--accent); border-radius:50%; display:block; }
+    .handle-tl { top:-13px; left:-13px; cursor:nwse-resize; }
+    .handle-tr { top:-13px; right:-13px; cursor:nesw-resize; }
+    .handle-bl { bottom:-13px; left:-13px; cursor:nesw-resize; }
+    .handle-br { bottom:-13px; right:-13px; cursor:nwse-resize; }
+
+    .control-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-self: start;
+    }
+    .panel-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 10px; }
+    .shape-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+    .shape-btn {
+      background: var(--bg-elevated); border:1.5px solid var(--border); border-radius:10px; color:var(--text-muted);
+      padding:10px 4px; display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer;
+      font-size:10.5px; font-weight:600; transition: border-color .15s, color .15s, background .15s;
+    }
+    .shape-btn svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.6; }
+    .shape-btn:hover { color:var(--text); border-color:#34405a; }
+    .shape-btn.active { color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
+
+    .preview-box { width:100%; height:160px; background: repeating-conic-gradient(#1c2130 0% 25%, #161a24 0% 50%) 50% / 16px 16px; border:1px solid var(--border); border-radius:10px; overflow:hidden; display:flex; justify-content:center; align-items:center; }
+    #preview-canvas { max-width:100%; max-height:100%; }
+    #preview-canvas.round-preview { border-radius:50%; }
+
+    .btn {
+      background: #fff; color: #000; border: none; padding: 13px 20px; border-radius: 10px;
+      font-weight: 700; font-size: 14px; cursor: pointer; width: 100%;
+      transition: transform .12s, opacity .12s; display: flex; justify-content: center; align-items: center; gap: 8px;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-action { background: var(--accent); color: #04191c; }
+    .btn-action:disabled { opacity: 0.4; pointer-events: none; }
+    .btn-reset { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
+
+    /* SAYFA 2: QR */
+    .page-2 { padding-top: 80px; }
+    .qr-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 30px 24px;
+      max-width: 550px;
+      width: 100%;
+      margin: 0 auto;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .qr-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .qr-field-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .qr-field-group label i { color: var(--accent); width: 18px; }
+    .qr-container input, .qr-container select {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: 0.2s;
+      width: 100%;
+    }
+    .qr-container input:focus, .qr-container select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .qr-container .qr-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .qr-container .qr-actions .btn { flex: 1; min-width: 120px; }
+    .qr-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+      margin-top: 4px;
+    }
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #qrcode img, #qrcode canvas {
+      max-width: 100%;
+      height: auto;
+      image-rendering: pixelated;
+    }
+    .qr-type-selector {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .qr-type-btn {
+      background: var(--bg-elevated);
+      border: 1.5px solid var(--border);
+      border-radius: 30px;
+      padding: 6px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .qr-type-btn.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .qr-type-btn i { margin-right: 6px; }
+
+    /* SAYFA 3: PIXEL ART MAKER */
+    .page-3 { padding-top: 80px; }
+    .pixel-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 30px 24px;
+      max-width: 750px;
+      width: 100%;
+      margin: 0 auto;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .pixel-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+    }
+    .pixel-controls .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .pixel-controls .control-group label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .pixel-controls input[type="number"],
+    .pixel-controls input[type="color"] {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      width: 100%;
+    }
+    .pixel-controls input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .pixel-controls input[type="color"] {
+      height: 40px;
+      padding: 4px;
+      cursor: pointer;
+    }
+    .pixel-controls .color-presets {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .pixel-controls .color-presets .preset {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .pixel-controls .color-presets .preset:hover {
+      transform: scale(1.1);
+    }
+    .pixel-controls .color-presets .preset.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-soft);
+    }
+    .mode-toggle {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: var(--bg-elevated);
+      border-radius: 30px;
+      padding: 4px;
+      border: 1px solid var(--border);
+    }
+    .mode-toggle .mode-btn {
+      padding: 6px 14px;
+      border-radius: 30px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mode-toggle .mode-btn.active {
+      background: var(--accent);
+      color: #04191c;
+    }
+    .mode-toggle .mode-btn i { font-size: 13px; }
+
+    .pixel-grid-wrapper {
+      overflow: auto;
+      max-width: 100%;
+      display: flex;
+      justify-content: center;
+      background: var(--bg-elevated);
+      border-radius: 10px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      min-height: 300px;
+      touch-action: none;
+    }
+    #pixelGrid {
+      display: grid;
+      gap: 1px;
+      background: var(--border);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+    #pixelGrid .cell {
+      width: 24px;
+      height: 24px;
+      background: #1a1f2b;
+      cursor: pointer;
+      transition: background 0.05s;
+      border-radius: 1px;
+      touch-action: none;
+    }
+    #pixelGrid .cell:hover { opacity: 0.8; }
+    .pixel-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .pixel-actions .btn { flex: 1; min-width: 100px; }
+    .pixel-info {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .pixel-info span { color: var(--accent); font-weight: 600; }
+
+    /* SAYFA 4: RESİM AYARLARI */
+    .page-4 { padding-top: 80px; }
+    .image-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 30px 24px;
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .image-container .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      color: var(--text-muted);
+    }
+    .image-container .upload-area:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .image-container .upload-area i {
+      font-size: 40px;
+      margin-bottom: 12px;
+      color: var(--text-muted);
+    }
+    .image-container .upload-area p { font-size: 14px; }
+    .image-container .upload-area span { font-size: 12px; display: block; margin-top: 4px; }
+    #imageInput { display: none; }
+
+    .image-container .preview-area {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .image-container .preview-area.show { display: flex; }
+    .image-container .preview-area .image-wrapper {
+      display: flex;
+      justify-content: center;
+      background: var(--bg-elevated);
+      border-radius: 10px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+    .image-container .preview-area .image-wrapper img {
+      max-width: 100%;
+      max-height: 400px;
+      border-radius: 6px;
+    }
+    .image-container .preview-area .image-wrapper .change-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 6px 14px;
+      color: var(--text);
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .image-container .preview-area .image-wrapper .change-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .image-container .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .image-container .settings-grid .setting-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .image-container .settings-grid .setting-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .image-container .settings-grid .setting-group label i { color: var(--accent); }
+    .image-container .settings-grid .setting-group input[type="range"] {
+      width: 100%;
+      height: 4px;
+      -webkit-appearance: none;
+      background: var(--border);
+      border-radius: 10px;
+      outline: none;
+    }
+    .image-container .settings-grid .setting-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+    .image-container .settings-grid .setting-group input[type="number"],
+    .image-container .settings-grid .setting-group select {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      width: 100%;
+    }
+    .image-container .settings-grid .setting-group select { cursor: pointer; }
+    .image-container .settings-grid .setting-group input[type="number"]:focus,
+    .image-container .settings-grid .setting-group select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .image-container .settings-grid .setting-group .range-value {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 600;
+      text-align: right;
+    }
+    .image-container .settings-grid .full-width { grid-column: 1 / -1; }
+    .image-container .settings-grid .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 0;
+    }
+    .image-container .settings-grid .checkbox-group input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .image-container .settings-grid .checkbox-group label {
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .filter-checkboxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 8px 0;
+    }
+    .filter-checkboxes label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-elevated);
+      padding: 4px 12px 4px 8px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: 0.15s;
+      user-select: none;
+    }
+    .filter-checkboxes label:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+    .filter-checkboxes label input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+    .filter-checkboxes label:has(input:checked) {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .active-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 6px 0;
+      min-height: 32px;
+    }
+    .active-filters .filter-tag {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 16px;
+      padding: 2px 12px;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .active-filters .filter-tag .remove-filter {
+      cursor: pointer;
+      font-size: 14px;
+      opacity: 0.6;
+      transition: 0.15s;
+    }
+    .active-filters .filter-tag .remove-filter:hover {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+
+    .image-container .action-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .image-container .action-buttons .btn { flex: 1; min-width: 120px; }
+
+    /* SAYFA 5: ÇEVİRİCİ */
+    .page-5 { padding-top: 80px; }
+    .convert-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 26px 22px;
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .convert-tabs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .convert-tab {
+      background: var(--bg-elevated);
+      border: 1.5px solid var(--border);
+      border-radius: 30px;
+      padding: 7px 13px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .convert-tab:hover { color: var(--text); border-color: #34405a; }
+    .convert-tab.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .convert-tab i { font-size: 12px; }
+
+    .convert-panel {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .convert-panel.active { display: flex; }
+
+    .convert-drop {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 32px 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+    }
+    .convert-drop:hover, .convert-drop.dragover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--text);
+    }
+    .convert-drop i {
+      font-size: 38px;
+      margin-bottom: 10px;
+      color: var(--text-muted);
+      display: block;
+      transition: 0.2s;
+    }
+    .convert-drop:hover i, .convert-drop.dragover i { color: var(--accent); }
+    .convert-drop p { font-size: 14px; font-weight: 600; color: var(--text); }
+    .convert-drop span { font-size: 12px; display: block; margin-top: 4px; }
+    .convert-drop .file-info {
+      margin-top: 10px;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 13px;
+      word-break: break-all;
+    }
+    #pdfInput, #pdfWordInput, #imgPdfInput, #excelInput, #imgPixelInput { display: none; }
+
+    .convert-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .convert-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .convert-row label {
+      flex-shrink: 0;
+      min-width: 100px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .convert-row label i { color: var(--accent); }
+    .convert-row select {
+      flex: 1;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .convert-row select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .convert-row input[type="number"] {
+      flex: 1;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+    }
+    .convert-row input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .convert-row input[type="range"] {
+      flex: 1;
+      height: 4px;
+      -webkit-appearance: none;
+      background: var(--border);
+      border-radius: 10px;
+      outline: none;
+    }
+    .convert-row input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+    .convert-row input[type="text"] {
+      flex: 1;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: 0.2s;
+    }
+    .convert-row input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .convert-textarea {
+      width: 100%;
+      min-height: 220px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: 'Segoe UI', monospace;
+      outline: none;
+      resize: vertical;
+      line-height: 1.5;
+      transition: 0.2s;
+    }
+    .convert-textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .convert-progress-wrap { display: none; }
+    .convert-progress-wrap.active { display: block; }
+    .convert-progress-bar {
+      height: 10px;
+      background: var(--bg-elevated);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .convert-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #6bcb77);
+      border-radius: 10px;
+      transition: width 0.3s;
+      box-shadow: 0 0 10px var(--accent-soft);
+    }
+    .convert-progress-text {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .convert-progress-text b { color: var(--accent); }
+
+    .convert-status {
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      text-align: center;
+      display: none;
+      border: 1px solid;
+      font-weight: 500;
+    }
+    .convert-status.show { display: block; }
+    .convert-status.success {
+      background: rgba(107, 203, 119, 0.1);
+      color: #6bcb77;
+      border-color: rgba(107, 203, 119, 0.3);
+    }
+    .convert-status.error {
+      background: rgba(255, 107, 107, 0.1);
+      color: #ff6b6b;
+      border-color: rgba(255, 107, 107, 0.3);
+    }
+    .convert-status.info {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: rgba(0, 243, 255, 0.3);
+    }
+
+    .convert-preview {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .convert-preview img {
+      width: 90px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .convert-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .convert-actions .btn { flex: 1; min-width: 120px; }
+
+    /* Görsel → PDF liste */
+    .img-pdf-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+    .img-pdf-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+    .img-pdf-item .thumb {
+      width: 38px;
+      height: 38px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .img-pdf-item .name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+    .img-pdf-item .rm {
+      background: transparent;
+      border: none;
+      color: #ff6b6b;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      transition: 0.15s;
+    }
+    .img-pdf-item .rm:hover { background: rgba(255, 107, 107, 0.15); }
+
+    /* Excel önizleme */
+    .excel-preview {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      max-height: 220px;
+      overflow: auto;
+      font-size: 12px;
+    }
+    .excel-preview table { border-collapse: collapse; width: 100%; }
+    .excel-preview td, .excel-preview th {
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      text-align: left;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .excel-preview th {
+      background: var(--bg-surface);
+      color: var(--accent);
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+    }
+
+    /* Pixel from image */
+    .pif-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 640px) {
+      .pif-grid { grid-template-columns: 1fr; }
+    }
+    .pif-preview {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+      overflow: auto;
+      gap: 8px;
+    }
+    .pif-preview img {
+      max-width: 100%;
+      max-height: 280px;
+      border-radius: 6px;
+    }
+    .pif-preview canvas {
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+      max-width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+    .pif-preview .placeholder {
+      color: var(--text-muted);
+      font-size: 12px;
+      text-align: center;
+    }
+    .pif-palette {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding-top: 6px;
+      width: 100%;
+    }
+    .pif-palette .sw {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .pif-palette .sw:hover {
+      transform: scale(1.15);
+      border-color: var(--accent);
+    }
+    .pif-palette-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+
+    .signature-float {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      z-index: 50;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 15px;
+      background: rgba(18, 21, 28, 0.85);
+      backdrop-filter: blur(6px);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+    .signature-float b { color: var(--accent); font-weight: 700; }
+    .signature-float .dot {
+      width: 5px; height: 5px; border-radius: 50%; background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    @media (max-width: 480px) {
+      .sidepanel { width: 240px; left: -250px; }
+      .page { padding: 70px 12px 90px; }
+      .qr-container, .pixel-container, .image-container, .convert-container { padding: 20px 14px; }
+      .pixel-controls { grid-template-columns: 1fr 1fr; }
+      .image-container .settings-grid { grid-template-columns: 1fr; }
+      #pixelGrid .cell { width: 18px; height: 18px; }
+      .filter-checkboxes label { font-size: 11px; padding: 3px 10px 3px 6px; }
+      .convert-row { flex-direction: column; align-items: flex-start; }
+      .convert-row label { min-width: auto; }
+      .convert-row select, .convert-row input[type="number"], .convert-row input[type="text"] { width: 100%; }
+      .convert-tab { font-size: 11px; padding: 6px 10px; }
+    }
+    @media (max-width: 380px) {
+      #pixelGrid .cell { width: 14px; height: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="menu-btn" id="menuBtn">
+    <i class="fas fa-bars"></i>
+  </div>
+
+  <div class="sidepanel" id="sidepanel">
+    <div class="logo-area">Görsel <span>Kırp</span></div>
+    <div class="nav-item active" data-page="page1"><i class="fas fa-crop-alt"></i> Kırpıcı</div>
+    <div class="nav-item" data-page="page2"><i class="fas fa-qrcode"></i> QR Oluştur</div>
+    <div class="nav-item" data-page="page3"><i class="fas fa-paint-brush"></i> Pixel Art</div>
+    <div class="nav-item" data-page="page4"><i class="fas fa-image"></i> Resim Ayarı</div>
+    <div class="nav-item" data-page="page5"><i class="fas fa-sync-alt"></i> Çevirici</div>
+    <div class="footer-imza">
+      <span class="dot"></span> Made by <b>Zeld</b>
+    </div>
+  </div>
+
+  <!-- SAYFA 1: Kırpıcı -->
+  <div class="page page-1 active" id="page1">
+    <div class="page-header">
+      <h1>Görsel <span>Kırpıcı</span></h1>
+      <p>Resimlerinizi istediğiniz oranda ve şekilde (kare, daire, 16:9, 9:16) kırpın.</p>
+    </div>
+    <div style="width:100%; max-width:1100px; margin:0 auto;">
+      <div class="main-container">
+        <div class="workspace" id="drop-zone">
+          <label class="upload-trigger" id="upload-ui">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" /></svg>
+            <p>Resmi buraya yükleyin</p>
+            <span>veya dokunup galeriden seçin</span>
+            <input type="file" id="file-input" accept="image/*">
+          </label>
+          <div class="crop-wrapper" id="crop-wrapper">
+            <img id="source-image" alt="Kaynak">
+            <div class="crop-box" id="crop-box">
+              <div class="crop-grid"></div>
+              <div class="handle handle-tl" data-handle="tl"></div>
+              <div class="handle handle-tr" data-handle="tr"></div>
+              <div class="handle handle-bl" data-handle="bl"></div>
+              <div class="handle handle-br" data-handle="br"></div>
+            </div>
+          </div>
+        </div>
+        <div class="control-panel">
+          <div>
+            <div class="panel-label">Kırpma Şekli</div>
+            <div class="shape-grid" id="shape-grid">
+              <button class="shape-btn active" data-shape="free" data-ratio="0"><svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="1"/></svg> Serbest</button>
+              <button class="shape-btn" data-shape="square" data-ratio="1"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1"/></svg> Kare</button>
+              <button class="shape-btn" data-shape="circle" data-ratio="1"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg> Daire</button>
+              <button class="shape-btn" data-shape="portrait" data-ratio="0.8"><svg viewBox="0 0 24 24"><rect x="7" y="4" width="10" height="16" rx="1"/></svg> 4:5</button>
+              <button class="shape-btn" data-shape="wide" data-ratio="1.778"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="10" rx="1"/></svg> 16:9</button>
+              <button class="shape-btn" data-shape="story" data-ratio="0.5625"><svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="18" rx="1"/></svg> 9:16</button>
+            </div>
+          </div>
+          <div>
+            <div class="panel-label">Önizleme</div>
+            <div class="preview-box"><canvas id="preview-canvas"></canvas></div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <button class="btn btn-action" id="download-btn" disabled>Kırp ve İndir</button>
+            <button class="btn btn-reset" id="reset-btn">Resmi Değiştir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAYFA 2: QR -->
+  <div class="page page-2" id="page2">
+    <div class="page-header">
+      <h1>QR <span>Oluşturucu</span></h1>
+      <p>Metin, URL, WiFi bağlantısı veya kişi kartı (vCard) için QR kod üretin.</p>
+    </div>
+    <div class="qr-container">
+      <div class="qr-field-group">
+        <label><i class="fas fa-tag"></i> QR Tipi</label>
+        <div class="qr-type-selector" id="qrTypeSelector">
+          <button class="qr-type-btn active" data-type="text"><i class="fas fa-font"></i> Metin/URL</button>
+          <button class="qr-type-btn" data-type="wifi"><i class="fas fa-wifi"></i> WiFi</button>
+          <button class="qr-type-btn" data-type="contact"><i class="fas fa-address-card"></i> Kişi</button>
+        </div>
+      </div>
+      <div id="qrDynamicFields">
+        <div class="qr-field-group" id="field-text">
+          <label><i class="fas fa-link"></i> İçerik</label>
+          <input type="text" id="qrText" value="https://zeld.com" placeholder="https://...">
+        </div>
+        <div class="qr-field-group" id="field-wifi" style="display:none;">
+          <label><i class="fas fa-wifi"></i> WiFi Adı (SSID)</label>
+          <input type="text" id="wifiSsid" placeholder="WiFi adı">
+          <label><i class="fas fa-key"></i> Şifre</label>
+          <input type="text" id="wifiPassword" placeholder="Şifre">
+          <label><i class="fas fa-lock"></i> Güvenlik</label>
+          <select id="wifiEncryption">
+            <option value="WPA">WPA/WPA2</option>
+            <option value="WEP">WEP</option>
+            <option value="nopass">Açık</option>
+          </select>
+        </div>
+        <div class="qr-field-group" id="field-contact" style="display:none;">
+          <label><i class="fas fa-user"></i> Ad Soyad</label>
+          <input type="text" id="contactName" placeholder="Ad Soyad">
+          <label><i class="fas fa-phone"></i> Telefon</label>
+          <input type="text" id="contactPhone" placeholder="Telefon">
+          <label><i class="fas fa-envelope"></i> E-posta</label>
+          <input type="text" id="contactEmail" placeholder="E-posta">
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+        <div class="qr-field-group">
+          <label><i class="fas fa-arrows-alt"></i> Boyut</label>
+          <select id="qrSize">
+            <option value="150">150</option>
+            <option value="200" selected>200</option>
+            <option value="250">250</option>
+            <option value="300">300</option>
+            <option value="400">400</option>
+          </select>
+        </div>
+        <div class="qr-field-group">
+          <label><i class="fas fa-palette"></i> Renk</label>
+          <input type="color" id="qrColorDark" value="#00f3ff">
+        </div>
+      </div>
+      <div class="qr-actions">
+        <button class="btn btn-action" id="generateQRBtn"><i class="fas fa-qrcode"></i> Oluştur</button>
+        <button class="btn btn-reset" id="downloadQRBtn"><i class="fas fa-download"></i> İndir</button>
+      </div>
+      <div class="qr-box" id="qrBox"><div id="qrcode"></div></div>
+    </div>
+  </div>
+
+  <!-- SAYFA 3: PIXEL ART -->
+  <div class="page page-3" id="page3">
+    <div class="page-header">
+      <h1>Pixel <span>Art</span> Maker</h1>
+      <p>Grid üzerinde tıklayarak pixel sanatı oluşturun. Silgi modu ile hataları düzeltin.</p>
+    </div>
+    <div class="pixel-container">
+      <div class="pixel-controls">
+        <div class="control-group">
+          <label><i class="fas fa-arrows-alt-h"></i> Kolon</label>
+          <input type="number" id="gridCols" value="16" min="4" max="50">
+        </div>
+        <div class="control-group">
+          <label><i class="fas fa-arrows-alt-v"></i> Satır</label>
+          <input type="number" id="gridRows" value="16" min="4" max="50">
+        </div>
+        <div class="control-group">
+          <label><i class="fas fa-palette"></i> Renk</label>
+          <input type="color" id="pixelColor" value="#00f3ff">
+        </div>
+        <div class="control-group">
+          <label>Hızlı Renkler</label>
+          <div class="color-presets" id="colorPresets">
+            <span class="preset active" style="background:#00f3ff;" data-color="#00f3ff"></span>
+            <span class="preset" style="background:#ff6b6b;" data-color="#ff6b6b"></span>
+            <span class="preset" style="background:#ffd93d;" data-color="#ffd93d"></span>
+            <span class="preset" style="background:#6bcb77;" data-color="#6bcb77"></span>
+            <span class="preset" style="background:#4d96ff;" data-color="#4d96ff"></span>
+            <span class="preset" style="background:#ff6bff;" data-color="#ff6bff"></span>
+            <span class="preset" style="background:#ffffff;" data-color="#ffffff"></span>
+            <span class="preset" style="background:#1a1f2b;" data-color="#1a1f2b"></span>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Mod</label>
+          <div class="mode-toggle">
+            <button class="mode-btn active" id="paintModeBtn"><i class="fas fa-paint-brush"></i> Fırça</button>
+            <button class="mode-btn" id="eraseModeBtn"><i class="fas fa-eraser"></i> Silgi</button>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>İşlem</label>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button class="btn btn-action" id="createGridBtn" style="flex:1;padding:8px 12px;font-size:12px;"><i class="fas fa-plus"></i> Oluştur</button>
+            <button class="btn btn-reset" id="clearGridBtn" style="flex:1;padding:8px 12px;font-size:12px;"><i class="fas fa-eraser"></i> Temizle</button>
+          </div>
+        </div>
+      </div>
+      <div class="pixel-grid-wrapper"><div id="pixelGrid"></div></div>
+      <div class="pixel-info"><span id="pixelCount">0</span> pixel boyandı</div>
+      <div class="pixel-actions">
+        <button class="btn btn-action" id="downloadPixelBtn"><i class="fas fa-download"></i> PNG İndir</button>
+        <button class="btn btn-reset" id="exportPixelBtn"><i class="fas fa-code"></i> JSON</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAYFA 4: RESİM AYARLARI -->
+  <div class="page page-4" id="page4">
+    <div class="page-header">
+      <h1>Resim <span>Ayarı</span></h1>
+      <p>Resimlerinizi dönüştürün, boyutlandırın ve filtre uygulayın.</p>
+    </div>
+    <div class="image-container">
+      <div class="upload-area" id="uploadArea">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <p>Resmi buraya sürükleyin veya tıklayın</p>
+        <span>PNG, JPG, WebP, BMP, GIF desteklenir</span>
+        <input type="file" id="imageInput" accept="image/*">
+      </div>
+      <div class="preview-area" id="previewArea">
+        <div class="image-wrapper">
+          <img id="previewImage" src="" alt="Önizleme">
+          <button class="change-btn" id="changeImageBtn"><i class="fas fa-exchange-alt"></i> Değiştir</button>
+        </div>
+        <div class="settings-grid">
+          <div class="setting-group">
+            <label><i class="fas fa-file-image"></i> Format</label>
+            <select id="outputFormat">
+              <option value="image/png">PNG</option>
+              <option value="image/jpeg">JPG</option>
+              <option value="image/webp">WebP</option>
+              <option value="image/bmp">BMP</option>
+            </select>
+          </div>
+          <div class="setting-group">
+            <label><i class="fas fa-sliders-h"></i> Kalite</label>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <input type="range" id="qualityRange" min="10" max="100" value="92">
+              <span class="range-value" id="qualityValue">92%</span>
+            </div>
+          </div>
+          <div class="setting-group">
+            <label><i class="fas fa-arrows-alt"></i> Genişlik</label>
+            <input type="number" id="resizeWidth" placeholder="Oto" min="1">
+          </div>
+          <div class="setting-group">
+            <label><i class="fas fa-arrows-alt-v"></i> Yükseklik</label>
+            <input type="number" id="resizeHeight" placeholder="Oto" min="1">
+          </div>
+          <div class="setting-group full-width">
+            <div class="checkbox-group">
+              <input type="checkbox" id="keepAspect" checked>
+              <label for="keepAspect">Oranı koru</label>
+            </div>
+          </div>
+          <div class="setting-group full-width">
+            <label><i class="fas fa-filter"></i> Filtreler</label>
+            <div class="filter-checkboxes" id="filterCheckboxes">
+              <label><input type="checkbox" value="grayscale(100%)" data-name="Gri"> Gri</label>
+              <label><input type="checkbox" value="brightness(1.2)" data-name="Parlak+"> Parlak+</label>
+              <label><input type="checkbox" value="brightness(0.8)" data-name="Parlak-"> Parlak-</label>
+              <label><input type="checkbox" value="contrast(1.3)" data-name="Kontrast"> Kontrast</label>
+              <label><input type="checkbox" value="saturate(1.5)" data-name="Doygun"> Doygun</label>
+              <label><input type="checkbox" value="hue-rotate(90deg)" data-name="Renk 90°"> Renk 90°</label>
+              <label><input type="checkbox" value="blur(2px)" data-name="Bulanık"> Bulanık</label>
+            </div>
+          </div>
+          <div class="setting-group full-width">
+            <label><i class="fas fa-check-circle"></i> Aktif Filtreler</label>
+            <div class="active-filters" id="activeFilters">
+              <span style="color:var(--text-muted);font-size:13px;">Seçilmedi</span>
+            </div>
+          </div>
+          <div class="setting-group">
+            <label><i class="fas fa-undo-alt"></i> Döndür</label>
+            <select id="imageRotate">
+              <option value="0">0°</option>
+              <option value="90">90°</option>
+              <option value="180">180°</option>
+              <option value="270">270°</option>
+            </select>
+          </div>
+          <div class="setting-group">
+            <label><i class="fas fa-arrows-alt-h"></i> Ayna</label>
+            <select id="imageFlip">
+              <option value="none">Yok</option>
+              <option value="horizontal">Yatay</option>
+              <option value="vertical">Dikey</option>
+            </select>
+          </div>
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-action" id="applySettingsBtn"><i class="fas fa-check"></i> Uygula</button>
+          <button class="btn btn-reset" id="resetImageBtn"><i class="fas fa-undo"></i> Sıfırla</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAYFA 5: ÇEVİRİCİ (6 ARAÇ) -->
+  <div class="page page-5" id="page5">
+    <div class="page-header">
+      <h1>Çevirici <span>Araçları</span></h1>
+      <p>Tüm dönüştürme araçları tek yerde. Dosyalarınız tarayıcıda işlenir, sunucuya yüklenmez.</p>
+    </div>
+    <div class="convert-container">
+
+      <!-- SEKMELER -->
+      <div class="convert-tabs">
+        <div class="convert-tab active" data-tab="pdf2pptx"><i class="fas fa-file-powerpoint"></i> PDF→PPTX</div>
+        <div class="convert-tab" data-tab="pdf2word"><i class="fas fa-file-word"></i> PDF→Word</div>
+        <div class="convert-tab" data-tab="img2pdf"><i class="fas fa-file-pdf"></i> Görsel→PDF</div>
+        <div class="convert-tab" data-tab="excel2pdf"><i class="fas fa-file-excel"></i> Excel→PDF</div>
+        <div class="convert-tab" data-tab="img2pixel"><i class="fas fa-th"></i> Görsel→Pixel</div>
+        <div class="convert-tab" data-tab="text2pdf"><i class="fas fa-file-alt"></i> Metin→PDF</div>
+      </div>
+
+      <!-- PANEL 1: PDF → PPTX -->
+      <div class="convert-panel active" data-panel="pdf2pptx">
+        <div class="convert-drop" id="pdfDropZone">
+          <i class="fas fa-file-pdf"></i>
+          <p>PDF dosyanızı sürükleyin veya tıklayın</p>
+          <span>PDF · Sunucuya yüklenmez</span>
+          <div class="file-info" id="pdfFileInfo"></div>
+          <input type="file" id="pdfInput" accept="application/pdf,.pdf">
+        </div>
+        <div class="convert-controls">
+          <div class="convert-row">
+            <label><i class="fas fa-sliders-h"></i> Kalite</label>
+            <select id="pdfQuality">
+              <option value="low">Düşük</option>
+              <option value="medium" selected>Orta (önerilen)</option>
+              <option value="high">Yüksek</option>
+            </select>
+          </div>
+          <div class="convert-row">
+            <label><i class="fas fa-file-image"></i> Format</label>
+            <select id="pdfFormat">
+              <option value="image/jpeg" selected>JPEG (küçük)</option>
+              <option value="image/png">PNG (kayıpsız)</option>
+            </select>
+          </div>
+        </div>
+        <div class="convert-actions">
+          <button class="btn btn-action" id="convertPdfBtn" disabled><i class="fas fa-sync-alt"></i> Dönüştür ve İndir</button>
+        </div>
+        <div class="convert-progress-wrap" id="convertProgressWrap">
+          <div class="convert-progress-bar"><div class="convert-progress-fill" id="convertProgressFill"></div></div>
+          <div class="convert-progress-text" id="convertProgressText">Hazırlanıyor...</div>
+        </div>
+        <div class="convert-status" id="convertStatus"></div>
+        <div class="convert-preview" id="convertPreview"></div>
+      </div>
+
+      <!-- PANEL 2: PDF → WORD -->
+      <div class="convert-panel" data-panel="pdf2word">
+        <div class="convert-drop" id="pdfWordDropZone">
+          <i class="fas fa-file-word"></i>
+          <p>PDF dosyanızı sürükleyin veya tıklayın</p>
+          <span>Metin tabanlı PDF'lerde en iyi sonuç verir</span>
+          <div class="file-info" id="pdfWordFileInfo"></div>
+          <input type="file" id="pdfWordInput" accept="application/pdf,.pdf">
+        </div>
+        <div class="convert-status show info" id="pdfWordHint">
+          ℹ️ PDF'teki metinler çıkarılıp .docx dosyasına aktarılır. Taranmış PDF'lerde metin olmayabilir.
+        </div>
+        <div class="convert-actions">
+          <button class="btn btn-action" id="convertPdfWordBtn" disabled><i class="fas fa-file-word"></i> Word Olarak İndir</button>
+        </div>
+        <div class="convert-progress-wrap" id="pdfWordProgressWrap">
+          <div class="convert-progress-bar"><div class="convert-progress-fill" id="pdfWordProgressFill"></div></div>
+          <div class="convert-progress-text" id="pdfWordProgressText">Hazırlanıyor...</div>
+        </div>
+        <div class="convert-status" id="pdfWordStatus"></div>
+      </div>
+
+      <!-- PANEL 3: GÖRSEL → PDF -->
+      <div class="convert-panel" data-panel="img2pdf">
+        <div class="convert-drop" id="imgPdfDropZone">
+          <i class="fas fa-images"></i>
+          <p>Görselleri sürükleyin veya tıklayın</p>
+          <span>Çoklu seçim · Birden fazla görsel tek PDF'e</span>
+          <input type="file" id="imgPdfInput" accept="image/*" multiple>
+        </div>
+        <div class="img-pdf-list" id="imgPdfList"></div>
+        <div class="convert-controls">
+          <div class="convert-row">
+            <label><i class="fas fa-file-alt"></i> Sayfa</label>
+            <select id="imgPdfPageSize">
+              <option value="a4" selected>A4</option>
+              <option value="letter">Letter</option>
+              <option value="fit">Görsele göre</option>
+            </select>
+          </div>
+          <div class="convert-row">
+            <label><i class="fas fa-arrows-alt"></i> Yön</label>
+            <select id="imgPdfOrientation">
+              <option value="portrait" selected>Dikey</option>
+              <option value="landscape">Yatay</option>
+              <option value="auto">Otomatik</option>
+            </select>
+          </div>
+          <div class="convert-row">
+            <label><i class="fas fa-border-all"></i> Kenar</label>
+            <select id="imgPdfMargin">
+              <option value="0">Yok</option>
+              <option value="10" selected>Az</option>
+              <option value="20">Orta</option>
+              <option value="30">Fazla</option>
+            </select>
+          </div>
+        </div>
+        <div class="convert-actions">
+          <button class="btn btn-action" id="convertImgPdfBtn" disabled><i class="fas fa-file-pdf"></i> PDF Oluştur</button>
+          <button class="btn btn-reset" id="clearImgPdfBtn"><i class="fas fa-trash"></i> Temizle</button>
+        </div>
+        <div class="convert-status" id="imgPdfStatus"></div>
+      </div>
+
+      <!-- PANEL 4: EXCEL → PDF -->
+      <div class="convert-panel" data-panel="excel2pdf">
+        <div class="convert-drop" id="excelDropZone">
+          <i class="fas fa-file-excel"></i>
+          <p>Excel/CSV dosyanızı sürükleyin veya tıklayın</p>
+          <span>.xlsx · .xls · .csv desteklenir</span>
+          <div class="file-info" id="excelFileInfo"></div>
+          <input type="file" id="excelInput" accept=".xlsx,.xls,.csv">
+        </div>
+        <div class="excel-preview" id="excelPreview" style="display:none;"></div>
+        <div class="convert-controls">
+          <div class="convert-row">
+            <label><i class="fas fa-file-alt"></i> Yön</label>
+            <select id="excelOrientation">
+              <option value="landscape" selected>Yatay (önerilen)</option>
+              <option value="portrait">Dikey</option>
+            </select>
+          </div>
+        </div>
+        <div class="convert-actions">
+          <button class="btn btn-action" id="convertExcelBtn" disabled><i class="fas fa-file-pdf"></i> PDF Oluştur</button>
+        </div>
+        <div class="convert-status" id="excelStatus"></div>
+      </div>
+
+      <!-- PANEL 5: GÖRSEL → PIXEL ART -->
+      <div class="convert-panel" data-panel="img2pixel">
+        <div class="convert-drop" id="imgPixelDropZone">
+          <i class="fas fa-th"></i>
+          <p>Görseli sürükleyin veya tıklayın</p>
+          <span>Görsel pixel art'a dönüştürülür</span>
+          <input type="file" id="imgPixelInput" accept="image/*">
+        </div>
+        <div class="convert-controls">
+          <div class="convert-row">
+            <label><i class="fas fa-th-large"></i> Blok Boyutu</label>
+            <input type="range" id="pixelBlockSize" min="4" max="24" value="8">
+            <span id="pixelBlockValue" style="min-width:34px;color:var(--accent);font-weight:700;">8px</span>
+          </div>
+          <div class="convert-row">
+            <label><i class="fas fa-palette"></i> Renk Sayısı</label>
+            <input type="range" id="pixelColorCount" min="4" max="32" value="16">
+            <span id="pixelColorValue" style="min-width:34px;color:var(--accent);font-weight:700;">16</span>
+          </div>
+        </div>
+        <div class="pif-grid">
+          <div class="pif-preview" id="pifOriginal">
+            <span class="placeholder">Orijinal görsel burada görünecek</span>
+          </div>
+          <div class="pif-preview" id="pifResult">
+            <span class="placeholder">Pixel art burada görünecek</span>
+          </div>
+        </div>
+        <div class="convert-actions">
+          <button class="btn btn-action" id="downloadPixelArtBtn" disabled><i class="fas fa-download"></i> PNG İndir</button>
+        </div>
+        <div class="convert-status" id="imgPixelStatus"></div>
+      </div>
+
+      <!-- PANEL 6: METİN → PDF -->
+      <div class="convert-panel" data-panel="text2pdf">
+        <div class="convert-row">
+          <label><i class="fas fa-heading"></i> Başlık</label>
+          <input type="text" id="txtTitle" placeholder="(opsiyonel) Belge başlığı">
+        </div>
+        <textarea id="txtContent" class="convert-textarea" placeholder="Metninizi buraya yazın veya yapıştırın... Örn: Türkçe karakterler: ğüşıöçĞÜŞİÖÇ"></textarea>
+        <div class="convert-controls">
+          <div class="convert-row">
+            <label><i class="fas fa-font"></i> Yazı Tipi</label>
+            <select id="txtFont">
+              <option value="roboto" selected>Roboto (Türkçe destekli)</option>
+              <option value="helvetica">Helvetica (Türkçe sorunlu)</option>
+              <option value="times">Times (Türkçe sorunlu)</option>
+              <option value="courier">Courier (Türkçe sorunlu)</option>
+            </select>
+          </div>
+          <div class="convert-row">
+            <label><i class="fas fa-text-height"></i> Boyut</label>
+            <input type="range" id="txtSize" min="8" max="24" value="12">
+            <span id="txtSizeValue" style="min-width:34px;color:var(--accent);font-weight:700;">12pt</span>
+          </div>
+          <div class="convert-row">
+            <label><i class="fas fa-align-left"></i> Hizalama</label>
+            <select id="txtAlign">
+              <option value="left" selected>Sol</option>
+              <option value="center">Orta</option>
+              <option value="right">Sağ</option>
+            </select>
+          </div>
+          <div class="convert-row">
+            <label><i class="fas fa-file-alt"></i> Sayfa</label>
+            <select id="txtPageSize">
+              <option value="a4" selected>A4</option>
+              <option value="letter">Letter</option>
+            </select>
+          </div>
+          <div class="convert-row">
+            <label><i class="fas fa-border-all"></i> Kenar</label>
+            <select id="txtMargin">
+              <option value="30">Az</option>
+              <option value="50" selected>Orta</option>
+              <option value="70">Fazla</option>
+            </select>
+          </div>
+        </div>
+        <div class="convert-actions">
+          <button class="btn btn-action" id="convertTxtBtn"><i class="fas fa-file-pdf"></i> PDF Oluştur ve İndir</button>
+          <button class="btn btn-reset" id="clearTxtBtn"><i class="fas fa-eraser"></i> Temizle</button>
+        </div>
+        <div class="convert-status" id="txtStatus"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="signature-float">
+    <span class="dot"></span> Made by <b>Zeld</b>
+  </div>
+
+  <script>
+    (function() {
+      // ===== Türkçe Font Yükleme (jsPDF için) =====
+      let TURKISH_FONT_REGULAR = null;
+      let TURKISH_FONT_BOLD = null;
+
+      async function loadTurkishFonts() {
+        if (TURKISH_FONT_REGULAR && TURKISH_FONT_BOLD) return;
+        try {
+          const [regBuf, boldBuf] = await Promise.all([
+            fetch(window.JSPDF_FONT_URLS.regular).then(r => r.arrayBuffer()),
+            fetch(window.JSPDF_FONT_URLS.bold).then(r => r.arrayBuffer())
+          ]);
+          TURKISH_FONT_REGULAR = regBuf;
+          TURKISH_FONT_BOLD = boldBuf;
+        } catch (e) {
+          console.warn('Türkçe font yüklenemedi, standart font kullanılacak:', e);
+        }
+      }
+
+      function arrayBufferToBase64(buffer) {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        const chunkSize = 0x8000;
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+        }
+        return btoa(binary);
+      }
+
+      async function registerTurkishFont(pdf) {
+        await loadTurkishFonts();
+        if (!TURKISH_FONT_REGULAR || !TURKISH_FONT_BOLD) return false;
+        try {
+          pdf.addFileToVFS('Roboto-Regular.ttf', arrayBufferToBase64(TURKISH_FONT_REGULAR));
+          pdf.addFileToVFS('Roboto-Bold.ttf', arrayBufferToBase64(TURKISH_FONT_BOLD));
+          pdf.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+          pdf.addFont('Roboto-Bold.ttf', 'Roboto', 'bold');
+          return true;
+        } catch (e) {
+          console.warn('Font register hatası:', e);
+          return false;
+        }
+      }
+
+      // ===== MENU =====
+      const menuBtn = document.getElementById('menuBtn');
+      const sidepanel = document.getElementById('sidepanel');
+      const navItems = document.querySelectorAll('.nav-item');
+      const pages = {
+        page1: document.getElementById('page1'),
+        page2: document.getElementById('page2'),
+        page3: document.getElementById('page3'),
+        page4: document.getElementById('page4'),
+        page5: document.getElementById('page5')
+      };
+
+      menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sidepanel.classList.toggle('open');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!sidepanel.contains(e.target) && e.target !== menuBtn && !menuBtn.contains(e.target)) {
+          sidepanel.classList.remove('open');
+        }
+      });
+
+      navItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const pageId = item.dataset.page;
+          if (!pageId) return;
+          navItems.forEach(n => n.classList.remove('active'));
+          item.classList.add('active');
+          Object.keys(pages).forEach(key => {
+            pages[key].classList.toggle('active', key === pageId);
+          });
+          sidepanel.classList.remove('open');
+          if (pageId === 'page2') {
+            const qrContainer = document.getElementById('qrcode');
+            if (qrContainer.children.length === 0) generateQR();
+          }
+        });
+      });
+
+      // ===== QR =====
+      const typeBtns = document.querySelectorAll('.qr-type-btn');
+      const fieldText = document.getElementById('field-text');
+      const fieldWifi = document.getElementById('field-wifi');
+      const fieldContact = document.getElementById('field-contact');
+
+      typeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          typeBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const type = btn.dataset.type;
+          fieldText.style.display = (type === 'text') ? 'block' : 'none';
+          fieldWifi.style.display = (type === 'wifi') ? 'block' : 'none';
+          fieldContact.style.display = (type === 'contact') ? 'block' : 'none';
+          generateQR();
+        });
+      });
+
+      let qrCodeInstance = null;
+      const qrContainer = document.getElementById('qrcode');
+      const qrSize = document.getElementById('qrSize');
+      const qrColorDark = document.getElementById('qrColorDark');
+      const qrText = document.getElementById('qrText');
+      const wifiSsid = document.getElementById('wifiSsid');
+      const wifiPassword = document.getElementById('wifiPassword');
+      const wifiEncryption = document.getElementById('wifiEncryption');
+      const contactName = document.getElementById('contactName');
+      const contactPhone = document.getElementById('contactPhone');
+      const contactEmail = document.getElementById('contactEmail');
+
+      function getQRContent() {
+        const activeType = document.querySelector('.qr-type-btn.active');
+        const type = activeType ? activeType.dataset.type : 'text';
+        if (type === 'wifi') {
+          const ssid = wifiSsid.value.trim() || 'WiFi';
+          const pass = wifiPassword.value.trim() || '';
+          const enc = wifiEncryption.value;
+          if (enc === 'nopass') return `WIFI:T:nopass;S:${ssid};;`;
+          return `WIFI:T:${enc};S:${ssid};P:${pass};;`;
+        } else if (type === 'contact') {
+          const name = contactName.value.trim() || 'Kişi';
+          const phone = contactPhone.value.trim() || '';
+          const email = contactEmail.value.trim() || '';
+          let vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\n`;
+          if (phone) vcard += `TEL:${phone}\n`;
+          if (email) vcard += `EMAIL:${email}\n`;
+          vcard += `END:VCARD`;
+          return vcard;
+        } else {
+          return qrText.value.trim() || 'https://zeld.com';
+        }
+      }
+
+      function generateQR() {
+        const text = getQRContent();
+        const size = parseInt(qrSize.value, 10) || 200;
+        const dark = qrColorDark.value || '#00f3ff';
+        const light = '#ffffff';
+        qrContainer.innerHTML = '';
+        try {
+          qrCodeInstance = new QRCode(qrContainer, {
+            text: text, width: size, height: size,
+            colorDark: dark, colorLight: light,
+            correctLevel: QRCode.CorrectLevel.H
+          });
+        } catch (e) {
+          try {
+            qrCodeInstance = new QRCode(qrContainer, {
+              text: text || ' ', width: size, height: size,
+              colorDark: dark, colorLight: light,
+              correctLevel: QRCode.CorrectLevel.H
+            });
+          } catch (e2) {
+            qrContainer.innerHTML = '<canvas></canvas>';
+            const canvas = qrContainer.querySelector('canvas');
+            if (canvas) {
+              canvas.width = size; canvas.height = size;
+              const ctx = canvas.getContext('2d');
+              ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, size, size);
+              ctx.fillStyle = dark; ctx.font = '14px sans-serif';
+              ctx.textAlign = 'center'; ctx.fillText('QR', size/2, size/2+5);
+            }
+          }
+        }
+      }
+
+      setTimeout(generateQR, 100);
+
+      document.getElementById('generateQRBtn').addEventListener('click', generateQR);
+
+      const qrInputs = [qrText, wifiSsid, wifiPassword, wifiEncryption, contactName, contactPhone, contactEmail, qrSize, qrColorDark];
+      qrInputs.forEach(el => {
+        if (el) {
+          el.addEventListener('input', generateQR);
+          el.addEventListener('change', generateQR);
+        }
+      });
+
+      document.getElementById('downloadQRBtn').addEventListener('click', () => {
+        const canvas = qrContainer.querySelector('canvas');
+        if (!canvas) { alert('Önce QR oluşturun!'); return; }
+        const link = document.createElement('a');
+        link.download = 'qr-kod.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+
+      // ===== PIXEL ART (GRID) =====
+      const gridCols = document.getElementById('gridCols');
+      const gridRows = document.getElementById('gridRows');
+      const pixelColor = document.getElementById('pixelColor');
+      const pixelGrid = document.getElementById('pixelGrid');
+      const createGridBtn = document.getElementById('createGridBtn');
+      const clearGridBtn = document.getElementById('clearGridBtn');
+      const downloadPixelBtn = document.getElementById('downloadPixelBtn');
+      const exportPixelBtn = document.getElementById('exportPixelBtn');
+      const pixelCount = document.getElementById('pixelCount');
+      const presets = document.querySelectorAll('.preset');
+      const paintModeBtn = document.getElementById('paintModeBtn');
+      const eraseModeBtn = document.getElementById('eraseModeBtn');
+
+      let isDrawing = false;
+      let isEraseMode = false;
+      let currentColor = '#00f3ff';
+      let gridData = [];
+
+      paintModeBtn.addEventListener('click', () => {
+        paintModeBtn.classList.add('active');
+        eraseModeBtn.classList.remove('active');
+        isEraseMode = false;
+      });
+
+      eraseModeBtn.addEventListener('click', () => {
+        eraseModeBtn.classList.add('active');
+        paintModeBtn.classList.remove('active');
+        isEraseMode = true;
+      });
+
+      presets.forEach(preset => {
+        preset.addEventListener('click', () => {
+          presets.forEach(p => p.classList.remove('active'));
+          preset.classList.add('active');
+          currentColor = preset.dataset.color;
+          pixelColor.value = currentColor;
+        });
+      });
+
+      pixelColor.addEventListener('input', () => {
+        currentColor = pixelColor.value;
+        presets.forEach(p => p.classList.remove('active'));
+        presets.forEach(p => {
+          if (p.dataset.color.toLowerCase() === currentColor.toLowerCase()) {
+            p.classList.add('active');
+          }
+        });
+      });
+
+      function createGrid() {
+        const cols = parseInt(gridCols.value) || 16;
+        const rows = parseInt(gridRows.value) || 16;
+        const clampedCols = Math.min(Math.max(cols, 4), 50);
+        const clampedRows = Math.min(Math.max(rows, 4), 50);
+        gridCols.value = clampedCols;
+        gridRows.value = clampedRows;
+
+        pixelGrid.style.gridTemplateColumns = `repeat(${clampedCols}, 1fr)`;
+        pixelGrid.innerHTML = '';
+        gridData = [];
+
+        for (let r = 0; r < clampedRows; r++) {
+          gridData[r] = [];
+          for (let c = 0; c < clampedCols; c++) {
+            gridData[r][c] = null;
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.dataset.row = r;
+            cell.dataset.col = c;
+            cell.style.background = '#1a1f2b';
+
+            cell.addEventListener('mousedown', (e) => {
+              e.preventDefault();
+              if (e.button === 0) { isDrawing = true; paintCell(cell); }
+            });
+
+            cell.addEventListener('mouseenter', (e) => {
+              if (isDrawing && e.buttons === 1) paintCell(cell);
+            });
+
+            cell.addEventListener('contextmenu', (e) => {
+              e.preventDefault();
+              const row = parseInt(cell.dataset.row);
+              const col = parseInt(cell.dataset.col);
+              gridData[row][col] = null;
+              cell.style.background = '#1a1f2b';
+              updatePixelCount();
+            });
+
+            let longPressTimer = null;
+            let isLongPress = false;
+
+            cell.addEventListener('touchstart', (e) => {
+              e.preventDefault();
+              const touch = e.touches[0];
+              const target = document.elementFromPoint(touch.clientX, touch.clientY);
+              longPressTimer = setTimeout(() => {
+                isLongPress = true;
+                if (target && target.classList.contains('cell')) paintCell(target);
+              }, 300);
+            }, { passive: false });
+
+            cell.addEventListener('touchmove', (e) => {
+              e.preventDefault();
+              const touch = e.touches[0];
+              const target = document.elementFromPoint(touch.clientX, touch.clientY);
+              if (isLongPress && target && target.classList.contains('cell')) paintCell(target);
+            }, { passive: false });
+
+            cell.addEventListener('touchend', (e) => {
+              e.preventDefault();
+              clearTimeout(longPressTimer);
+              if (!isLongPress) {
+                const touch = e.changedTouches[0];
+                const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                if (target && target.classList.contains('cell')) paintCell(target);
+              }
+              isLongPress = false;
+            }, { passive: false });
+
+            cell.addEventListener('touchcancel', () => {
+              clearTimeout(longPressTimer);
+              isLongPress = false;
+            });
+
+            pixelGrid.appendChild(cell);
+          }
+        }
+        updatePixelCount();
+      }
+
+      function paintCell(cell) {
+        const row = parseInt(cell.dataset.row);
+        const col = parseInt(cell.dataset.col);
+        if (isEraseMode) {
+          gridData[row][col] = null;
+          cell.style.background = '#1a1f2b';
+        } else {
+          gridData[row][col] = currentColor;
+          cell.style.background = currentColor;
+        }
+        updatePixelCount();
+      }
+
+      function updatePixelCount() {
+        let count = 0;
+        for (let r = 0; r < gridData.length; r++) {
+          for (let c = 0; c < gridData[r].length; c++) {
+            if (gridData[r][c] !== null) count++;
+          }
+        }
+        pixelCount.textContent = count;
+      }
+
+      document.addEventListener('mouseup', () => { isDrawing = false; });
+
+      createGridBtn.addEventListener('click', createGrid);
+
+      clearGridBtn.addEventListener('click', () => {
+        for (let r = 0; r < gridData.length; r++) {
+          for (let c = 0; c < gridData[r].length; c++) {
+            gridData[r][c] = null;
+            const cells = pixelGrid.children;
+            const idx = r * gridData[0].length + c;
+            if (cells[idx]) cells[idx].style.background = '#1a1f2b';
+          }
+        }
+        updatePixelCount();
+      });
+
+      downloadPixelBtn.addEventListener('click', () => {
+        const cols = gridData[0]?.length || 16;
+        const rows = gridData.length || 16;
+        const totalSize = 20 * Math.max(cols, rows);
+        const canvas = document.createElement('canvas');
+        canvas.width = totalSize; canvas.height = totalSize;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, totalSize, totalSize);
+        const scale = totalSize / Math.max(cols, rows);
+        const size = scale * 0.9;
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const color = gridData[r]?.[c];
+            if (color) {
+              ctx.fillStyle = color;
+              const x = c * scale + (scale - size) / 2;
+              const y = r * scale + (scale - size) / 2;
+              ctx.fillRect(x, y, size, size);
+            }
+          }
+        }
+        const link = document.createElement('a');
+        link.download = 'pixel-art.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+
+      exportPixelBtn.addEventListener('click', () => {
+        const data = { cols: gridData[0]?.length || 16, rows: gridData.length || 16, pixels: gridData };
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = 'pixel-art.json';
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+
+      createGrid();
+
+      // ===== RESİM AYARLARI =====
+      const uploadArea = document.getElementById('uploadArea');
+      const imageInput = document.getElementById('imageInput');
+      const previewArea = document.getElementById('previewArea');
+      const previewImage = document.getElementById('previewImage');
+      const changeImageBtn = document.getElementById('changeImageBtn');
+      const outputFormat = document.getElementById('outputFormat');
+      const qualityRange = document.getElementById('qualityRange');
+      const qualityValue = document.getElementById('qualityValue');
+      const resizeWidth = document.getElementById('resizeWidth');
+      const resizeHeight = document.getElementById('resizeHeight');
+      const keepAspect = document.getElementById('keepAspect');
+      const filterCheckboxes = document.querySelectorAll('#filterCheckboxes input[type="checkbox"]');
+      const activeFiltersContainer = document.getElementById('activeFilters');
+      const imageRotate = document.getElementById('imageRotate');
+      const imageFlip = document.getElementById('imageFlip');
+      const applySettingsBtn = document.getElementById('applySettingsBtn');
+      const resetImageBtn = document.getElementById('resetImageBtn');
+
+      let originalImageData = null;
+      let originalWidth = 0;
+      let originalHeight = 0;
+      let selectedFilters = [];
+
+      qualityRange.addEventListener('input', () => {
+        qualityValue.textContent = qualityRange.value + '%';
+        updatePreview();
+      });
+
+      filterCheckboxes.forEach(cb => {
+        cb.addEventListener('change', () => { updateActiveFilters(); updatePreview(); });
+      });
+
+      function updateActiveFilters() {
+        selectedFilters = [];
+        const filterNames = [];
+        filterCheckboxes.forEach(cb => {
+          if (cb.checked) {
+            selectedFilters.push(cb.value);
+            filterNames.push(cb.dataset.name);
+          }
+        });
+        if (selectedFilters.length === 0) {
+          activeFiltersContainer.innerHTML = '<span style="color:var(--text-muted);font-size:13px;">Seçilmedi</span>';
+        } else {
+          let html = '';
+          filterNames.forEach((name, index) => {
+            html += `<span class="filter-tag">${name}<span class="remove-filter" data-index="${index}">&times;</span></span>`;
+          });
+          activeFiltersContainer.innerHTML = html;
+          activeFiltersContainer.querySelectorAll('.remove-filter').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              const index = parseInt(e.target.dataset.index);
+              let checkedIndex = 0;
+              filterCheckboxes.forEach(cb => {
+                if (cb.checked) {
+                  if (checkedIndex === index) cb.checked = false;
+                  checkedIndex++;
+                }
+              });
+              updateActiveFilters();
+              updatePreview();
+            });
+          });
+        }
+      }
+
+      function updatePreview() {
+        if (!originalImageData) return;
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        let width = parseInt(resizeWidth.value) || originalWidth;
+        let height = parseInt(resizeHeight.value) || originalHeight;
+        if (keepAspect.checked) {
+          const ratio = originalWidth / originalHeight;
+          if (resizeWidth.value && !resizeHeight.value) height = Math.round(width / ratio);
+          else if (!resizeWidth.value && resizeHeight.value) width = Math.round(height * ratio);
+        }
+        canvas.width = width; canvas.height = height;
+        if (selectedFilters.length > 0) ctx.filter = selectedFilters.join(' ');
+        const rotate = parseInt(imageRotate.value);
+        if (rotate > 0) {
+          ctx.translate(width / 2, height / 2);
+          ctx.rotate((rotate * Math.PI) / 180);
+          ctx.translate(-width / 2, -height / 2);
+        }
+        const flip = imageFlip.value;
+        if (flip === 'horizontal') { ctx.translate(width, 0); ctx.scale(-1, 1); }
+        else if (flip === 'vertical') { ctx.translate(0, height); ctx.scale(1, -1); }
+        ctx.drawImage(originalImageData, 0, 0, width, height);
+        previewImage.src = canvas.toDataURL('image/png');
+      }
+
+      function loadImage(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            originalWidth = img.width;
+            originalHeight = img.height;
+            originalImageData = img;
+            previewImage.src = event.target.result;
+            previewArea.classList.add('show');
+            uploadArea.style.display = 'none';
+            resizeWidth.placeholder = originalWidth;
+            resizeHeight.placeholder = originalHeight;
+            filterCheckboxes.forEach(cb => cb.checked = false);
+            updateActiveFilters();
+            updatePreview();
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      uploadArea.addEventListener('click', () => imageInput.click());
+      imageInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (file) loadImage(file); });
+      changeImageBtn.addEventListener('click', () => imageInput.click());
+
+      uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.style.borderColor = 'var(--accent)'; uploadArea.style.background = 'var(--accent-soft)'; });
+      uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = 'var(--border)'; uploadArea.style.background = 'transparent'; });
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = 'var(--border)';
+        uploadArea.style.background = 'transparent';
+        const file = e.dataTransfer.files[0];
+        if (file) loadImage(file);
+      });
+
+      resizeWidth.addEventListener('input', () => {
+        if (keepAspect.checked && originalWidth > 0) {
+          const ratio = originalHeight / originalWidth;
+          const w = parseInt(resizeWidth.value) || 0;
+          if (w > 0) resizeHeight.value = Math.round(w * ratio);
+        }
+        updatePreview();
+      });
+
+      resizeHeight.addEventListener('input', () => {
+        if (keepAspect.checked && originalHeight > 0) {
+          const ratio = originalWidth / originalHeight;
+          const h = parseInt(resizeHeight.value) || 0;
+          if (h > 0) resizeWidth.value = Math.round(h * ratio);
+        }
+        updatePreview();
+      });
+
+      imageRotate.addEventListener('change', updatePreview);
+      imageFlip.addEventListener('change', updatePreview);
+      keepAspect.addEventListener('change', updatePreview);
+      outputFormat.addEventListener('change', updatePreview);
+
+      applySettingsBtn.addEventListener('click', () => {
+        if (!originalImageData) { alert('Lütfen önce bir resim yükleyin!'); return; }
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        let width = parseInt(resizeWidth.value) || originalWidth;
+        let height = parseInt(resizeHeight.value) || originalHeight;
+        if (keepAspect.checked) {
+          const ratio = originalWidth / originalHeight;
+          if (resizeWidth.value && !resizeHeight.value) height = Math.round(width / ratio);
+          else if (!resizeWidth.value && resizeHeight.value) width = Math.round(height * ratio);
+        }
+        canvas.width = width; canvas.height = height;
+        if (selectedFilters.length > 0) ctx.filter = selectedFilters.join(' ');
+        const rotate = parseInt(imageRotate.value);
+        if (rotate > 0) {
+          ctx.translate(width / 2, height / 2);
+          ctx.rotate((rotate * Math.PI) / 180);
+          ctx.translate(-width / 2, -height / 2);
+        }
+        const flip = imageFlip.value;
+        if (flip === 'horizontal') { ctx.translate(width, 0); ctx.scale(-1, 1); }
+        else if (flip === 'vertical') { ctx.translate(0, height); ctx.scale(1, -1); }
+        ctx.drawImage(originalImageData, 0, 0, width, height);
+        const format = outputFormat.value;
+        const quality = parseInt(qualityRange.value) / 100;
+        const link = document.createElement('a');
+        const ext = format.split('/')[1];
+        link.download = `donusturulmus.${ext === 'jpeg' ? 'jpg' : ext}`;
+        link.href = canvas.toDataURL(format, quality);
+        link.click();
+      });
+
+      resetImageBtn.addEventListener('click', () => {
+        if (originalImageData) {
+          previewImage.src = originalImageData.src;
+          resizeWidth.value = ''; resizeHeight.value = '';
+          resizeWidth.placeholder = originalWidth; resizeHeight.placeholder = originalHeight;
+          filterCheckboxes.forEach(cb => cb.checked = false);
+          updateActiveFilters();
+          imageRotate.value = '0'; imageFlip.value = 'none';
+          qualityRange.value = '92'; qualityValue.textContent = '92%';
+          outputFormat.value = 'image/png';
+          updatePreview();
+        }
+      });
+
+      // ===== KIRPICI =====
+      const fileInput = document.getElementById('file-input');
+      const uploadUi = document.getElementById('upload-ui');
+      const cropWrapper = document.getElementById('crop-wrapper');
+      const sourceImg = document.getElementById('source-image');
+      const cropBox = document.getElementById('crop-box');
+      const previewCanvas = document.getElementById('preview-canvas');
+      const downloadBtn = document.getElementById('download-btn');
+      const resetBtn = document.getElementById('reset-btn');
+      const shapeButtons = document.querySelectorAll('.shape-btn');
+
+      let currentAction = null;
+      let activeHandle = null;
+      let startX, startY, startLeft, startTop, startWidth, startHeight;
+      let activeRatio = 0;
+      let activeShape = 'free';
+
+      function clientPos(e) {
+        if (e.touches && e.touches.length) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        return { x: e.clientX, y: e.clientY };
+      }
+
+      fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          sourceImg.src = e.target.result;
+          sourceImg.onload = () => {
+            uploadUi.style.display = 'none';
+            cropWrapper.style.display = 'block';
+            const w = sourceImg.clientWidth;
+            const h = sourceImg.clientHeight;
+            const size = Math.min(w, h) * 0.6;
+            cropBox.style.width = size + 'px';
+            cropBox.style.height = size + 'px';
+            cropBox.style.left = ((w - size) / 2) + 'px';
+            cropBox.style.top = ((h - size) / 2) + 'px';
+            downloadBtn.disabled = false;
+            updatePreviewCrop();
+          };
+        };
+        reader.readAsDataURL(file);
+      });
+
+      shapeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          shapeButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeShape = btn.dataset.shape;
+          activeRatio = parseFloat(btn.dataset.ratio);
+          cropBox.classList.toggle('round', activeShape === 'circle');
+          if (activeRatio > 0 && sourceImg.clientWidth) {
+            const maxW = cropWrapper.clientWidth;
+            const maxH = sourceImg.clientHeight;
+            let newW = cropBox.offsetWidth;
+            let newH = newW / activeRatio;
+            if (newH > maxH) { newH = maxH; newW = newH * activeRatio; }
+            if (newW > maxW) { newW = maxW; newH = newW / activeRatio; }
+            let left = cropBox.offsetLeft;
+            let top = cropBox.offsetTop;
+            if (left + newW > maxW) left = Math.max(0, maxW - newW);
+            if (top + newH > maxH) top = Math.max(0, maxH - newH);
+            cropBox.style.width = newW + 'px';
+            cropBox.style.height = newH + 'px';
+            cropBox.style.left = left + 'px';
+            cropBox.style.top = top + 'px';
+          }
+          updatePreviewCrop();
+        });
+      });
+
+      cropBox.addEventListener('pointerdown', startActionCrop);
+
+      function startActionCrop(e) {
+        e.preventDefault();
+        const pos = clientPos(e);
+        if (cropBox.setPointerCapture && e.pointerId !== undefined) cropBox.setPointerCapture(e.pointerId);
+        startX = pos.x; startY = pos.y;
+        startLeft = cropBox.offsetLeft; startTop = cropBox.offsetTop;
+        startWidth = cropBox.offsetWidth; startHeight = cropBox.offsetHeight;
+        if (e.target.classList.contains('handle')) {
+          currentAction = 'resize';
+          activeHandle = e.target.getAttribute('data-handle');
+        } else {
+          currentAction = 'move';
+        }
+        document.addEventListener('pointermove', doActionCrop);
+        document.addEventListener('pointerup', endActionCrop);
+        document.addEventListener('pointercancel', endActionCrop);
+      }
+
+      function doActionCrop(e) {
+        if (!currentAction) return;
+        e.preventDefault();
+        const pos = clientPos(e);
+        const dx = pos.x - startX;
+        const dy = pos.y - startY;
+        const maxW = cropWrapper.clientWidth;
+        const maxH = sourceImg.clientHeight || cropWrapper.clientHeight;
+
+        if (currentAction === 'move') {
+          let newLeft = Math.max(0, Math.min(startLeft + dx, maxW - startWidth));
+          let newTop = Math.max(0, Math.min(startTop + dy, maxH - startHeight));
+          cropBox.style.left = newLeft + 'px';
+          cropBox.style.top = newTop + 'px';
+        } else if (currentAction === 'resize') {
+          let newLeft = startLeft, newTop = startTop, newWidth = startWidth, newHeight = startHeight;
+          if (activeRatio > 0) {
+            const dir = (activeHandle === 'tl' || activeHandle === 'bl') ? -1 : 1;
+            let delta = dx * dir;
+            newWidth = Math.max(40, startWidth + delta);
+            newHeight = newWidth / activeRatio;
+            if (activeHandle.includes('l')) newLeft = startLeft + (startWidth - newWidth);
+            if (activeHandle.includes('t')) newTop = startTop + (startHeight - newHeight);
+            if (newLeft < 0) { newWidth += newLeft; newHeight = newWidth / activeRatio; newLeft = 0; if(activeHandle.includes('t')) newTop = startTop + (startHeight - newHeight); }
+            if (newTop < 0) { newHeight += newTop; newWidth = newHeight * activeRatio; newTop = 0; if(activeHandle.includes('l')) newLeft = startLeft + (startWidth - newWidth); }
+            if (newLeft + newWidth > maxW) { newWidth = maxW - newLeft; newHeight = newWidth / activeRatio; }
+            if (newTop + newHeight > maxH) { newHeight = maxH - newTop; newWidth = newHeight * activeRatio; }
+          } else {
+            if (activeHandle.includes('r')) newWidth = Math.max(40, Math.min(startWidth + dx, maxW - startLeft));
+            if (activeHandle.includes('b')) newHeight = Math.max(40, Math.min(startHeight + dy, maxH - startTop));
+            if (activeHandle.includes('l')) { let pw = startWidth - dx; if (pw >= 40 && startLeft + dx >= 0) { newLeft = startLeft + dx; newWidth = pw; } }
+            if (activeHandle.includes('t')) { let ph = startHeight - dy; if (ph >= 40 && startTop + dy >= 0) { newTop = startTop + dy; newHeight = ph; } }
+          }
+          cropBox.style.left = newLeft + 'px';
+          cropBox.style.top = newTop + 'px';
+          cropBox.style.width = newWidth + 'px';
+          cropBox.style.height = newHeight + 'px';
+        }
+        updatePreviewCrop();
+      }
+
+      function endActionCrop() {
+        currentAction = null;
+        activeHandle = null;
+        document.removeEventListener('pointermove', doActionCrop);
+        document.removeEventListener('pointerup', endActionCrop);
+        document.removeEventListener('pointercancel', endActionCrop);
+      }
+
+      function updatePreviewCrop() {
+        if (!sourceImg.naturalWidth) return;
+        const ctx = previewCanvas.getContext('2d');
+        const scaleX = sourceImg.naturalWidth / sourceImg.clientWidth;
+        const scaleY = sourceImg.naturalHeight / sourceImg.clientHeight;
+        const cropX = cropBox.offsetLeft * scaleX;
+        const cropY = cropBox.offsetTop * scaleY;
+        const cropW = cropBox.offsetWidth * scaleX;
+        const cropH = cropBox.offsetHeight * scaleY;
+        previewCanvas.width = cropW;
+        previewCanvas.height = cropH;
+        ctx.clearRect(0, 0, cropW, cropH);
+        if (activeShape === 'circle') {
+          ctx.save();
+          ctx.beginPath();
+          ctx.ellipse(cropW / 2, cropH / 2, cropW / 2, cropH / 2, 0, 0, Math.PI * 2);
+          ctx.clip();
+        }
+        ctx.drawImage(sourceImg, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+        if (activeShape === 'circle') ctx.restore();
+        previewCanvas.classList.toggle('round-preview', activeShape === 'circle');
+      }
+
+      window.addEventListener('resize', updatePreviewCrop);
+
+      downloadBtn.addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.download = 'kirpilmis-gorsel.png';
+        link.href = previewCanvas.toDataURL('image/png');
+        link.click();
+      });
+
+      resetBtn.addEventListener('click', () => { location.reload(); });
+
+      // ===== ÇEVİRİCİ =====
+      if (typeof pdfjsLib !== 'undefined') {
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      }
+
+      const convertTabs = document.querySelectorAll('.convert-tab');
+      const convertPanels = document.querySelectorAll('.convert-panel');
+      convertTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          convertTabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          const target = tab.dataset.tab;
+          convertPanels.forEach(p => {
+            p.classList.toggle('active', p.dataset.panel === target);
+          });
+        });
+      });
+
+      function formatBytes(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+      }
+      function nextFrame() { return new Promise(r => setTimeout(r, 0)); }
+      function showStatus(el, msg, type = 'info') {
+        el.textContent = msg;
+        el.className = 'convert-status show ' + type;
+      }
+      function hideStatus(el) { el.className = 'convert-status'; }
+
+      // ---- PANEL 1: PDF → PPTX ----
+      const pdfDropZone = document.getElementById('pdfDropZone');
+      const pdfInput = document.getElementById('pdfInput');
+      const pdfFileInfo = document.getElementById('pdfFileInfo');
+      const pdfQuality = document.getElementById('pdfQuality');
+      const pdfFormat = document.getElementById('pdfFormat');
+      const convertPdfBtn = document.getElementById('convertPdfBtn');
+      const convertProgressWrap = document.getElementById('convertProgressWrap');
+      const convertProgressFill = document.getElementById('convertProgressFill');
+      const convertProgressText = document.getElementById('convertProgressText');
+      const convertStatus = document.getElementById('convertStatus');
+      const convertPreview = document.getElementById('convertPreview');
+
+      let pdfDoc = null;
+      let currentPdfFile = null;
+
+      const PDF_QUALITY_PRESETS = {
+        low:    { scale: 1.0, quality: 0.60 },
+        medium: { scale: 1.5, quality: 0.75 },
+        high:   { scale: 2.0, quality: 0.90 }
+      };
+
+      function setConvertProgress(percent, text) {
+        convertProgressFill.style.width = percent + '%';
+        if (text) convertProgressText.innerHTML = text;
+      }
+
+      pdfDropZone.addEventListener('click', () => pdfInput.click());
+      pdfDropZone.addEventListener('dragover', (e) => { e.preventDefault(); pdfDropZone.classList.add('dragover'); });
+      pdfDropZone.addEventListener('dragleave', () => pdfDropZone.classList.remove('dragover'));
+      pdfDropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        pdfDropZone.classList.remove('dragover');
+        const f = e.dataTransfer.files[0];
+        if (f) handlePdfFile(f);
+      });
+      pdfInput.addEventListener('change', (e) => {
+        const f = e.target.files[0];
+        if (f) handlePdfFile(f);
+      });
+
+      async function handlePdfFile(file) {
+        hideStatus(convertStatus);
+        convertPreview.innerHTML = '';
+        if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+          showStatus(convertStatus, '❌ Lütfen bir PDF dosyası seçin.', 'error');
+          return;
+        }
+        pdfFileInfo.textContent = '⏳ Yükleniyor: ' + file.name;
+        convertPdfBtn.disabled = true;
+        currentPdfFile = file;
+        try {
+          const buf = await file.arrayBuffer();
+          pdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
+          pdfFileInfo.textContent = `✅ ${file.name} — ${pdfDoc.numPages} sayfa, ${formatBytes(file.size)}`;
+          showStatus(convertStatus, `PDF hazır: ${pdfDoc.numPages} sayfa.`, 'info');
+          convertPdfBtn.disabled = false;
+        } catch (err) {
+          console.error(err);
+          pdfFileInfo.textContent = '';
+          showStatus(convertStatus, '❌ PDF okunamadı: ' + err.message, 'error');
+          pdfDoc = null;
+        }
+      }
+
+      convertPdfBtn.addEventListener('click', async () => {
+        if (!pdfDoc) return;
+        convertPdfBtn.disabled = true;
+        convertPreview.innerHTML = '';
+        hideStatus(convertStatus);
+        convertProgressWrap.classList.add('active');
+        setConvertProgress(0, 'Başlıyor...');
+
+        const preset = PDF_QUALITY_PRESETS[pdfQuality.value];
+        const imgFormat = pdfFormat.value;
+        const pptx = new PptxGenJS();
+        let slideDefined = false;
+        const slideWidthIn = 10;
+        const totalPages = pdfDoc.numPages;
+
+        try {
+          for (let i = 1; i <= totalPages; i++) {
+            setConvertProgress(Math.round(((i - 1) / totalPages) * 100), `Sayfa <b>${i}</b> / ${totalPages}`);
+            await nextFrame();
+            const page = await pdfDoc.getPage(i);
+            const viewport = page.getViewport({ scale: preset.scale });
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.floor(viewport.width);
+            canvas.height = Math.floor(viewport.height);
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            await page.render({ canvasContext: ctx, viewport }).promise;
+            const imgData = canvas.toDataURL(imgFormat, preset.quality);
+            const slideHeightIn = (viewport.height / viewport.width) * slideWidthIn;
+            if (!slideDefined) {
+              pptx.defineLayout({ name: 'PDF_LAYOUT', width: slideWidthIn, height: slideHeightIn });
+              pptx.layout = 'PDF_LAYOUT';
+              slideDefined = true;
+            }
+            const slide = pptx.addSlide();
+            slide.background = { color: 'FFFFFF' };
+            slide.addImage({ data: imgData, x: 0, y: 0, w: slideWidthIn, h: slideHeightIn });
+            if (i <= 3) {
+              const img = document.createElement('img');
+              img.src = imgData; img.alt = 'Sayfa ' + i;
+              convertPreview.appendChild(img);
+            }
+            canvas.width = 0; canvas.height = 0;
+          }
+          setConvertProgress(95, 'PPTX paketleniyor...');
+          await nextFrame();
+          await pptx.writeFile({ fileName: (currentPdfFile.name.replace(/\.pdf$/i, '') || 'output') + '.pptx' });
+          setConvertProgress(100, 'Tamamlandı! ✅');
+          showStatus(convertStatus, '✅ PPTX indirildi!', 'success');
+        } catch (err) {
+          console.error(err);
+          showStatus(convertStatus, '❌ Hata: ' + err.message, 'error');
+        } finally {
+          convertPdfBtn.disabled = false;
+          setTimeout(() => {
+            convertProgressWrap.classList.remove('active');
+            setConvertProgress(0, '');
+          }, 1800);
+        }
+      });
+
+      // ---- PANEL 2: PDF → WORD ----
+      const pdfWordDropZone = document.getElementById('pdfWordDropZone');
+      const pdfWordInput = document.getElementById('pdfWordInput');
+      const pdfWordFileInfo = document.getElementById('pdfWordFileInfo');
+      const convertPdfWordBtn = document.getElementById('convertPdfWordBtn');
+      const pdfWordProgressWrap = document.getElementById('pdfWordProgressWrap');
+      const pdfWordProgressFill = document.getElementById('pdfWordProgressFill');
+      const pdfWordProgressText = document.getElementById('pdfWordProgressText');
+      const pdfWordStatus = document.getElementById('pdfWordStatus');
+      const pdfWordHint = document.getElementById('pdfWordHint');
+
+      let pdfWordDoc = null;
+      let currentPdfWordFile = null;
+
+      function setWordProgress(p, t) {
+        pdfWordProgressFill.style.width = p + '%';
+        if (t) pdfWordProgressText.innerHTML = t;
+      }
+
+      pdfWordDropZone.addEventListener('click', () => pdfWordInput.click());
+      pdfWordDropZone.addEventListener('dragover', (e) => { e.preventDefault(); pdfWordDropZone.classList.add('dragover'); });
+      pdfWordDropZone.addEventListener('dragleave', () => pdfWordDropZone.classList.remove('dragover'));
+      pdfWordDropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        pdfWordDropZone.classList.remove('dragover');
+        const f = e.dataTransfer.files[0];
+        if (f) handlePdfWordFile(f);
+      });
+      pdfWordInput.addEventListener('change', (e) => {
+        const f = e.target.files[0];
+        if (f) handlePdfWordFile(f);
+      });
+
+      async function handlePdfWordFile(file) {
+        pdfWordHint.classList.remove('show');
+        hideStatus(pdfWordStatus);
+        if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+          showStatus(pdfWordStatus, '❌ Lütfen bir PDF dosyası seçin.', 'error');
+          return;
+        }
+        pdfWordFileInfo.textContent = '⏳ Yükleniyor: ' + file.name;
+        convertPdfWordBtn.disabled = true;
+        currentPdfWordFile = file;
+        try {
+          const buf = await file.arrayBuffer();
+          pdfWordDoc = await pdfjsLib.getDocument({ data: buf }).promise;
+          pdfWordFileInfo.textContent = `✅ ${file.name} — ${pdfWordDoc.numPages} sayfa, ${formatBytes(file.size)}`;
+          showStatus(pdfWordStatus, `PDF hazır: ${pdfWordDoc.numPages} sayfa.`, 'info');
+          convertPdfWordBtn.disabled = false;
+        } catch (err) {
+          console.error(err);
+          pdfWordFileInfo.textContent = '';
+          showStatus(pdfWordStatus, '❌ PDF okunamadı: ' + err.message, 'error');
+          pdfWordDoc = null;
+        }
+      }
+
+      convertPdfWordBtn.addEventListener('click', async () => {
+        if (!pdfWordDoc) return;
+        convertPdfWordBtn.disabled = true;
+        hideStatus(pdfWordStatus);
+        pdfWordProgressWrap.classList.add('active');
+        setWordProgress(0, 'Başlıyor...');
+
+        const totalPages = pdfWordDoc.numPages;
+        const pagesText = [];
+
+        try {
+          for (let i = 1; i <= totalPages; i++) {
+            setWordProgress(Math.round(((i - 1) / totalPages) * 100), `Sayfa <b>${i}</b> / ${totalPages}`);
+            await nextFrame();
+            const page = await pdfWordDoc.getPage(i);
+            const textContent = await page.getTextContent();
+            const items = textContent.items;
+            let lastY = null;
+            let line = '';
+            const lines = [];
+            for (const it of items) {
+              if ('str' in it) {
+                const y = it.transform ? it.transform[5] : null;
+                if (lastY !== null && y !== null && Math.abs(y - lastY) > 2) {
+                  lines.push(line);
+                  line = '';
+                }
+                line += it.str;
+                lastY = y;
+              }
+            }
+            if (line) lines.push(line);
+            pagesText.push(lines);
+          }
+
+          setWordProgress(95, 'Word belgesi oluşturuluyor...');
+          await nextFrame();
+
+          const { Document, Packer, Paragraph, TextRun } = window.docx;
+          const children = [];
+
+          pagesText.forEach((lines, idx) => {
+            if (idx > 0) {
+              children.push(new Paragraph({ children: [new TextRun({ text: '', break: 1 })], pageBreakBefore: true }));
+            }
+            if (lines.length === 0) {
+              children.push(new Paragraph({
+                children: [new TextRun({ text: `[Sayfa ${idx + 1} — Metin bulunamadı (muhtemelen taranmış PDF)]`, italics: true, color: '888888' })]
+              }));
+            } else {
+              lines.forEach(l => {
+                children.push(new Paragraph({
+                  children: [new TextRun({ text: l })]
+                }));
+              });
+            }
+          });
+
+          const doc = new Document({
+            sections: [{ properties: {}, children }]
+          });
+
+          const blob = await Packer.toBlob(doc);
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = (currentPdfWordFile.name.replace(/\.pdf$/i, '') || 'output') + '.docx';
+          a.click();
+          URL.revokeObjectURL(url);
+
+          setWordProgress(100, 'Tamamlandı! ✅');
+          showStatus(pdfWordStatus, '✅ Word belgesi indirildi!', 'success');
+        } catch (err) {
+          console.error(err);
+          showStatus(pdfWordStatus, '❌ Hata: ' + err.message, 'error');
+        } finally {
+          convertPdfWordBtn.disabled = false;
+          setTimeout(() => {
+            pdfWordProgressWrap.classList.remove('active');
+            setWordProgress(0, '');
+          }, 1800);
+        }
+      });
+
+      // ---- PANEL 3: GÖRSEL → PDF ----
+      const imgPdfDropZone = document.getElementById('imgPdfDropZone');
+      const imgPdfInput = document.getElementById('imgPdfInput');
+      const imgPdfList = document.getElementById('imgPdfList');
+      const imgPdfPageSize = document.getElementById('imgPdfPageSize');
+      const imgPdfOrientation = document.getElementById('imgPdfOrientation');
+      const imgPdfMargin = document.getElementById('imgPdfMargin');
+      const convertImgPdfBtn = document.getElementById('convertImgPdfBtn');
+      const clearImgPdfBtn = document.getElementById('clearImgPdfBtn');
+      const imgPdfStatus = document.getElementById('imgPdfStatus');
+
+      let imgPdfFiles = [];
+
+      function renderImgPdfList() {
+        imgPdfList.innerHTML = '';
+        if (imgPdfFiles.length === 0) {
+          convertImgPdfBtn.disabled = true;
+          return;
+        }
+        imgPdfFiles.forEach((item, idx) => {
+          const row = document.createElement('div');
+          row.className = 'img-pdf-item';
+          row.innerHTML = `
+            <img class="thumb" src="${item.dataUrl}" alt="">
+            <span class="name">${idx + 1}. ${item.file.name}</span>
+            <button class="rm" data-idx="${idx}" title="Kaldır"><i class="fas fa-times"></i></button>
+          `;
+          imgPdfList.appendChild(row);
+        });
+        imgPdfList.querySelectorAll('.rm').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const idx = parseInt(e.currentTarget.dataset.idx);
+            imgPdfFiles.splice(idx, 1);
+            renderImgPdfList();
+          });
+        });
+        convertImgPdfBtn.disabled = false;
+      }
+
+      imgPdfDropZone.addEventListener('click', () => imgPdfInput.click());
+      imgPdfDropZone.addEventListener('dragover', (e) => { e.preventDefault(); imgPdfDropZone.classList.add('dragover'); });
+      imgPdfDropZone.addEventListener('dragleave', () => imgPdfDropZone.classList.remove('dragover'));
+      imgPdfDropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        imgPdfDropZone.classList.remove('dragover');
+        handleImgPdfFiles(Array.from(e.dataTransfer.files));
+      });
+      imgPdfInput.addEventListener('change', (e) => {
+        handleImgPdfFiles(Array.from(e.target.files));
+        imgPdfInput.value = '';
+      });
+
+      function handleImgPdfFiles(files) {
+        const validFiles = files.filter(f => f.type.startsWith('image/'));
+        if (validFiles.length === 0) return;
+        let loaded = 0;
+        validFiles.forEach(file => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+              imgPdfFiles.push({ file, dataUrl: e.target.result, img });
+              loaded++;
+              if (loaded === validFiles.length) renderImgPdfList();
+            };
+            img.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      clearImgPdfBtn.addEventListener('click', () => {
+        imgPdfFiles = [];
+        renderImgPdfList();
+        hideStatus(imgPdfStatus);
+      });
+
+      convertImgPdfBtn.addEventListener('click', async () => {
+        if (imgPdfFiles.length === 0) return;
+        convertImgPdfBtn.disabled = true;
+        hideStatus(imgPdfStatus);
+        try {
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
+
+          for (let i = 0; i < imgPdfFiles.length; i++) {
+            const { img, file } = imgPdfFiles[i];
+            const pageSize = imgPdfPageSize.value;
+            const orientOpt = imgPdfOrientation.value;
+            const margin = parseInt(imgPdfMargin.value) || 0;
+
+            let pageW, pageH;
+            if (pageSize === 'a4') { pageW = 595.28; pageH = 841.89; }
+            else if (pageSize === 'letter') { pageW = 612; pageH = 792; }
+            else { pageW = img.width; pageH = img.height; }
+
+            let orientation = 'p';
+            if (orientOpt === 'landscape') orientation = 'l';
+            else if (orientOpt === 'portrait') orientation = 'p';
+            else orientation = img.width > img.height ? 'l' : 'p';
+
+            if (pageSize !== 'fit') {
+              if (orientation === 'l') { const t = pageW; pageW = pageH; pageH = t; }
+            }
+
+            if (i > 0) pdf.addPage([pageW, pageH], orientation);
+
+            const availableW = pageW - margin * 2;
+            const availableH = pageH - margin * 2;
+            const ratio = Math.min(availableW / img.width, availableH / img.height);
+            const drawW = img.width * ratio;
+            const drawH = img.height * ratio;
+            const drawX = (pageW - drawW) / 2;
+            const drawY = (pageH - drawH) / 2;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+
+            pdf.addImage(dataUrl, 'JPEG', drawX, drawY, drawW, drawH);
+            canvas.width = 0; canvas.height = 0;
+            await nextFrame();
+          }
+
+          pdf.save('gorseller.pdf');
+          showStatus(imgPdfStatus, `✅ PDF oluşturuldu (${imgPdfFiles.length} sayfa)!`, 'success');
+        } catch (err) {
+          console.error(err);
+          showStatus(imgPdfStatus, '❌ Hata: ' + err.message, 'error');
+        } finally {
+          convertImgPdfBtn.disabled = false;
+        }
+      });
+
+      // ---- PANEL 4: EXCEL → PDF ----
+      const excelDropZone = document.getElementById('excelDropZone');
+      const excelInput = document.getElementById('excelInput');
+      const excelFileInfo = document.getElementById('excelFileInfo');
+      const excelPreview = document.getElementById('excelPreview');
+      const excelOrientation = document.getElementById('excelOrientation');
+      const convertExcelBtn = document.getElementById('convertExcelBtn');
+      const excelStatus = document.getElementById('excelStatus');
+
+      let excelWorkbook = null;
+      let currentExcelFile = null;
+
+      excelDropZone.addEventListener('click', () => excelInput.click());
+      excelDropZone.addEventListener('dragover', (e) => { e.preventDefault(); excelDropZone.classList.add('dragover'); });
+      excelDropZone.addEventListener('dragleave', () => excelDropZone.classList.remove('dragover'));
+      excelDropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        excelDropZone.classList.remove('dragover');
+        const f = e.dataTransfer.files[0];
+        if (f) handleExcelFile(f);
+      });
+      excelInput.addEventListener('change', (e) => {
+        const f = e.target.files[0];
+        if (f) handleExcelFile(f);
+      });
+
+      function handleExcelFile(file) {
+        hideStatus(excelStatus);
+        const okExt = /\.(xlsx|xls|csv)$/i.test(file.name);
+        if (!okExt) {
+          showStatus(excelStatus, '❌ Lütfen bir Excel/CSV dosyası seçin.', 'error');
+          return;
+        }
+        excelFileInfo.textContent = '⏳ Yükleniyor: ' + file.name;
+        convertExcelBtn.disabled = true;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const data = new Uint8Array(e.target.result);
+            excelWorkbook = XLSX.read(data, { type: 'array' });
+            currentExcelFile = file;
+            excelFileInfo.textContent = `✅ ${file.name} — ${excelWorkbook.SheetNames.length} sayfa, ${formatBytes(file.size)}`;
+            showExcelPreview(excelWorkbook.SheetNames[0]);
+            showStatus(excelStatus, `Excel hazır.`, 'info');
+            convertExcelBtn.disabled = false;
+          } catch (err) {
+            console.error(err);
+            showStatus(excelStatus, '❌ Dosya okunamadı: ' + err.message, 'error');
+            excelWorkbook = null;
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      }
+
+      function showExcelPreview(sheetName) {
+        const sheet = excelWorkbook.Sheets[sheetName];
+        const html = XLSX.utils.sheet_to_html(sheet, { id: 'xlsx-preview-table' });
+        excelPreview.innerHTML = html;
+        excelPreview.style.display = 'block';
+      }
+
+      convertExcelBtn.addEventListener('click', async () => {
+        if (!excelWorkbook) return;
+        convertExcelBtn.disabled = true;
+        hideStatus(excelStatus);
+        try {
+          const { jsPDF } = window.jspdf;
+          const orient = excelOrientation.value === 'portrait' ? 'portrait' : 'landscape';
+          const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: orient });
+          const pageW = pdf.internal.pageSize.getWidth();
+          const pageH = pdf.internal.pageSize.getHeight();
+          const margin = 24;
+
+          let firstSheet = true;
+          for (const sheetName of excelWorkbook.SheetNames) {
+            const sheet = excelWorkbook.Sheets[sheetName];
+            const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, defval: '' });
+            if (rows.length === 0) continue;
+
+            if (!firstSheet) pdf.addPage();
+            firstSheet = false;
+
+            pdf.setFontSize(13);
+            pdf.setTextColor(0, 180, 200);
+            pdf.text(sheetName, margin, margin + 12);
+
+            const fontSize = 8;
+            pdf.setFontSize(fontSize);
+            pdf.setTextColor(0, 0, 0);
+
+            const colCount = Math.max(...rows.map(r => r.length));
+            const usableW = pageW - margin * 2;
+            const cellW = usableW / colCount;
+            const lineH = fontSize + 3;
+            const startY = margin + 22;
+            let y = startY;
+
+            for (let r = 0; r < rows.length; r++) {
+              if (y + lineH > pageH - margin) {
+                pdf.addPage();
+                y = margin;
+              }
+              for (let c = 0; c < colCount; c++) {
+                const val = rows[r][c] !== undefined ? String(rows[r][c]) : '';
+                const x = margin + c * cellW;
+                pdf.rect(x, y, cellW, lineH);
+                if (val.length > 0) {
+                  const maxChars = Math.floor(cellW / (fontSize * 0.5));
+                  const shortVal = val.length > maxChars ? val.substring(0, maxChars - 1) + '…' : val;
+                  pdf.text(shortVal, x + 2, y + lineH - 3);
+                }
+              }
+              y += lineH;
+            }
+            await nextFrame();
+          }
+
+          pdf.save((currentExcelFile.name.replace(/\.(xlsx|xls|csv)$/i, '') || 'excel') + '.pdf');
+          showStatus(excelStatus, '✅ PDF oluşturuldu!', 'success');
+        } catch (err) {
+          console.error(err);
+          showStatus(excelStatus, '❌ Hata: ' + err.message, 'error');
+        } finally {
+          convertExcelBtn.disabled = false;
+        }
+      });
+
+      // ===== PANEL 5: GÖRSEL → PIXEL ART =====
+      const imgPixelDropZone = document.getElementById('imgPixelDropZone');
+      const imgPixelInput = document.getElementById('imgPixelInput');
+      const pixelBlockSize = document.getElementById('pixelBlockSize');
+      const pixelBlockValue = document.getElementById('pixelBlockValue');
+      const pixelColorCount = document.getElementById('pixelColorCount');
+      const pixelColorValue = document.getElementById('pixelColorValue');
+      const pifOriginal = document.getElementById('pifOriginal');
+      const pifResult = document.getElementById('pifResult');
+      const downloadPixelArtBtn = document.getElementById('downloadPixelArtBtn');
+      const imgPixelStatus = document.getElementById('imgPixelStatus');
+
+      let pixelSourceImg = null;
+
+      imgPixelDropZone.addEventListener('click', () => imgPixelInput.click());
+      imgPixelDropZone.addEventListener('dragover', (e) => { e.preventDefault(); imgPixelDropZone.classList.add('dragover'); });
+      imgPixelDropZone.addEventListener('dragleave', () => imgPixelDropZone.classList.remove('dragover'));
+      imgPixelDropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        imgPixelDropZone.classList.remove('dragover');
+        const f = e.dataTransfer.files[0];
+        if (f) handlePixelImage(f);
+      });
+      imgPixelInput.addEventListener('change', (e) => {
+        const f = e.target.files[0];
+        if (f) handlePixelImage(f);
+      });
+
+      pixelBlockSize.addEventListener('input', () => {
+        pixelBlockValue.textContent = pixelBlockSize.value + 'px';
+        if (pixelSourceImg) renderPixelArt();
+      });
+      pixelColorCount.addEventListener('input', () => {
+        pixelColorValue.textContent = pixelColorCount.value;
+        if (pixelSourceImg) renderPixelArt();
+      });
+
+      function handlePixelImage(file) {
+        if (!file.type.startsWith('image/')) return;
+        hideStatus(imgPixelStatus);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            pixelSourceImg = img;
+            pifOriginal.innerHTML = '';
+            const im = document.createElement('img');
+            im.src = e.target.result;
+            pifOriginal.appendChild(im);
+            renderPixelArt();
+            downloadPixelArtBtn.disabled = false;
+            showStatus(imgPixelStatus, '✅ Görsel yüklendi.', 'success');
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function medianCutPalette(pixels, maxColors) {
+        if (pixels.length === 0) return [[0,0,0]];
+        let boxes = [pixels];
+        while (boxes.length < maxColors) {
+          let bestIdx = -1;
+          let bestScore = -1;
+          for (let i = 0; i < boxes.length; i++) {
+            const box = boxes[i];
+            if (box.length < 2) continue;
+            const r = colorRange(box);
+            const score = r.range * Math.log(box.length + 1);
+            if (score > bestScore) { bestScore = score; bestIdx = i; }
+          }
+          if (bestIdx === -1) break;
+          const box = boxes[bestIdx];
+          const r = colorRange(box);
+          box.sort((a, b) => a[r.channel] - b[r.channel]);
+          const mid = Math.floor(box.length / 2);
+          const box1 = box.slice(0, mid);
+          const box2 = box.slice(mid);
+          boxes.splice(bestIdx, 1, box1, box2);
+        }
+        return boxes.map(box => {
+          let r = 0, g = 0, b = 0;
+          for (const p of box) { r += p[0]; g += p[1]; b += p[2]; }
+          const n = box.length;
+          return [Math.round(r/n), Math.round(g/n), Math.round(b/n)];
+        });
+      }
+
+      function colorRange(box) {
+        let rMin = 255, rMax = 0, gMin = 255, gMax = 0, bMin = 255, bMax = 0;
+        for (const p of box) {
+          if (p[0] < rMin) rMin = p[0]; if (p[0] > rMax) rMax = p[0];
+          if (p[1] < gMin) gMin = p[1]; if (p[1] > gMax) gMax = p[1];
+          if (p[2] < bMin) bMin = p[2]; if (p[2] > bMax) bMax = p[2];
+        }
+        const rR = rMax - rMin, gR = gMax - gMin, bR = bMax - bMin;
+        let channel = 0, range = rR;
+        if (gR > range) { channel = 1; range = gR; }
+        if (bR > range) { channel = 2; range = bR; }
+        return { channel, range };
+      }
+
+      function findNearest(r, g, b, palette) {
+        let best = palette[0];
+        let bestDist = Infinity;
+        for (const c of palette) {
+          const d = (r - c[0])**2 + (g - c[1])**2 + (b - c[2])**2;
+          if (d < bestDist) { bestDist = d; best = c; }
+        }
+        return best;
+      }
+
+      function renderPixelArt() {
+        if (!pixelSourceImg) return;
+        const block = parseInt(pixelBlockSize.value) || 8;
+        const colorCount = parseInt(pixelColorCount.value) || 16;
+
+        const smallW = Math.max(1, Math.round(pixelSourceImg.width / block));
+        const smallH = Math.max(1, Math.round(pixelSourceImg.height / block));
+
+        const smallCanvas = document.createElement('canvas');
+        smallCanvas.width = smallW;
+        smallCanvas.height = smallH;
+        const sctx = smallCanvas.getContext('2d');
+        sctx.imageSmoothingEnabled = false;
+        sctx.drawImage(pixelSourceImg, 0, 0, smallW, smallH);
+
+        const imgData = sctx.getImageData(0, 0, smallW, smallH);
+        const data = imgData.data;
+
+        const samples = [];
+        const step = Math.max(1, Math.floor((smallW * smallH) / 5000));
+        for (let i = 0; i < data.length; i += 4 * step) {
+          if (data[i+3] < 128) continue;
+          samples.push([data[i], data[i+1], data[i+2]]);
+        }
+
+        const palette = medianCutPalette(samples, colorCount);
+
+        for (let i = 0; i < data.length; i += 4) {
+          if (data[i+3] < 128) continue;
+          const nearest = findNearest(data[i], data[i+1], data[i+2], palette);
+          data[i] = nearest[0];
+          data[i+1] = nearest[1];
+          data[i+2] = nearest[2];
+        }
+        sctx.putImageData(imgData, 0, 0);
+
+        const outCanvas = document.createElement('canvas');
+        outCanvas.width = smallW * block;
+        outCanvas.height = smallH * block;
+        const octx = outCanvas.getContext('2d');
+        octx.imageSmoothingEnabled = false;
+        octx.drawImage(smallCanvas, 0, 0, outCanvas.width, outCanvas.height);
+
+        pifResult.innerHTML = '';
+        const resultImg = new Image();
+        resultImg.src = outCanvas.toDataURL('image/png');
+        resultImg.dataset.final = '1';
+        pifResult.appendChild(resultImg);
+
+        const paletteDiv = document.createElement('div');
+        paletteDiv.className = 'pif-palette';
+        palette.slice(0, colorCount).forEach(c => {
+          const sw = document.createElement('div');
+          sw.className = 'sw';
+          sw.style.background = `rgb(${c[0]},${c[1]},${c[2]})`;
+          sw.title = `RGB(${c[0]}, ${c[1]}, ${c[2]})`;
+          paletteDiv.appendChild(sw);
+        });
+        pifResult.appendChild(paletteDiv);
+
+        const label = document.createElement('div');
+        label.className = 'pif-palette-label';
+        label.textContent = `${palette.length} renk paleti · ${smallW}×${smallH} pixel grid`;
+        pifResult.appendChild(label);
+      }
+
+      downloadPixelArtBtn.addEventListener('click', () => {
+        const img = pifResult.querySelector('img');
+        if (!img) return;
+        const link = document.createElement('a');
+        link.download = 'pixel-art.png';
+        link.href = img.src;
+        link.click();
+      });
+
+      // ---- PANEL 6: METİN → PDF (Türkçe destekli) ----
+      const txtTitle = document.getElementById('txtTitle');
+      const txtContent = document.getElementById('txtContent');
+      const txtFont = document.getElementById('txtFont');
+      const txtSize = document.getElementById('txtSize');
+      const txtSizeValue = document.getElementById('txtSizeValue');
+      const txtAlign = document.getElementById('txtAlign');
+      const txtPageSize = document.getElementById('txtPageSize');
+      const txtMargin = document.getElementById('txtMargin');
+      const convertTxtBtn = document.getElementById('convertTxtBtn');
+      const clearTxtBtn = document.getElementById('clearTxtBtn');
+      const txtStatus = document.getElementById('txtStatus');
+
+      txtSize.addEventListener('input', () => {
+        txtSizeValue.textContent = txtSize.value + 'pt';
+      });
+
+      clearTxtBtn.addEventListener('click', () => {
+        txtTitle.value = '';
+        txtContent.value = '';
+        hideStatus(txtStatus);
+      });
+
+      convertTxtBtn.addEventListener('click', async () => {
+        const content = txtContent.value.trim();
+        if (!content) {
+          showStatus(txtStatus, '❌ Lütfen bir metin yazın.', 'error');
+          return;
+        }
+
+        showStatus(txtStatus, '⏳ Türkçe font hazırlanıyor...', 'info');
+        convertTxtBtn.disabled = true;
+
+        try {
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({ unit: 'pt', format: txtPageSize.value, orientation: 'portrait' });
+
+          // Türkçe font kaydet
+          const fontOk = await registerTurkishFont(pdf);
+          const fontChoice = txtFont.value;
+          let useFont;
+          if (fontChoice === 'roboto' && fontOk) {
+            useFont = 'Roboto';
+          } else if (fontChoice === 'helvetica' || fontChoice === 'times' || fontChoice === 'courier') {
+            useFont = fontChoice;
+          } else {
+            useFont = fontOk ? 'Roboto' : 'helvetica';
+          }
+
+          const pageW = pdf.internal.pageSize.getWidth();
+          const pageH = pdf.internal.pageSize.getHeight();
+          const margin = parseInt(txtMargin.value) || 50;
+          const usableW = pageW - margin * 2;
+          const fontSize = parseInt(txtSize.value) || 12;
+          const lineHeight = fontSize * 1.4;
+          const align = txtAlign.value;
+
+          let y = margin;
+
+          const title = txtTitle.value.trim();
+          if (title) {
+            pdf.setFont(useFont, 'bold');
+            pdf.setFontSize(fontSize + 6);
+            pdf.setTextColor(0, 0, 0);
+            const titleLines = pdf.splitTextToSize(title, usableW);
+            titleLines.forEach(line => {
+              if (y + lineHeight > pageH - margin) { pdf.addPage(); y = margin; }
+              let x, opts = {};
+              if (align === 'center') { x = pageW / 2; opts.align = 'center'; }
+              else if (align === 'right') { x = pageW - margin; opts.align = 'right'; }
+              else { x = margin; opts.align = 'left'; }
+              pdf.text(line, x, y, opts);
+              y += (fontSize + 6) * 1.4;
+            });
+            y += 8;
+          }
+
+          pdf.setFont(useFont, 'normal');
+          pdf.setFontSize(fontSize);
+          pdf.setTextColor(0, 0, 0);
+
+          const paragraphs = content.split('\n');
+
+          paragraphs.forEach((para, idx) => {
+            if (para.trim() === '') {
+              y += lineHeight * 0.6;
+              return;
+            }
+
+            const lines = pdf.splitTextToSize(para, usableW);
+
+            lines.forEach(line => {
+              if (y + lineHeight > pageH - margin) {
+                pdf.addPage();
+                y = margin;
+              }
+              let x, opts = {};
+              if (align === 'center') { x = pageW / 2; opts.align = 'center'; }
+              else if (align === 'right') { x = pageW - margin; opts.align = 'right'; }
+              else { x = margin; opts.align = 'left'; }
+              pdf.text(line, x, y, opts);
+              y += lineHeight;
+            });
+
+            if (idx < paragraphs.length - 1) y += lineHeight * 0.3;
+          });
+
+          const baseName = title
+            ? title.replace(/[^a-zA-Z0-9ğüşıöçĞÜŞİÖÇ\s-]/g, '').substring(0, 40).trim()
+            : 'metin';
+          pdf.save((baseName || 'metin') + '.pdf');
+
+          showStatus(txtStatus,
+            fontOk
+              ? `✅ PDF oluşturuldu! (${pdf.internal.getNumberOfPages()} sayfa) · Türkçe karakter destekli`
+              : `⚠️ PDF oluşturuldu ama Türkçe font yüklenemedi. İnternet bağlantını kontrol et.`,
+            fontOk ? 'success' : 'info'
+          );
+        } catch (err) {
+          console.error(err);
+          showStatus(txtStatus, '❌ Hata: ' + err.message, 'error');
+        } finally {
+          convertTxtBtn.disabled = false;
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>
