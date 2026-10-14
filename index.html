@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Kırp · QR · Pixel · Resim · Çevirici · Zeld</title>
+  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -11,1152 +12,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
   <script>
-    // Türkçe font URL'leri (Google Fonts Roboto - Unicode destekli)
     window.JSPDF_FONT_URLS = {
       regular: 'https://cdn.jsdelivr.net/gh/googlefonts/roboto@main/src/hinted/Roboto-Regular.ttf',
       bold: 'https://cdn.jsdelivr.net/gh/googlefonts/roboto@main/src/hinted/Roboto-Bold.ttf'
     };
   </script>
-  <style>
-    :root {
-      --bg-main: #0b0d12;
-      --bg-surface: #12151c;
-      --bg-elevated: #181c26;
-      --accent: #00f3ff;
-      --accent-soft: rgba(0, 243, 255, 0.15);
-      --text: #e6ecf5;
-      --text-muted: #6b7688;
-      --border: #232838;
-      --radius: 14px;
-      --shadow: 0 12px 30px rgba(0,0,0,0.6);
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: radial-gradient(circle at 15% 0%, rgba(0,243,255,0.06), transparent 45%), var(--bg-main);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .menu-btn {
-      position: fixed;
-      top: 18px;
-      left: 18px;
-      z-index: 1000;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      width: 46px;
-      height: 46px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--text);
-      font-size: 22px;
-      transition: 0.2s;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-    .menu-btn:hover { background: var(--bg-elevated); border-color: var(--accent); }
-
-    .sidepanel {
-      position: fixed;
-      top: 0;
-      left: -280px;
-      width: 270px;
-      height: 100vh;
-      background: var(--bg-surface);
-      border-right: 1px solid var(--border);
-      padding: 70px 20px 30px;
-      transition: left 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
-      z-index: 999;
-      backdrop-filter: blur(8px);
-      box-shadow: 4px 0 30px rgba(0,0,0,0.6);
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      overflow-y: auto;
-    }
-    .sidepanel.open { left: 0; }
-
-    .sidepanel .logo-area {
-      font-size: 20px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: -0.02em;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 16px;
-    }
-    .sidepanel .logo-area span { color: var(--accent); }
-
-    .sidepanel .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 12px 16px;
-      border-radius: 12px;
-      background: transparent;
-      color: var(--text-muted);
-      font-weight: 500;
-      font-size: 15px;
-      cursor: pointer;
-      transition: 0.15s;
-      border: 1px solid transparent;
-    }
-    .sidepanel .nav-item i { width: 22px; font-size: 18px; color: var(--text-muted); }
-    .sidepanel .nav-item.active {
-      background: var(--accent-soft);
-      color: var(--accent);
-      border-color: var(--accent);
-    }
-    .sidepanel .nav-item.active i { color: var(--accent); }
-    .sidepanel .nav-item:hover { background: var(--bg-elevated); color: var(--text); }
-
-    .sidepanel .footer-imza {
-      margin-top: auto;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-    .sidepanel .footer-imza b { color: var(--accent); }
-    .sidepanel .footer-imza .dot {
-      width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
-      box-shadow: 0 0 8px var(--accent);
-    }
-
-    .page {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      padding: 80px 20px 100px;
-      width: 100%;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .page.active { display: flex; }
-
-    .page-header {
-      width: 100%;
-      max-width: 1100px;
-      margin-bottom: 28px;
-      padding: 0 4px;
-    }
-    .page-header h1 {
-      font-size: clamp(26px, 5vw, 36px);
-      font-weight: 800;
-      color: #fff;
-      letter-spacing: -0.02em;
-    }
-    .page-header h1 span { color: var(--accent); }
-    .page-header p {
-      color: var(--text-muted);
-      font-size: 15px;
-      margin-top: 6px;
-      line-height: 1.5;
-      max-width: 600px;
-    }
-
-    /* SAYFA 1: Kırpıcı */
-    .page-1 .main-container {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: 20px;
-      width: 100%;
-    }
-    @media (max-width: 820px) {
-      .page-1 .main-container { grid-template-columns: 1fr; }
-      .page-1 .control-panel { order: -1; }
-    }
-
-    .workspace {
-      background: var(--bg-surface);
-      border: 1.5px dashed var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 420px;
-      position: relative;
-      overflow: hidden;
-      touch-action: none;
-    }
-    .upload-trigger { text-align: center; cursor: pointer; color: var(--text-muted); padding: 30px 16px; }
-    .upload-trigger svg { width: 44px; height: 44px; margin-bottom: 12px; stroke: currentColor; }
-    .upload-trigger p { font-weight: 600; font-size: 14.5px; color: var(--text); }
-    .upload-trigger span { font-size: 12.5px; display: block; margin-top: 4px; }
-    #file-input { display: none; }
-
-    .crop-wrapper { position: relative; display: none; max-width: 100%; line-height: 0; touch-action: none; }
-    #source-image { max-width: 100%; max-height: 62vh; display: block; user-select: none; -webkit-user-drag: none; pointer-events: none; border-radius: 4px; }
-    .crop-box { position: absolute; box-sizing: border-box; border: 2px solid var(--accent); cursor: move; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.65); touch-action: none; }
-    .crop-box.round { border-radius: 50%; }
-    .crop-box.round .crop-grid { border-radius: 50%; overflow: hidden; }
-    .crop-grid { position: absolute; top:0;left:0;right:0;bottom:0; pointer-events:none; }
-    .crop-grid::before, .crop-grid::after { content:''; position:absolute; }
-    .crop-grid::before { top:33.33%; bottom:33.33%; left:0; right:0; border-top:1px dashed rgba(0,243,255,0.35); border-bottom:1px dashed rgba(0,243,255,0.35); }
-    .crop-grid::after { left:33.33%; right:33.33%; top:0; bottom:0; border-left:1px dashed rgba(0,243,255,0.35); border-right:1px dashed rgba(0,243,255,0.35); }
-    .handle { position:absolute; width:26px; height:26px; display:flex; align-items:center; justify-content:center; z-index:10; touch-action:none; }
-    .handle::after { content:''; width:13px; height:13px; background:#fff; border:2px solid var(--accent); border-radius:50%; display:block; }
-    .handle-tl { top:-13px; left:-13px; cursor:nwse-resize; }
-    .handle-tr { top:-13px; right:-13px; cursor:nesw-resize; }
-    .handle-bl { bottom:-13px; left:-13px; cursor:nesw-resize; }
-    .handle-br { bottom:-13px; right:-13px; cursor:nwse-resize; }
-
-    .control-panel {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      align-self: start;
-    }
-    .panel-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 10px; }
-    .shape-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
-    .shape-btn {
-      background: var(--bg-elevated); border:1.5px solid var(--border); border-radius:10px; color:var(--text-muted);
-      padding:10px 4px; display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer;
-      font-size:10.5px; font-weight:600; transition: border-color .15s, color .15s, background .15s;
-    }
-    .shape-btn svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.6; }
-    .shape-btn:hover { color:var(--text); border-color:#34405a; }
-    .shape-btn.active { color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
-
-    .preview-box { width:100%; height:160px; background: repeating-conic-gradient(#1c2130 0% 25%, #161a24 0% 50%) 50% / 16px 16px; border:1px solid var(--border); border-radius:10px; overflow:hidden; display:flex; justify-content:center; align-items:center; }
-    #preview-canvas { max-width:100%; max-height:100%; }
-    #preview-canvas.round-preview { border-radius:50%; }
-
-    .btn {
-      background: #fff; color: #000; border: none; padding: 13px 20px; border-radius: 10px;
-      font-weight: 700; font-size: 14px; cursor: pointer; width: 100%;
-      transition: transform .12s, opacity .12s; display: flex; justify-content: center; align-items: center; gap: 8px;
-    }
-    .btn:active { transform: scale(0.97); }
-    .btn-action { background: var(--accent); color: #04191c; }
-    .btn-action:disabled { opacity: 0.4; pointer-events: none; }
-    .btn-reset { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
-
-    /* SAYFA 2: QR */
-    .page-2 { padding-top: 80px; }
-    .qr-container {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 30px 24px;
-      max-width: 550px;
-      width: 100%;
-      margin: 0 auto;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-    .qr-field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .qr-field-group label {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .qr-field-group label i { color: var(--accent); width: 18px; }
-    .qr-container input, .qr-container select {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 14px;
-      color: var(--text);
-      font-size: 14px;
-      outline: none;
-      transition: 0.2s;
-      width: 100%;
-    }
-    .qr-container input:focus, .qr-container select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
-    }
-    .qr-container .qr-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .qr-container .qr-actions .btn { flex: 1; min-width: 120px; }
-    .qr-box {
-      background: #fff;
-      padding: 20px;
-      border-radius: 14px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 200px;
-      margin-top: 4px;
-    }
-    #qrcode {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    #qrcode img, #qrcode canvas {
-      max-width: 100%;
-      height: auto;
-      image-rendering: pixelated;
-    }
-    .qr-type-selector {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .qr-type-btn {
-      background: var(--bg-elevated);
-      border: 1.5px solid var(--border);
-      border-radius: 30px;
-      padding: 6px 16px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: 0.15s;
-    }
-    .qr-type-btn.active {
-      border-color: var(--accent);
-      background: var(--accent-soft);
-      color: var(--accent);
-    }
-    .qr-type-btn i { margin-right: 6px; }
-
-    /* SAYFA 3: PIXEL ART MAKER */
-    .page-3 { padding-top: 80px; }
-    .pixel-container {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 30px 24px;
-      max-width: 750px;
-      width: 100%;
-      margin: 0 auto;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    .pixel-controls {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
-    }
-    .pixel-controls .control-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .pixel-controls .control-group label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .pixel-controls input[type="number"],
-    .pixel-controls input[type="color"] {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px 10px;
-      color: var(--text);
-      font-size: 13px;
-      outline: none;
-      width: 100%;
-    }
-    .pixel-controls input[type="number"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
-    }
-    .pixel-controls input[type="color"] {
-      height: 40px;
-      padding: 4px;
-      cursor: pointer;
-    }
-    .pixel-controls .color-presets {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    .pixel-controls .color-presets .preset {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: 0.15s;
-    }
-    .pixel-controls .color-presets .preset:hover {
-      transform: scale(1.1);
-    }
-    .pixel-controls .color-presets .preset.active {
-      border-color: var(--accent);
-      box-shadow: 0 0 10px var(--accent-soft);
-    }
-    .mode-toggle {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      background: var(--bg-elevated);
-      border-radius: 30px;
-      padding: 4px;
-      border: 1px solid var(--border);
-    }
-    .mode-toggle .mode-btn {
-      padding: 6px 14px;
-      border-radius: 30px;
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.15s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .mode-toggle .mode-btn.active {
-      background: var(--accent);
-      color: #04191c;
-    }
-    .mode-toggle .mode-btn i { font-size: 13px; }
-
-    .pixel-grid-wrapper {
-      overflow: auto;
-      max-width: 100%;
-      display: flex;
-      justify-content: center;
-      background: var(--bg-elevated);
-      border-radius: 10px;
-      padding: 16px;
-      border: 1px solid var(--border);
-      min-height: 300px;
-      touch-action: none;
-    }
-    #pixelGrid {
-      display: grid;
-      gap: 1px;
-      background: var(--border);
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: none;
-    }
-    #pixelGrid .cell {
-      width: 24px;
-      height: 24px;
-      background: #1a1f2b;
-      cursor: pointer;
-      transition: background 0.05s;
-      border-radius: 1px;
-      touch-action: none;
-    }
-    #pixelGrid .cell:hover { opacity: 0.8; }
-    .pixel-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .pixel-actions .btn { flex: 1; min-width: 100px; }
-    .pixel-info {
-      font-size: 12px;
-      color: var(--text-muted);
-      text-align: center;
-    }
-    .pixel-info span { color: var(--accent); font-weight: 600; }
-
-    /* SAYFA 4: RESİM AYARLARI */
-    .page-4 { padding-top: 80px; }
-    .image-container {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 30px 24px;
-      max-width: 800px;
-      width: 100%;
-      margin: 0 auto;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    .image-container .upload-area {
-      border: 2px dashed var(--border);
-      border-radius: var(--radius);
-      padding: 40px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.2s;
-      color: var(--text-muted);
-    }
-    .image-container .upload-area:hover {
-      border-color: var(--accent);
-      background: var(--accent-soft);
-    }
-    .image-container .upload-area i {
-      font-size: 40px;
-      margin-bottom: 12px;
-      color: var(--text-muted);
-    }
-    .image-container .upload-area p { font-size: 14px; }
-    .image-container .upload-area span { font-size: 12px; display: block; margin-top: 4px; }
-    #imageInput { display: none; }
-
-    .image-container .preview-area {
-      display: none;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .image-container .preview-area.show { display: flex; }
-    .image-container .preview-area .image-wrapper {
-      display: flex;
-      justify-content: center;
-      background: var(--bg-elevated);
-      border-radius: 10px;
-      padding: 16px;
-      border: 1px solid var(--border);
-      position: relative;
-    }
-    .image-container .preview-area .image-wrapper img {
-      max-width: 100%;
-      max-height: 400px;
-      border-radius: 6px;
-    }
-    .image-container .preview-area .image-wrapper .change-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 30px;
-      padding: 6px 14px;
-      color: var(--text);
-      font-size: 12px;
-      cursor: pointer;
-      transition: 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .image-container .preview-area .image-wrapper .change-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .image-container .settings-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-    .image-container .settings-grid .setting-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .image-container .settings-grid .setting-group label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .image-container .settings-grid .setting-group label i { color: var(--accent); }
-    .image-container .settings-grid .setting-group input[type="range"] {
-      width: 100%;
-      height: 4px;
-      -webkit-appearance: none;
-      background: var(--border);
-      border-radius: 10px;
-      outline: none;
-    }
-    .image-container .settings-grid .setting-group input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: var(--accent);
-      cursor: pointer;
-    }
-    .image-container .settings-grid .setting-group input[type="number"],
-    .image-container .settings-grid .setting-group select {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px 10px;
-      color: var(--text);
-      font-size: 13px;
-      outline: none;
-      width: 100%;
-    }
-    .image-container .settings-grid .setting-group select { cursor: pointer; }
-    .image-container .settings-grid .setting-group input[type="number"]:focus,
-    .image-container .settings-grid .setting-group select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
-    }
-    .image-container .settings-grid .setting-group .range-value {
-      font-size: 13px;
-      color: var(--accent);
-      font-weight: 600;
-      text-align: right;
-    }
-    .image-container .settings-grid .full-width { grid-column: 1 / -1; }
-    .image-container .settings-grid .checkbox-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 6px 0;
-    }
-    .image-container .settings-grid .checkbox-group input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--accent);
-      cursor: pointer;
-    }
-    .image-container .settings-grid .checkbox-group label {
-      font-size: 13px;
-      color: var(--text);
-      cursor: pointer;
-    }
-
-    .filter-checkboxes {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 8px 0;
-    }
-    .filter-checkboxes label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--bg-elevated);
-      padding: 4px 12px 4px 8px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      font-size: 12px;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: 0.15s;
-      user-select: none;
-    }
-    .filter-checkboxes label:hover {
-      border-color: var(--accent);
-      color: var(--text);
-    }
-    .filter-checkboxes label input[type="checkbox"] {
-      accent-color: var(--accent);
-      width: 14px;
-      height: 14px;
-      cursor: pointer;
-    }
-    .filter-checkboxes label:has(input:checked) {
-      border-color: var(--accent);
-      background: var(--accent-soft);
-      color: var(--accent);
-    }
-
-    .active-filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      padding: 6px 0;
-      min-height: 32px;
-    }
-    .active-filters .filter-tag {
-      background: var(--accent-soft);
-      color: var(--accent);
-      border: 1px solid var(--accent);
-      border-radius: 16px;
-      padding: 2px 12px;
-      font-size: 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .active-filters .filter-tag .remove-filter {
-      cursor: pointer;
-      font-size: 14px;
-      opacity: 0.6;
-      transition: 0.15s;
-    }
-    .active-filters .filter-tag .remove-filter:hover {
-      opacity: 1;
-      transform: scale(1.2);
-    }
-
-    .image-container .action-buttons {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .image-container .action-buttons .btn { flex: 1; min-width: 120px; }
-
-    /* SAYFA 5: ÇEVİRİCİ */
-    .page-5 { padding-top: 80px; }
-    .convert-container {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 26px 22px;
-      max-width: 720px;
-      width: 100%;
-      margin: 0 auto;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .convert-tabs {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 12px;
-    }
-    .convert-tab {
-      background: var(--bg-elevated);
-      border: 1.5px solid var(--border);
-      border-radius: 30px;
-      padding: 7px 13px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: 0.15s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .convert-tab:hover { color: var(--text); border-color: #34405a; }
-    .convert-tab.active {
-      border-color: var(--accent);
-      background: var(--accent-soft);
-      color: var(--accent);
-    }
-    .convert-tab i { font-size: 12px; }
-
-    .convert-panel {
-      display: none;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .convert-panel.active { display: flex; }
-
-    .convert-drop {
-      border: 2px dashed var(--border);
-      border-radius: var(--radius);
-      padding: 32px 18px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.2s;
-      color: var(--text-muted);
-      background: var(--bg-elevated);
-    }
-    .convert-drop:hover, .convert-drop.dragover {
-      border-color: var(--accent);
-      background: var(--accent-soft);
-      color: var(--text);
-    }
-    .convert-drop i {
-      font-size: 38px;
-      margin-bottom: 10px;
-      color: var(--text-muted);
-      display: block;
-      transition: 0.2s;
-    }
-    .convert-drop:hover i, .convert-drop.dragover i { color: var(--accent); }
-    .convert-drop p { font-size: 14px; font-weight: 600; color: var(--text); }
-    .convert-drop span { font-size: 12px; display: block; margin-top: 4px; }
-    .convert-drop .file-info {
-      margin-top: 10px;
-      color: var(--accent);
-      font-weight: 600;
-      font-size: 13px;
-      word-break: break-all;
-    }
-    #pdfInput, #pdfWordInput, #imgPdfInput, #excelInput, #imgPixelInput { display: none; }
-
-    .convert-controls {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .convert-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 13px;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-    .convert-row label {
-      flex-shrink: 0;
-      min-width: 100px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .convert-row label i { color: var(--accent); }
-    .convert-row select {
-      flex: 1;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 14px;
-      color: var(--text);
-      font-size: 13px;
-      outline: none;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .convert-row select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
-    }
-    .convert-row input[type="number"] {
-      flex: 1;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 14px;
-      color: var(--text);
-      font-size: 13px;
-      outline: none;
-    }
-    .convert-row input[type="number"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
-    }
-    .convert-row input[type="range"] {
-      flex: 1;
-      height: 4px;
-      -webkit-appearance: none;
-      background: var(--border);
-      border-radius: 10px;
-      outline: none;
-    }
-    .convert-row input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: var(--accent);
-      cursor: pointer;
-    }
-    .convert-row input[type="text"] {
-      flex: 1;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 14px;
-      color: var(--text);
-      font-size: 13px;
-      outline: none;
-      transition: 0.2s;
-    }
-    .convert-row input[type="text"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
-    }
-
-    .convert-textarea {
-      width: 100%;
-      min-height: 220px;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 14px;
-      color: var(--text);
-      font-size: 14px;
-      font-family: 'Segoe UI', monospace;
-      outline: none;
-      resize: vertical;
-      line-height: 1.5;
-      transition: 0.2s;
-    }
-    .convert-textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
-    }
-
-    .convert-progress-wrap { display: none; }
-    .convert-progress-wrap.active { display: block; }
-    .convert-progress-bar {
-      height: 10px;
-      background: var(--bg-elevated);
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-    .convert-progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent), #6bcb77);
-      border-radius: 10px;
-      transition: width 0.3s;
-      box-shadow: 0 0 10px var(--accent-soft);
-    }
-    .convert-progress-text {
-      text-align: center;
-      margin-top: 10px;
-      font-size: 13px;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-    .convert-progress-text b { color: var(--accent); }
-
-    .convert-status {
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      text-align: center;
-      display: none;
-      border: 1px solid;
-      font-weight: 500;
-    }
-    .convert-status.show { display: block; }
-    .convert-status.success {
-      background: rgba(107, 203, 119, 0.1);
-      color: #6bcb77;
-      border-color: rgba(107, 203, 119, 0.3);
-    }
-    .convert-status.error {
-      background: rgba(255, 107, 107, 0.1);
-      color: #ff6b6b;
-      border-color: rgba(255, 107, 107, 0.3);
-    }
-    .convert-status.info {
-      background: var(--accent-soft);
-      color: var(--accent);
-      border-color: rgba(0, 243, 255, 0.3);
-    }
-
-    .convert-preview {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .convert-preview img {
-      width: 90px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-    }
-
-    .convert-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .convert-actions .btn { flex: 1; min-width: 120px; }
-
-    /* Görsel → PDF liste */
-    .img-pdf-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      max-height: 240px;
-      overflow-y: auto;
-    }
-    .img-pdf-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 6px 10px;
-      font-size: 13px;
-    }
-    .img-pdf-item .thumb {
-      width: 38px;
-      height: 38px;
-      object-fit: cover;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    .img-pdf-item .name {
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      color: var(--text-muted);
-      font-size: 12px;
-    }
-    .img-pdf-item .rm {
-      background: transparent;
-      border: none;
-      color: #ff6b6b;
-      cursor: pointer;
-      font-size: 16px;
-      padding: 2px 6px;
-      border-radius: 6px;
-      transition: 0.15s;
-    }
-    .img-pdf-item .rm:hover { background: rgba(255, 107, 107, 0.15); }
-
-    /* Excel önizleme */
-    .excel-preview {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px;
-      max-height: 220px;
-      overflow: auto;
-      font-size: 12px;
-    }
-    .excel-preview table { border-collapse: collapse; width: 100%; }
-    .excel-preview td, .excel-preview th {
-      border: 1px solid var(--border);
-      padding: 4px 8px;
-      text-align: left;
-      color: var(--text);
-      white-space: nowrap;
-    }
-    .excel-preview th {
-      background: var(--bg-surface);
-      color: var(--accent);
-      font-weight: 700;
-      position: sticky;
-      top: 0;
-    }
-
-    /* Pixel from image */
-    .pif-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    @media (max-width: 640px) {
-      .pif-grid { grid-template-columns: 1fr; }
-    }
-    .pif-preview {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      min-height: 200px;
-      overflow: auto;
-      gap: 8px;
-    }
-    .pif-preview img {
-      max-width: 100%;
-      max-height: 280px;
-      border-radius: 6px;
-    }
-    .pif-preview canvas {
-      image-rendering: pixelated;
-      image-rendering: -moz-crisp-edges;
-      image-rendering: crisp-edges;
-      max-width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-    }
-    .pif-preview .placeholder {
-      color: var(--text-muted);
-      font-size: 12px;
-      text-align: center;
-    }
-    .pif-palette {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding-top: 6px;
-      width: 100%;
-    }
-    .pif-palette .sw {
-      width: 18px;
-      height: 18px;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      transition: 0.15s;
-    }
-    .pif-palette .sw:hover {
-      transform: scale(1.15);
-      border-color: var(--accent);
-    }
-    .pif-palette-label {
-      font-size: 10px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-top: 4px;
-    }
-
-    .signature-float {
-      position: fixed;
-      bottom: 18px;
-      right: 18px;
-      z-index: 50;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 15px;
-      background: rgba(18, 21, 28, 0.85);
-      backdrop-filter: blur(6px);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      font-size: 12px;
-      color: var(--text-muted);
-      letter-spacing: 0.02em;
-    }
-    .signature-float b { color: var(--accent); font-weight: 700; }
-    .signature-float .dot {
-      width: 5px; height: 5px; border-radius: 50%; background: var(--accent);
-      box-shadow: 0 0 6px var(--accent);
-    }
-
-    @media (max-width: 480px) {
-      .sidepanel { width: 240px; left: -250px; }
-      .page { padding: 70px 12px 90px; }
-      .qr-container, .pixel-container, .image-container, .convert-container { padding: 20px 14px; }
-      .pixel-controls { grid-template-columns: 1fr 1fr; }
-      .image-container .settings-grid { grid-template-columns: 1fr; }
-      #pixelGrid .cell { width: 18px; height: 18px; }
-      .filter-checkboxes label { font-size: 11px; padding: 3px 10px 3px 6px; }
-      .convert-row { flex-direction: column; align-items: flex-start; }
-      .convert-row label { min-width: auto; }
-      .convert-row select, .convert-row input[type="number"], .convert-row input[type="text"] { width: 100%; }
-      .convert-tab { font-size: 11px; padding: 6px 10px; }
-    }
-    @media (max-width: 380px) {
-      #pixelGrid .cell { width: 14px; height: 14px; }
-    }
-  </style>
 </head>
 <body>
 
@@ -1442,7 +304,7 @@
     </div>
   </div>
 
-  <!-- SAYFA 5: ÇEVİRİCİ (6 ARAÇ) -->
+  <!-- SAYFA 5: ÇEVİRİCİ (7 ARAÇ) -->
   <div class="page page-5" id="page5">
     <div class="page-header">
       <h1>Çevirici <span>Araçları</span></h1>
@@ -1450,7 +312,6 @@
     </div>
     <div class="convert-container">
 
-      <!-- SEKMELER -->
       <div class="convert-tabs">
         <div class="convert-tab active" data-tab="pdf2pptx"><i class="fas fa-file-powerpoint"></i> PDF→PPTX</div>
         <div class="convert-tab" data-tab="pdf2word"><i class="fas fa-file-word"></i> PDF→Word</div>
@@ -1458,9 +319,9 @@
         <div class="convert-tab" data-tab="excel2pdf"><i class="fas fa-file-excel"></i> Excel→PDF</div>
         <div class="convert-tab" data-tab="img2pixel"><i class="fas fa-th"></i> Görsel→Pixel</div>
         <div class="convert-tab" data-tab="text2pdf"><i class="fas fa-file-alt"></i> Metin→PDF</div>
+        <div class="convert-tab" data-tab="merge2pdf"><i class="fas fa-layer-group"></i> PDF Birleştir</div>
       </div>
 
-      <!-- PANEL 1: PDF → PPTX -->
       <div class="convert-panel active" data-panel="pdf2pptx">
         <div class="convert-drop" id="pdfDropZone">
           <i class="fas fa-file-pdf"></i>
@@ -1497,7 +358,6 @@
         <div class="convert-preview" id="convertPreview"></div>
       </div>
 
-      <!-- PANEL 2: PDF → WORD -->
       <div class="convert-panel" data-panel="pdf2word">
         <div class="convert-drop" id="pdfWordDropZone">
           <i class="fas fa-file-word"></i>
@@ -1519,7 +379,6 @@
         <div class="convert-status" id="pdfWordStatus"></div>
       </div>
 
-      <!-- PANEL 3: GÖRSEL → PDF -->
       <div class="convert-panel" data-panel="img2pdf">
         <div class="convert-drop" id="imgPdfDropZone">
           <i class="fas fa-images"></i>
@@ -1562,7 +421,6 @@
         <div class="convert-status" id="imgPdfStatus"></div>
       </div>
 
-      <!-- PANEL 4: EXCEL → PDF -->
       <div class="convert-panel" data-panel="excel2pdf">
         <div class="convert-drop" id="excelDropZone">
           <i class="fas fa-file-excel"></i>
@@ -1587,7 +445,6 @@
         <div class="convert-status" id="excelStatus"></div>
       </div>
 
-      <!-- PANEL 5: GÖRSEL → PIXEL ART -->
       <div class="convert-panel" data-panel="img2pixel">
         <div class="convert-drop" id="imgPixelDropZone">
           <i class="fas fa-th"></i>
@@ -1621,7 +478,6 @@
         <div class="convert-status" id="imgPixelStatus"></div>
       </div>
 
-      <!-- PANEL 6: METİN → PDF -->
       <div class="convert-panel" data-panel="text2pdf">
         <div class="convert-row">
           <label><i class="fas fa-heading"></i> Başlık</label>
@@ -1674,6 +530,25 @@
         <div class="convert-status" id="txtStatus"></div>
       </div>
 
+      <div class="convert-panel" data-panel="merge2pdf">
+        <div class="convert-drop" id="mergePdfDropZone">
+          <i class="fas fa-layer-group"></i>
+          <p>PDF dosyalarını sürükleyin veya tıklayın</p>
+          <span>Birden fazla PDF · Sıralama sürükle-bırak ile değiştirilebilir</span>
+          <input type="file" id="mergePdfInput" accept="application/pdf,.pdf" multiple>
+        </div>
+        <div class="img-pdf-list" id="mergePdfList"></div>
+        <div class="convert-actions">
+          <button class="btn btn-action" id="convertMergeBtn" disabled><i class="fas fa-file-pdf"></i> Birleştir ve İndir</button>
+          <button class="btn btn-reset" id="clearMergeBtn"><i class="fas fa-trash"></i> Temizle</button>
+        </div>
+        <div class="convert-progress-wrap" id="mergeProgressWrap">
+          <div class="convert-progress-bar"><div class="convert-progress-fill" id="mergeProgressFill"></div></div>
+          <div class="convert-progress-text" id="mergeProgressText">Hazırlanıyor...</div>
+        </div>
+        <div class="convert-status" id="mergeStatus"></div>
+      </div>
+
     </div>
   </div>
 
@@ -1683,7 +558,7 @@
 
   <script>
     (function() {
-      // ===== Türkçe Font Yükleme (jsPDF için) =====
+      // ===== Türkçe Font Yükleme =====
       let TURKISH_FONT_REGULAR = null;
       let TURKISH_FONT_BOLD = null;
 
@@ -1697,7 +572,7 @@
           TURKISH_FONT_REGULAR = regBuf;
           TURKISH_FONT_BOLD = boldBuf;
         } catch (e) {
-          console.warn('Türkçe font yüklenemedi, standart font kullanılacak:', e);
+          console.warn('Türkçe font yüklenemedi:', e);
         }
       }
 
@@ -1853,7 +728,6 @@
       }
 
       setTimeout(generateQR, 100);
-
       document.getElementById('generateQRBtn').addEventListener('click', generateQR);
 
       const qrInputs = [qrText, wifiSsid, wifiPassword, wifiEncryption, contactName, contactPhone, contactEmail, qrSize, qrColorDark];
@@ -2029,7 +903,6 @@
       }
 
       document.addEventListener('mouseup', () => { isDrawing = false; });
-
       createGridBtn.addEventListener('click', createGrid);
 
       clearGridBtn.addEventListener('click', () => {
@@ -2490,7 +1363,7 @@
       }
       function hideStatus(el) { el.className = 'convert-status'; }
 
-      // ---- PANEL 1: PDF → PPTX ----
+      // PANEL 1: PDF → PPTX
       const pdfDropZone = document.getElementById('pdfDropZone');
       const pdfInput = document.getElementById('pdfInput');
       const pdfFileInfo = document.getElementById('pdfFileInfo');
@@ -2617,7 +1490,7 @@
         }
       });
 
-      // ---- PANEL 2: PDF → WORD ----
+      // PANEL 2: PDF → WORD
       const pdfWordDropZone = document.getElementById('pdfWordDropZone');
       const pdfWordInput = document.getElementById('pdfWordInput');
       const pdfWordFileInfo = document.getElementById('pdfWordFileInfo');
@@ -2721,21 +1594,16 @@
             }
             if (lines.length === 0) {
               children.push(new Paragraph({
-                children: [new TextRun({ text: `[Sayfa ${idx + 1} — Metin bulunamadı (muhtemelen taranmış PDF)]`, italics: true, color: '888888' })]
+                children: [new TextRun({ text: `[Sayfa ${idx + 1} — Metin bulunamadı]`, italics: true, color: '888888' })]
               }));
             } else {
               lines.forEach(l => {
-                children.push(new Paragraph({
-                  children: [new TextRun({ text: l })]
-                }));
+                children.push(new Paragraph({ children: [new TextRun({ text: l })] }));
               });
             }
           });
 
-          const doc = new Document({
-            sections: [{ properties: {}, children }]
-          });
-
+          const doc = new Document({ sections: [{ properties: {}, children }] });
           const blob = await Packer.toBlob(doc);
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
@@ -2758,7 +1626,7 @@
         }
       });
 
-      // ---- PANEL 3: GÖRSEL → PDF ----
+      // PANEL 3: GÖRSEL → PDF
       const imgPdfDropZone = document.getElementById('imgPdfDropZone');
       const imgPdfInput = document.getElementById('imgPdfInput');
       const imgPdfList = document.getElementById('imgPdfList');
@@ -2844,7 +1712,7 @@
           const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
 
           for (let i = 0; i < imgPdfFiles.length; i++) {
-            const { img, file } = imgPdfFiles[i];
+            const { img } = imgPdfFiles[i];
             const pageSize = imgPdfPageSize.value;
             const orientOpt = imgPdfOrientation.value;
             const margin = parseInt(imgPdfMargin.value) || 0;
@@ -2897,7 +1765,7 @@
         }
       });
 
-      // ---- PANEL 4: EXCEL → PDF ----
+      // PANEL 4: EXCEL → PDF
       const excelDropZone = document.getElementById('excelDropZone');
       const excelInput = document.getElementById('excelInput');
       const excelFileInfo = document.getElementById('excelFileInfo');
@@ -3024,7 +1892,7 @@
         }
       });
 
-      // ===== PANEL 5: GÖRSEL → PIXEL ART =====
+      // PANEL 5: GÖRSEL → PIXEL ART
       const imgPixelDropZone = document.getElementById('imgPixelDropZone');
       const imgPixelInput = document.getElementById('imgPixelInput');
       const pixelBlockSize = document.getElementById('pixelBlockSize');
@@ -3211,7 +2079,7 @@
         link.click();
       });
 
-      // ---- PANEL 6: METİN → PDF (Türkçe destekli) ----
+      // PANEL 6: METİN → PDF
       const txtTitle = document.getElementById('txtTitle');
       const txtContent = document.getElementById('txtContent');
       const txtFont = document.getElementById('txtFont');
@@ -3248,7 +2116,6 @@
           const { jsPDF } = window.jspdf;
           const pdf = new jsPDF({ unit: 'pt', format: txtPageSize.value, orientation: 'portrait' });
 
-          // Türkçe font kaydet
           const fontOk = await registerTurkishFont(pdf);
           const fontChoice = txtFont.value;
           let useFont;
@@ -3299,9 +2166,7 @@
               y += lineHeight * 0.6;
               return;
             }
-
             const lines = pdf.splitTextToSize(para, usableW);
-
             lines.forEach(line => {
               if (y + lineHeight > pageH - margin) {
                 pdf.addPage();
@@ -3314,7 +2179,6 @@
               pdf.text(line, x, y, opts);
               y += lineHeight;
             });
-
             if (idx < paragraphs.length - 1) y += lineHeight * 0.3;
           });
 
@@ -3324,9 +2188,8 @@
           pdf.save((baseName || 'metin') + '.pdf');
 
           showStatus(txtStatus,
-            fontOk
-              ? `✅ PDF oluşturuldu! (${pdf.internal.getNumberOfPages()} sayfa) · Türkçe karakter destekli`
-              : `⚠️ PDF oluşturuldu ama Türkçe font yüklenemedi. İnternet bağlantını kontrol et.`,
+            fontOk ? `✅ PDF oluşturuldu! (${pdf.internal.getNumberOfPages()} sayfa) · Türkçe destekli`
+                   : `⚠️ PDF oluşturuldu ama Türkçe font yüklenemedi.`,
             fontOk ? 'success' : 'info'
           );
         } catch (err) {
@@ -3334,6 +2197,175 @@
           showStatus(txtStatus, '❌ Hata: ' + err.message, 'error');
         } finally {
           convertTxtBtn.disabled = false;
+        }
+      });
+
+      // PANEL 7: PDF BİRLEŞTİR
+      const mergePdfDropZone = document.getElementById('mergePdfDropZone');
+      const mergePdfInput = document.getElementById('mergePdfInput');
+      const mergePdfList = document.getElementById('mergePdfList');
+      const convertMergeBtn = document.getElementById('convertMergeBtn');
+      const clearMergeBtn = document.getElementById('clearMergeBtn');
+      const mergeProgressWrap = document.getElementById('mergeProgressWrap');
+      const mergeProgressFill = document.getElementById('mergeProgressFill');
+      const mergeProgressText = document.getElementById('mergeProgressText');
+      const mergeStatus = document.getElementById('mergeStatus');
+
+      let mergePdfFiles = [];
+
+      async function getPdfPageCount(file) {
+        try {
+          const buf = await file.arrayBuffer();
+          const pdf = await PDFLib.PDFDocument.load(buf, { ignoreEncryption: true });
+          return pdf.getPageCount();
+        } catch (e) {
+          return 0;
+        }
+      }
+
+      function renderMergePdfList() {
+        mergePdfList.innerHTML = '';
+        if (mergePdfFiles.length === 0) {
+          convertMergeBtn.disabled = true;
+          return;
+        }
+        mergePdfFiles.forEach((item, idx) => {
+          const row = document.createElement('div');
+          row.className = 'img-pdf-item';
+          row.draggable = true;
+          row.dataset.idx = idx;
+          row.style.cursor = 'grab';
+          row.innerHTML = `
+            <span style="color:var(--accent);font-weight:700;min-width:22px;">${idx + 1}.</span>
+            <span class="name">${item.file.name}</span>
+            <span style="color:var(--text-muted);font-size:11px;white-space:nowrap;">${item.pageCount} sayfa</span>
+            <button class="rm" data-idx="${idx}" title="Kaldır"><i class="fas fa-times"></i></button>
+          `;
+          mergePdfList.appendChild(row);
+        });
+
+        mergePdfList.querySelectorAll('.rm').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const idx = parseInt(e.currentTarget.dataset.idx);
+            mergePdfFiles.splice(idx, 1);
+            renderMergePdfList();
+          });
+        });
+
+        let dragIdx = null;
+        mergePdfList.querySelectorAll('.img-pdf-item').forEach(row => {
+          row.addEventListener('dragstart', () => {
+            dragIdx = parseInt(row.dataset.idx);
+            row.style.opacity = '0.4';
+          });
+          row.addEventListener('dragend', () => { row.style.opacity = '1'; });
+          row.addEventListener('dragover', (e) => { e.preventDefault(); row.style.borderColor = 'var(--accent)'; });
+          row.addEventListener('dragleave', () => { row.style.borderColor = 'var(--border)'; });
+          row.addEventListener('drop', (e) => {
+            e.preventDefault();
+            row.style.borderColor = 'var(--border)';
+            const targetIdx = parseInt(row.dataset.idx);
+            if (dragIdx === null || dragIdx === targetIdx) return;
+            const moved = mergePdfFiles.splice(dragIdx, 1)[0];
+            mergePdfFiles.splice(targetIdx, 0, moved);
+            renderMergePdfList();
+          });
+        });
+
+        convertMergeBtn.disabled = false;
+      }
+
+      mergePdfDropZone.addEventListener('click', () => mergePdfInput.click());
+      mergePdfDropZone.addEventListener('dragover', (e) => { e.preventDefault(); mergePdfDropZone.classList.add('dragover'); });
+      mergePdfDropZone.addEventListener('dragleave', () => mergePdfDropZone.classList.remove('dragover'));
+      mergePdfDropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        mergePdfDropZone.classList.remove('dragover');
+        handleMergePdfFiles(Array.from(e.dataTransfer.files));
+      });
+      mergePdfInput.addEventListener('change', (e) => {
+        handleMergePdfFiles(Array.from(e.target.files));
+        mergePdfInput.value = '';
+      });
+
+      async function handleMergePdfFiles(files) {
+        const pdfFiles = files.filter(f =>
+          f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf')
+        );
+        if (pdfFiles.length === 0) {
+          showStatus(mergeStatus, '❌ Lütfen PDF dosyası seçin.', 'error');
+          return;
+        }
+        showStatus(mergeStatus, '⏳ PDF sayfaları okunuyor...', 'info');
+        for (const file of pdfFiles) {
+          const pageCount = await getPdfPageCount(file);
+          mergePdfFiles.push({ file, pageCount });
+        }
+        renderMergePdfList();
+        hideStatus(mergeStatus);
+      }
+
+      clearMergeBtn.addEventListener('click', () => {
+        mergePdfFiles = [];
+        renderMergePdfList();
+        hideStatus(mergeStatus);
+        mergeProgressWrap.classList.remove('active');
+      });
+
+      convertMergeBtn.addEventListener('click', async () => {
+        if (mergePdfFiles.length === 0) return;
+        if (mergePdfFiles.length === 1) {
+          showStatus(mergeStatus, '⚠️ En az 2 PDF gerekli.', 'info');
+          return;
+        }
+        convertMergeBtn.disabled = true;
+        hideStatus(mergeStatus);
+        mergeProgressWrap.classList.add('active');
+        mergeProgressFill.style.width = '0%';
+        mergeProgressText.innerHTML = 'Başlıyor...';
+
+        try {
+          const mergedPdf = await PDFLib.PDFDocument.create();
+          const total = mergePdfFiles.length;
+
+          for (let i = 0; i < total; i++) {
+            const { file } = mergePdfFiles[i];
+            mergeProgressFill.style.width = Math.round((i / total) * 100) + '%';
+            mergeProgressText.innerHTML = `İşleniyor: <b>${i + 1}</b> / ${total} · ${file.name}`;
+            await nextFrame();
+
+            const buf = await file.arrayBuffer();
+            const srcPdf = await PDFLib.PDFDocument.load(buf, { ignoreEncryption: true });
+            const pages = await mergedPdf.copyPages(srcPdf, srcPdf.getPageIndices());
+            pages.forEach(p => mergedPdf.addPage(p));
+          }
+
+          mergeProgressFill.style.width = '95%';
+          mergeProgressText.innerHTML = 'Kaydediliyor...';
+          await nextFrame();
+
+          const mergedBytes = await mergedPdf.save();
+          const blob = new Blob([mergedBytes], { type: 'application/pdf' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'birlestirilmis.pdf';
+          a.click();
+          URL.revokeObjectURL(url);
+
+          mergeProgressFill.style.width = '100%';
+          mergeProgressText.innerHTML = 'Tamamlandı! ✅';
+          const totalPages = mergedPdf.getPageCount();
+          showStatus(mergeStatus, `✅ PDF oluşturuldu! (${total} dosya → ${totalPages} sayfa)`, 'success');
+        } catch (err) {
+          console.error(err);
+          showStatus(mergeStatus, '❌ Hata: ' + err.message, 'error');
+        } finally {
+          convertMergeBtn.disabled = false;
+          setTimeout(() => {
+            mergeProgressWrap.classList.remove('active');
+          }, 2000);
         }
       });
 
