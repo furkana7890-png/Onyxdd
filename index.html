@@ -11,6 +11,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script>
+    // Türkçe font URL'leri (Google Fonts Roboto - Unicode destekli)
+    window.JSPDF_FONT_URLS = {
+      regular: 'https://cdn.jsdelivr.net/gh/googlefonts/roboto@main/src/hinted/Roboto-Regular.ttf',
+      bold: 'https://cdn.jsdelivr.net/gh/googlefonts/roboto@main/src/hinted/Roboto-Bold.ttf'
+    };
+  </script>
   <style>
     :root {
       --bg-main: #0b0d12;
@@ -862,6 +869,41 @@
       background: var(--accent);
       cursor: pointer;
     }
+    .convert-row input[type="text"] {
+      flex: 1;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: 0.2s;
+    }
+    .convert-row input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .convert-textarea {
+      width: 100%;
+      min-height: 220px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: 'Segoe UI', monospace;
+      outline: none;
+      resize: vertical;
+      line-height: 1.5;
+      transition: 0.2s;
+    }
+    .convert-textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
 
     .convert-progress-wrap { display: none; }
     .convert-progress-wrap.active { display: block; }
@@ -1108,7 +1150,7 @@
       .filter-checkboxes label { font-size: 11px; padding: 3px 10px 3px 6px; }
       .convert-row { flex-direction: column; align-items: flex-start; }
       .convert-row label { min-width: auto; }
-      .convert-row select, .convert-row input[type="number"] { width: 100%; }
+      .convert-row select, .convert-row input[type="number"], .convert-row input[type="text"] { width: 100%; }
       .convert-tab { font-size: 11px; padding: 6px 10px; }
     }
     @media (max-width: 380px) {
@@ -1400,7 +1442,7 @@
     </div>
   </div>
 
-  <!-- SAYFA 5: ÇEVİRİCİ (5 ARAÇ) -->
+  <!-- SAYFA 5: ÇEVİRİCİ (6 ARAÇ) -->
   <div class="page page-5" id="page5">
     <div class="page-header">
       <h1>Çevirici <span>Araçları</span></h1>
@@ -1415,6 +1457,7 @@
         <div class="convert-tab" data-tab="img2pdf"><i class="fas fa-file-pdf"></i> Görsel→PDF</div>
         <div class="convert-tab" data-tab="excel2pdf"><i class="fas fa-file-excel"></i> Excel→PDF</div>
         <div class="convert-tab" data-tab="img2pixel"><i class="fas fa-th"></i> Görsel→Pixel</div>
+        <div class="convert-tab" data-tab="text2pdf"><i class="fas fa-file-alt"></i> Metin→PDF</div>
       </div>
 
       <!-- PANEL 1: PDF → PPTX -->
@@ -1578,6 +1621,59 @@
         <div class="convert-status" id="imgPixelStatus"></div>
       </div>
 
+      <!-- PANEL 6: METİN → PDF -->
+      <div class="convert-panel" data-panel="text2pdf">
+        <div class="convert-row">
+          <label><i class="fas fa-heading"></i> Başlık</label>
+          <input type="text" id="txtTitle" placeholder="(opsiyonel) Belge başlığı">
+        </div>
+        <textarea id="txtContent" class="convert-textarea" placeholder="Metninizi buraya yazın veya yapıştırın... Örn: Türkçe karakterler: ğüşıöçĞÜŞİÖÇ"></textarea>
+        <div class="convert-controls">
+          <div class="convert-row">
+            <label><i class="fas fa-font"></i> Yazı Tipi</label>
+            <select id="txtFont">
+              <option value="roboto" selected>Roboto (Türkçe destekli)</option>
+              <option value="helvetica">Helvetica (Türkçe sorunlu)</option>
+              <option value="times">Times (Türkçe sorunlu)</option>
+              <option value="courier">Courier (Türkçe sorunlu)</option>
+            </select>
+          </div>
+          <div class="convert-row">
+            <label><i class="fas fa-text-height"></i> Boyut</label>
+            <input type="range" id="txtSize" min="8" max="24" value="12">
+            <span id="txtSizeValue" style="min-width:34px;color:var(--accent);font-weight:700;">12pt</span>
+          </div>
+          <div class="convert-row">
+            <label><i class="fas fa-align-left"></i> Hizalama</label>
+            <select id="txtAlign">
+              <option value="left" selected>Sol</option>
+              <option value="center">Orta</option>
+              <option value="right">Sağ</option>
+            </select>
+          </div>
+          <div class="convert-row">
+            <label><i class="fas fa-file-alt"></i> Sayfa</label>
+            <select id="txtPageSize">
+              <option value="a4" selected>A4</option>
+              <option value="letter">Letter</option>
+            </select>
+          </div>
+          <div class="convert-row">
+            <label><i class="fas fa-border-all"></i> Kenar</label>
+            <select id="txtMargin">
+              <option value="30">Az</option>
+              <option value="50" selected>Orta</option>
+              <option value="70">Fazla</option>
+            </select>
+          </div>
+        </div>
+        <div class="convert-actions">
+          <button class="btn btn-action" id="convertTxtBtn"><i class="fas fa-file-pdf"></i> PDF Oluştur ve İndir</button>
+          <button class="btn btn-reset" id="clearTxtBtn"><i class="fas fa-eraser"></i> Temizle</button>
+        </div>
+        <div class="convert-status" id="txtStatus"></div>
+      </div>
+
     </div>
   </div>
 
@@ -1587,6 +1683,49 @@
 
   <script>
     (function() {
+      // ===== Türkçe Font Yükleme (jsPDF için) =====
+      let TURKISH_FONT_REGULAR = null;
+      let TURKISH_FONT_BOLD = null;
+
+      async function loadTurkishFonts() {
+        if (TURKISH_FONT_REGULAR && TURKISH_FONT_BOLD) return;
+        try {
+          const [regBuf, boldBuf] = await Promise.all([
+            fetch(window.JSPDF_FONT_URLS.regular).then(r => r.arrayBuffer()),
+            fetch(window.JSPDF_FONT_URLS.bold).then(r => r.arrayBuffer())
+          ]);
+          TURKISH_FONT_REGULAR = regBuf;
+          TURKISH_FONT_BOLD = boldBuf;
+        } catch (e) {
+          console.warn('Türkçe font yüklenemedi, standart font kullanılacak:', e);
+        }
+      }
+
+      function arrayBufferToBase64(buffer) {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        const chunkSize = 0x8000;
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+        }
+        return btoa(binary);
+      }
+
+      async function registerTurkishFont(pdf) {
+        await loadTurkishFonts();
+        if (!TURKISH_FONT_REGULAR || !TURKISH_FONT_BOLD) return false;
+        try {
+          pdf.addFileToVFS('Roboto-Regular.ttf', arrayBufferToBase64(TURKISH_FONT_REGULAR));
+          pdf.addFileToVFS('Roboto-Bold.ttf', arrayBufferToBase64(TURKISH_FONT_BOLD));
+          pdf.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+          pdf.addFont('Roboto-Bold.ttf', 'Roboto', 'bold');
+          return true;
+        } catch (e) {
+          console.warn('Font register hatası:', e);
+          return false;
+        }
+      }
+
       // ===== MENU =====
       const menuBtn = document.getElementById('menuBtn');
       const sidepanel = document.getElementById('sidepanel');
@@ -2885,7 +3024,7 @@
         }
       });
 
-      // ===== PANEL 5: GÖRSEL → PIXEL ART (İYİLEŞTİRİLMİŞ) =====
+      // ===== PANEL 5: GÖRSEL → PIXEL ART =====
       const imgPixelDropZone = document.getElementById('imgPixelDropZone');
       const imgPixelInput = document.getElementById('imgPixelInput');
       const pixelBlockSize = document.getElementById('pixelBlockSize');
@@ -2943,29 +3082,20 @@
         reader.readAsDataURL(file);
       }
 
-      // === MEDIAN CUT RENK PALETİ ÇIKARIMI ===
       function medianCutPalette(pixels, maxColors) {
         if (pixels.length === 0) return [[0,0,0]];
-
         let boxes = [pixels];
-
         while (boxes.length < maxColors) {
-          // En geniş renk aralığına sahip kutuyu seç
           let bestIdx = -1;
           let bestScore = -1;
           for (let i = 0; i < boxes.length; i++) {
             const box = boxes[i];
             if (box.length < 2) continue;
             const r = colorRange(box);
-            // Hem genişliği hem de yoğunluğu hesaba kat
             const score = r.range * Math.log(box.length + 1);
-            if (score > bestScore) {
-              bestScore = score;
-              bestIdx = i;
-            }
+            if (score > bestScore) { bestScore = score; bestIdx = i; }
           }
           if (bestIdx === -1) break;
-
           const box = boxes[bestIdx];
           const r = colorRange(box);
           box.sort((a, b) => a[r.channel] - b[r.channel]);
@@ -2974,7 +3104,6 @@
           const box2 = box.slice(mid);
           boxes.splice(bestIdx, 1, box1, box2);
         }
-
         return boxes.map(box => {
           let r = 0, g = 0, b = 0;
           for (const p of box) { r += p[0]; g += p[1]; b += p[2]; }
@@ -3007,13 +3136,11 @@
         return best;
       }
 
-      // === PIXEL ART RENDER (İyileştirilmiş) ===
       function renderPixelArt() {
         if (!pixelSourceImg) return;
         const block = parseInt(pixelBlockSize.value) || 8;
         const colorCount = parseInt(pixelColorCount.value) || 16;
 
-        // 1. Küçük boyuta indir (nearest neighbor — keskin pikseller)
         const smallW = Math.max(1, Math.round(pixelSourceImg.width / block));
         const smallH = Math.max(1, Math.round(pixelSourceImg.height / block));
 
@@ -3021,14 +3148,12 @@
         smallCanvas.width = smallW;
         smallCanvas.height = smallH;
         const sctx = smallCanvas.getContext('2d');
-        // ⭐ Smoothing KAPALI = keskin
         sctx.imageSmoothingEnabled = false;
         sctx.drawImage(pixelSourceImg, 0, 0, smallW, smallH);
 
         const imgData = sctx.getImageData(0, 0, smallW, smallH);
         const data = imgData.data;
 
-        // 2. Renk örneklerini topla (performans için max ~5000 örnek)
         const samples = [];
         const step = Math.max(1, Math.floor((smallW * smallH) / 5000));
         for (let i = 0; i < data.length; i += 4 * step) {
@@ -3036,12 +3161,10 @@
           samples.push([data[i], data[i+1], data[i+2]]);
         }
 
-        // 3. Median Cut ile palet çıkar
         const palette = medianCutPalette(samples, colorCount);
 
-        // 4. Her pikseli en yakın palet rengine ata
         for (let i = 0; i < data.length; i += 4) {
-          if (data[i+3] < 128) continue; // şeffaf pikselleri atla
+          if (data[i+3] < 128) continue;
           const nearest = findNearest(data[i], data[i+1], data[i+2], palette);
           data[i] = nearest[0];
           data[i+1] = nearest[1];
@@ -3049,7 +3172,6 @@
         }
         sctx.putImageData(imgData, 0, 0);
 
-        // 5. Büyüt (yine nearest neighbor — pixel art görünümü)
         const outCanvas = document.createElement('canvas');
         outCanvas.width = smallW * block;
         outCanvas.height = smallH * block;
@@ -3057,14 +3179,12 @@
         octx.imageSmoothingEnabled = false;
         octx.drawImage(smallCanvas, 0, 0, outCanvas.width, outCanvas.height);
 
-        // 6. Sonucu göster + palet önizlemesi
         pifResult.innerHTML = '';
         const resultImg = new Image();
         resultImg.src = outCanvas.toDataURL('image/png');
         resultImg.dataset.final = '1';
         pifResult.appendChild(resultImg);
 
-        // Palet önizlemesi
         const paletteDiv = document.createElement('div');
         paletteDiv.className = 'pif-palette';
         palette.slice(0, colorCount).forEach(c => {
@@ -3089,6 +3209,132 @@
         link.download = 'pixel-art.png';
         link.href = img.src;
         link.click();
+      });
+
+      // ---- PANEL 6: METİN → PDF (Türkçe destekli) ----
+      const txtTitle = document.getElementById('txtTitle');
+      const txtContent = document.getElementById('txtContent');
+      const txtFont = document.getElementById('txtFont');
+      const txtSize = document.getElementById('txtSize');
+      const txtSizeValue = document.getElementById('txtSizeValue');
+      const txtAlign = document.getElementById('txtAlign');
+      const txtPageSize = document.getElementById('txtPageSize');
+      const txtMargin = document.getElementById('txtMargin');
+      const convertTxtBtn = document.getElementById('convertTxtBtn');
+      const clearTxtBtn = document.getElementById('clearTxtBtn');
+      const txtStatus = document.getElementById('txtStatus');
+
+      txtSize.addEventListener('input', () => {
+        txtSizeValue.textContent = txtSize.value + 'pt';
+      });
+
+      clearTxtBtn.addEventListener('click', () => {
+        txtTitle.value = '';
+        txtContent.value = '';
+        hideStatus(txtStatus);
+      });
+
+      convertTxtBtn.addEventListener('click', async () => {
+        const content = txtContent.value.trim();
+        if (!content) {
+          showStatus(txtStatus, '❌ Lütfen bir metin yazın.', 'error');
+          return;
+        }
+
+        showStatus(txtStatus, '⏳ Türkçe font hazırlanıyor...', 'info');
+        convertTxtBtn.disabled = true;
+
+        try {
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({ unit: 'pt', format: txtPageSize.value, orientation: 'portrait' });
+
+          // Türkçe font kaydet
+          const fontOk = await registerTurkishFont(pdf);
+          const fontChoice = txtFont.value;
+          let useFont;
+          if (fontChoice === 'roboto' && fontOk) {
+            useFont = 'Roboto';
+          } else if (fontChoice === 'helvetica' || fontChoice === 'times' || fontChoice === 'courier') {
+            useFont = fontChoice;
+          } else {
+            useFont = fontOk ? 'Roboto' : 'helvetica';
+          }
+
+          const pageW = pdf.internal.pageSize.getWidth();
+          const pageH = pdf.internal.pageSize.getHeight();
+          const margin = parseInt(txtMargin.value) || 50;
+          const usableW = pageW - margin * 2;
+          const fontSize = parseInt(txtSize.value) || 12;
+          const lineHeight = fontSize * 1.4;
+          const align = txtAlign.value;
+
+          let y = margin;
+
+          const title = txtTitle.value.trim();
+          if (title) {
+            pdf.setFont(useFont, 'bold');
+            pdf.setFontSize(fontSize + 6);
+            pdf.setTextColor(0, 0, 0);
+            const titleLines = pdf.splitTextToSize(title, usableW);
+            titleLines.forEach(line => {
+              if (y + lineHeight > pageH - margin) { pdf.addPage(); y = margin; }
+              let x, opts = {};
+              if (align === 'center') { x = pageW / 2; opts.align = 'center'; }
+              else if (align === 'right') { x = pageW - margin; opts.align = 'right'; }
+              else { x = margin; opts.align = 'left'; }
+              pdf.text(line, x, y, opts);
+              y += (fontSize + 6) * 1.4;
+            });
+            y += 8;
+          }
+
+          pdf.setFont(useFont, 'normal');
+          pdf.setFontSize(fontSize);
+          pdf.setTextColor(0, 0, 0);
+
+          const paragraphs = content.split('\n');
+
+          paragraphs.forEach((para, idx) => {
+            if (para.trim() === '') {
+              y += lineHeight * 0.6;
+              return;
+            }
+
+            const lines = pdf.splitTextToSize(para, usableW);
+
+            lines.forEach(line => {
+              if (y + lineHeight > pageH - margin) {
+                pdf.addPage();
+                y = margin;
+              }
+              let x, opts = {};
+              if (align === 'center') { x = pageW / 2; opts.align = 'center'; }
+              else if (align === 'right') { x = pageW - margin; opts.align = 'right'; }
+              else { x = margin; opts.align = 'left'; }
+              pdf.text(line, x, y, opts);
+              y += lineHeight;
+            });
+
+            if (idx < paragraphs.length - 1) y += lineHeight * 0.3;
+          });
+
+          const baseName = title
+            ? title.replace(/[^a-zA-Z0-9ğüşıöçĞÜŞİÖÇ\s-]/g, '').substring(0, 40).trim()
+            : 'metin';
+          pdf.save((baseName || 'metin') + '.pdf');
+
+          showStatus(txtStatus,
+            fontOk
+              ? `✅ PDF oluşturuldu! (${pdf.internal.getNumberOfPages()} sayfa) · Türkçe karakter destekli`
+              : `⚠️ PDF oluşturuldu ama Türkçe font yüklenemedi. İnternet bağlantını kontrol et.`,
+            fontOk ? 'success' : 'info'
+          );
+        } catch (err) {
+          console.error(err);
+          showStatus(txtStatus, '❌ Hata: ' + err.message, 'error');
+        } finally {
+          convertTxtBtn.disabled = false;
+        }
       });
 
     })();
