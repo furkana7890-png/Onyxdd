@@ -29,6 +29,8 @@
     <i class="fas fa-bars"></i>
   </div>
 
+  <div class="sidepanel-overlay" id="sidepanelOverlay"></div>
+
   <div class="sidepanel" id="sidepanel">
     <div class="logo-area">
       <img src="android-chrome-512x512.png" alt="Logo" class="logo-img">
@@ -43,6 +45,8 @@
       <span class="dot"></span> Made by <b>Zeld</b>
     </div>
   </div>
+
+  <div class="toast-container" id="toastContainer"></div>
 
   <!-- SAYFA 1: Kırpıcı -->
   <div class="page page-1 active" id="page1">
@@ -310,7 +314,7 @@
     </div>
   </div>
 
-  <!-- SAYFA 5: ÇEVİRİCİ (7 ARAÇ) -->
+  <!-- SAYFA 5: ÇEVİRİCİ -->
   <div class="page page-5" id="page5">
     <div class="page-header">
       <h1>Çevirici <span>Araçları</span></h1>
@@ -389,7 +393,7 @@
         <div class="convert-drop" id="imgPdfDropZone">
           <i class="fas fa-images"></i>
           <p>Görselleri sürükleyin veya tıklayın</p>
-          <span>Çoklu seçim · Birden fazla görsel tek PDF'e</span>
+          <span>Çoklu seçim · Sürükle-bırak ile sırala</span>
           <input type="file" id="imgPdfInput" accept="image/*" multiple>
         </div>
         <div class="img-pdf-list" id="imgPdfList"></div>
@@ -495,9 +499,6 @@
             <label><i class="fas fa-font"></i> Yazı Tipi</label>
             <select id="txtFont">
               <option value="roboto" selected>Roboto (Türkçe destekli)</option>
-              <option value="helvetica">Helvetica (Türkçe sorunlu)</option>
-              <option value="times">Times (Türkçe sorunlu)</option>
-              <option value="courier">Courier (Türkçe sorunlu)</option>
             </select>
           </div>
           <div class="convert-row">
@@ -540,7 +541,7 @@
         <div class="convert-drop" id="mergePdfDropZone">
           <i class="fas fa-layer-group"></i>
           <p>PDF dosyalarını sürükleyin veya tıklayın</p>
-          <span>Birden fazla PDF · Sıralama sürükle-bırak ile değiştirilebilir</span>
+          <span>Birden fazla PDF · Sıralama sürükle-bırak</span>
           <input type="file" id="mergePdfInput" accept="application/pdf,.pdf" multiple>
         </div>
         <div class="img-pdf-list" id="mergePdfList"></div>
@@ -564,6 +565,24 @@
 
   <script>
     (function() {
+      // ===== TOAST BİLDİRİM SİSTEMİ =====
+      const toastContainer = document.getElementById('toastContainer');
+      function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = 'toast ' + type;
+        toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
+        toastContainer.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+
+      // ===== URL HASH ROUTING =====
+      const pageHashes = { page1: 'kirpici', page2: 'qr', page3: 'pixel', page4: 'resim', page5: 'cevirici' };
+      const hashToPage = { 'kirpici': 'page1', 'qr': 'page2', 'pixel': 'page3', 'resim': 'page4', 'cevirici': 'page5' };
+
       // ===== Türkçe Font Yükleme =====
       let TURKISH_FONT_REGULAR = null;
       let TURKISH_FONT_BOLD = null;
@@ -610,6 +629,7 @@
       // ===== MENU =====
       const menuBtn = document.getElementById('menuBtn');
       const sidepanel = document.getElementById('sidepanel');
+      const sidepanelOverlay = document.getElementById('sidepanelOverlay');
       const navItems = document.querySelectorAll('.nav-item');
       const pages = {
         page1: document.getElementById('page1'),
@@ -619,32 +639,69 @@
         page5: document.getElementById('page5')
       };
 
+      function openMenu() {
+        sidepanel.classList.add('open');
+        sidepanelOverlay.classList.add('show');
+      }
+      function closeMenu() {
+        sidepanel.classList.remove('open');
+        sidepanelOverlay.classList.remove('show');
+      }
+
       menuBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        sidepanel.classList.toggle('open');
+        sidepanel.classList.contains('open') ? closeMenu() : openMenu();
       });
 
+      sidepanelOverlay.addEventListener('click', closeMenu);
       document.addEventListener('click', (e) => {
         if (!sidepanel.contains(e.target) && e.target !== menuBtn && !menuBtn.contains(e.target)) {
-          sidepanel.classList.remove('open');
+          closeMenu();
         }
       });
+
+      function switchPage(pageId, updateHash = true) {
+        navItems.forEach(n => {
+          n.classList.toggle('active', n.dataset.page === pageId);
+        });
+        Object.keys(pages).forEach(key => {
+          pages[key].classList.toggle('active', key === pageId);
+        });
+        if (updateHash && pageHashes[pageId]) {
+          history.pushState(null, '', '#' + pageHashes[pageId]);
+        }
+        if (pageId === 'page2') {
+          const qrContainer = document.getElementById('qrcode');
+          if (qrContainer.children.length === 0) generateQR();
+        }
+      }
 
       navItems.forEach(item => {
         item.addEventListener('click', () => {
           const pageId = item.dataset.page;
           if (!pageId) return;
-          navItems.forEach(n => n.classList.remove('active'));
-          item.classList.add('active');
-          Object.keys(pages).forEach(key => {
-            pages[key].classList.toggle('active', key === pageId);
-          });
-          sidepanel.classList.remove('open');
-          if (pageId === 'page2') {
-            const qrContainer = document.getElementById('qrcode');
-            if (qrContainer.children.length === 0) generateQR();
-          }
+          switchPage(pageId);
+          closeMenu();
         });
+      });
+
+      // URL'den başlangıç sayfasını al
+      function getPageFromHash() {
+        const hash = window.location.hash.replace('#', '');
+        return hashToPage[hash] || 'page1';
+      }
+
+      // Başlangıçta hash'i kontrol et
+      window.addEventListener('DOMContentLoaded', () => {
+        const initialPage = getPageFromHash();
+        if (initialPage !== 'page1') {
+          switchPage(initialPage, false);
+        }
+      });
+
+      // Geri/ileri butonu için
+      window.addEventListener('popstate', () => {
+        switchPage(getPageFromHash(), false);
       });
 
       // ===== QR =====
@@ -700,11 +757,29 @@
         }
       }
 
+      // QR renk kontrast kontrolü
+      function isColorTooLight(hex) {
+        const r = parseInt(hex.substr(1,2), 16);
+        const g = parseInt(hex.substr(3,2), 16);
+        const b = parseInt(hex.substr(5,2), 16);
+        const luminance = (0.299*r + 0.587*g + 0.114*b) / 255;
+        return luminance > 0.7;
+      }
+
+      let qrWarningShown = false;
+
       function generateQR() {
         const text = getQRContent();
         const size = parseInt(qrSize.value, 10) || 200;
-        const dark = qrColorDark.value || '#00f3ff';
+        let dark = qrColorDark.value || '#00f3ff';
         const light = '#ffffff';
+
+        // Renk çok açıksa uyar
+        if (isColorTooLight(dark) && !qrWarningShown) {
+          showToast('⚠️ Seçilen renk çok açık, QR okunamayabilir', 'info');
+          qrWarningShown = true;
+        }
+
         qrContainer.innerHTML = '';
         try {
           qrCodeInstance = new QRCode(qrContainer, {
@@ -746,11 +821,12 @@
 
       document.getElementById('downloadQRBtn').addEventListener('click', () => {
         const canvas = qrContainer.querySelector('canvas');
-        if (!canvas) { alert('Önce QR oluşturun!'); return; }
+        if (!canvas) { showToast('❌ Önce QR oluşturun!', 'error'); return; }
         const link = document.createElement('a');
         link.download = 'qr-kod.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
+        showToast('✅ QR kod indirildi');
       });
 
       // ===== PIXEL ART (GRID) =====
@@ -921,6 +997,7 @@
           }
         }
         updatePixelCount();
+        showToast('🗑️ Grid temizlendi');
       });
 
       downloadPixelBtn.addEventListener('click', () => {
@@ -948,6 +1025,7 @@
         link.download = 'pixel-art.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
+        showToast('✅ Pixel art indirildi');
       });
 
       exportPixelBtn.addEventListener('click', () => {
@@ -960,6 +1038,7 @@
         link.href = url;
         link.click();
         URL.revokeObjectURL(url);
+        showToast('✅ JSON indirildi');
       });
 
       createGrid();
@@ -1118,7 +1197,7 @@
       outputFormat.addEventListener('change', updatePreview);
 
       applySettingsBtn.addEventListener('click', () => {
-        if (!originalImageData) { alert('Lütfen önce bir resim yükleyin!'); return; }
+        if (!originalImageData) { showToast('❌ Önce bir resim yükleyin', 'error'); return; }
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         let width = parseInt(resizeWidth.value) || originalWidth;
@@ -1147,6 +1226,7 @@
         link.download = `donusturulmus.${ext === 'jpeg' ? 'jpg' : ext}`;
         link.href = canvas.toDataURL(format, quality);
         link.click();
+        showToast('✅ Görsel indirildi');
       });
 
       resetImageBtn.addEventListener('click', () => {
@@ -1160,6 +1240,7 @@
           qualityRange.value = '92'; qualityValue.textContent = '92%';
           outputFormat.value = 'image/png';
           updatePreview();
+          showToast('🔄 Ayarlar sıfırlandı');
         }
       });
 
@@ -1183,6 +1264,25 @@
       function clientPos(e) {
         if (e.touches && e.touches.length) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
         return { x: e.clientX, y: e.clientY };
+      }
+
+      function resetCrop() {
+        // Sayfa yenileme yerine sadece kırpma alanını sıfırla
+        sourceImg.src = '';
+        cropWrapper.style.display = 'none';
+        uploadUi.style.display = 'block';
+        downloadBtn.disabled = true;
+        fileInput.value = '';
+        const ctx = previewCanvas.getContext('2d');
+        ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+        previewCanvas.width = 0;
+        previewCanvas.height = 0;
+        shapeButtons.forEach(b => b.classList.remove('active'));
+        shapeButtons[0].classList.add('active');
+        activeShape = 'free';
+        activeRatio = 0;
+        cropBox.classList.remove('round');
+        showToast('🔄 Kırpma sıfırlandı');
       }
 
       fileInput.addEventListener('change', () => {
@@ -1334,9 +1434,10 @@
         link.download = 'kirpilmis-gorsel.png';
         link.href = previewCanvas.toDataURL('image/png');
         link.click();
+        showToast('✅ Görsel indirildi');
       });
 
-      resetBtn.addEventListener('click', () => { location.reload(); });
+      resetBtn.addEventListener('click', resetCrop);
 
       // ===== ÇEVİRİCİ =====
       if (typeof pdfjsLib !== 'undefined') {
@@ -1484,9 +1585,11 @@
           await pptx.writeFile({ fileName: (currentPdfFile.name.replace(/\.pdf$/i, '') || 'output') + '.pptx' });
           setConvertProgress(100, 'Tamamlandı! ✅');
           showStatus(convertStatus, '✅ PPTX indirildi!', 'success');
+          showToast('✅ PPTX indirildi');
         } catch (err) {
           console.error(err);
           showStatus(convertStatus, '❌ Hata: ' + err.message, 'error');
+          showToast('❌ PPTX hatası', 'error');
         } finally {
           convertPdfBtn.disabled = false;
           setTimeout(() => {
@@ -1620,9 +1723,11 @@
 
           setWordProgress(100, 'Tamamlandı! ✅');
           showStatus(pdfWordStatus, '✅ Word belgesi indirildi!', 'success');
+          showToast('✅ Word indirildi');
         } catch (err) {
           console.error(err);
           showStatus(pdfWordStatus, '❌ Hata: ' + err.message, 'error');
+          showToast('❌ Word hatası', 'error');
         } finally {
           convertPdfWordBtn.disabled = false;
           setTimeout(() => {
@@ -1632,7 +1737,7 @@
         }
       });
 
-      // PANEL 3: GÖRSEL → PDF
+      // PANEL 3: GÖRSEL → PDF (Sıralama destekli)
       const imgPdfDropZone = document.getElementById('imgPdfDropZone');
       const imgPdfInput = document.getElementById('imgPdfInput');
       const imgPdfList = document.getElementById('imgPdfList');
@@ -1654,20 +1759,47 @@
         imgPdfFiles.forEach((item, idx) => {
           const row = document.createElement('div');
           row.className = 'img-pdf-item';
+          row.draggable = true;
+          row.dataset.idx = idx;
+          row.style.cursor = 'grab';
           row.innerHTML = `
+            <span style="color:var(--accent);font-weight:700;min-width:22px;">${idx + 1}.</span>
             <img class="thumb" src="${item.dataUrl}" alt="">
-            <span class="name">${idx + 1}. ${item.file.name}</span>
+            <span class="name" title="${item.file.name}">${item.file.name}</span>
             <button class="rm" data-idx="${idx}" title="Kaldır"><i class="fas fa-times"></i></button>
           `;
           imgPdfList.appendChild(row);
         });
         imgPdfList.querySelectorAll('.rm').forEach(btn => {
           btn.addEventListener('click', (e) => {
+            e.stopPropagation();
             const idx = parseInt(e.currentTarget.dataset.idx);
             imgPdfFiles.splice(idx, 1);
             renderImgPdfList();
           });
         });
+
+        // Drag & drop sıralama
+        let dragIdx = null;
+        imgPdfList.querySelectorAll('.img-pdf-item').forEach(row => {
+          row.addEventListener('dragstart', () => {
+            dragIdx = parseInt(row.dataset.idx);
+            row.style.opacity = '0.4';
+          });
+          row.addEventListener('dragend', () => { row.style.opacity = '1'; });
+          row.addEventListener('dragover', (e) => { e.preventDefault(); row.style.borderColor = 'var(--accent)'; });
+          row.addEventListener('dragleave', () => { row.style.borderColor = 'var(--border)'; });
+          row.addEventListener('drop', (e) => {
+            e.preventDefault();
+            row.style.borderColor = 'var(--border)';
+            const targetIdx = parseInt(row.dataset.idx);
+            if (dragIdx === null || dragIdx === targetIdx) return;
+            const moved = imgPdfFiles.splice(dragIdx, 1)[0];
+            imgPdfFiles.splice(targetIdx, 0, moved);
+            renderImgPdfList();
+          });
+        });
+
         convertImgPdfBtn.disabled = false;
       }
 
@@ -1707,6 +1839,7 @@
         imgPdfFiles = [];
         renderImgPdfList();
         hideStatus(imgPdfStatus);
+        showToast('🗑️ Liste temizlendi');
       });
 
       convertImgPdfBtn.addEventListener('click', async () => {
@@ -1763,9 +1896,11 @@
 
           pdf.save('gorseller.pdf');
           showStatus(imgPdfStatus, `✅ PDF oluşturuldu (${imgPdfFiles.length} sayfa)!`, 'success');
+          showToast('✅ PDF oluşturuldu');
         } catch (err) {
           console.error(err);
           showStatus(imgPdfStatus, '❌ Hata: ' + err.message, 'error');
+          showToast('❌ PDF hatası', 'error');
         } finally {
           convertImgPdfBtn.disabled = false;
         }
@@ -1857,13 +1992,14 @@
             pdf.setTextColor(0, 180, 200);
             pdf.text(sheetName, margin, margin + 12);
 
-            const fontSize = 8;
-            pdf.setFontSize(fontSize);
-            pdf.setTextColor(0, 0, 0);
-
             const colCount = Math.max(...rows.map(r => r.length));
             const usableW = pageW - margin * 2;
             const cellW = usableW / colCount;
+            // Dinamik font boyutu (sütun sayısına göre)
+            const fontSize = colCount > 20 ? 6 : colCount > 12 ? 7 : 8;
+            pdf.setFontSize(fontSize);
+            pdf.setTextColor(0, 0, 0);
+
             const lineH = fontSize + 3;
             const startY = margin + 22;
             let y = startY;
@@ -1890,9 +2026,11 @@
 
           pdf.save((currentExcelFile.name.replace(/\.(xlsx|xls|csv)$/i, '') || 'excel') + '.pdf');
           showStatus(excelStatus, '✅ PDF oluşturuldu!', 'success');
+          showToast('✅ Excel PDF indirildi');
         } catch (err) {
           console.error(err);
           showStatus(excelStatus, '❌ Hata: ' + err.message, 'error');
+          showToast('❌ Excel hatası', 'error');
         } finally {
           convertExcelBtn.disabled = false;
         }
@@ -2083,6 +2221,7 @@
         link.download = 'pixel-art.png';
         link.href = img.src;
         link.click();
+        showToast('✅ Pixel art indirildi');
       });
 
       // PANEL 6: METİN → PDF
@@ -2106,6 +2245,7 @@
         txtTitle.value = '';
         txtContent.value = '';
         hideStatus(txtStatus);
+        showToast('🗑️ Metin temizlendi');
       });
 
       convertTxtBtn.addEventListener('click', async () => {
@@ -2123,15 +2263,7 @@
           const pdf = new jsPDF({ unit: 'pt', format: txtPageSize.value, orientation: 'portrait' });
 
           const fontOk = await registerTurkishFont(pdf);
-          const fontChoice = txtFont.value;
-          let useFont;
-          if (fontChoice === 'roboto' && fontOk) {
-            useFont = 'Roboto';
-          } else if (fontChoice === 'helvetica' || fontChoice === 'times' || fontChoice === 'courier') {
-            useFont = fontChoice;
-          } else {
-            useFont = fontOk ? 'Roboto' : 'helvetica';
-          }
+          const useFont = fontOk ? 'Roboto' : 'helvetica';
 
           const pageW = pdf.internal.pageSize.getWidth();
           const pageH = pdf.internal.pageSize.getHeight();
@@ -2198,9 +2330,11 @@
                    : `⚠️ PDF oluşturuldu ama Türkçe font yüklenemedi.`,
             fontOk ? 'success' : 'info'
           );
+          showToast('✅ Metin PDF indirildi');
         } catch (err) {
           console.error(err);
           showStatus(txtStatus, '❌ Hata: ' + err.message, 'error');
+          showToast('❌ Metin PDF hatası', 'error');
         } finally {
           convertTxtBtn.disabled = false;
         }
@@ -2243,7 +2377,7 @@
           row.style.cursor = 'grab';
           row.innerHTML = `
             <span style="color:var(--accent);font-weight:700;min-width:22px;">${idx + 1}.</span>
-            <span class="name">${item.file.name}</span>
+            <span class="name" title="${item.file.name}">${item.file.name}</span>
             <span style="color:var(--text-muted);font-size:11px;white-space:nowrap;">${item.pageCount} sayfa</span>
             <button class="rm" data-idx="${idx}" title="Kaldır"><i class="fas fa-times"></i></button>
           `;
@@ -2279,7 +2413,8 @@
           });
         });
 
-        convertMergeBtn.disabled = false;
+        // ⚠️ Tek dosya varsa buton pasif olsun
+        convertMergeBtn.disabled = mergePdfFiles.length < 2;
       }
 
       mergePdfDropZone.addEventListener('click', () => mergePdfInput.click());
@@ -2317,14 +2452,11 @@
         renderMergePdfList();
         hideStatus(mergeStatus);
         mergeProgressWrap.classList.remove('active');
+        showToast('🗑️ Liste temizlendi');
       });
 
       convertMergeBtn.addEventListener('click', async () => {
-        if (mergePdfFiles.length === 0) return;
-        if (mergePdfFiles.length === 1) {
-          showStatus(mergeStatus, '⚠️ En az 2 PDF gerekli.', 'info');
-          return;
-        }
+        if (mergePdfFiles.length < 2) return;
         convertMergeBtn.disabled = true;
         hideStatus(mergeStatus);
         mergeProgressWrap.classList.add('active');
@@ -2364,9 +2496,11 @@
           mergeProgressText.innerHTML = 'Tamamlandı! ✅';
           const totalPages = mergedPdf.getPageCount();
           showStatus(mergeStatus, `✅ PDF oluşturuldu! (${total} dosya → ${totalPages} sayfa)`, 'success');
+          showToast(`✅ ${totalPages} sayfa birleştirildi`);
         } catch (err) {
           console.error(err);
           showStatus(mergeStatus, '❌ Hata: ' + err.message, 'error');
+          showToast('❌ Birleştirme hatası', 'error');
         } finally {
           convertMergeBtn.disabled = false;
           setTimeout(() => {
